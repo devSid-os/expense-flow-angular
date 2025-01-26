@@ -1,0 +1,163 @@
+<p-table 
+    #expenseTable 
+    *ngIf="entries.length;else emptyTable"
+    [lazy]='true' 
+    [paginator]='true' 
+    [showCurrentPageReport]='true' 
+    [first]='entriesPagination.currentPage * entriesPagination.pageSize'
+    [rows]='entriesPagination.pageSize' 
+    [rowsPerPageOptions]='[25, 50, 100]'
+    [currentPageReportTemplate]='"Page "+(entriesPagination.currentPage + 1)+" of "+(getTotalPage())'
+    [totalRecords]='entriesPagination.totalRecords' 
+    (onLazyLoad)='onPageChange.emit($event)' 
+    [value]='entries' 
+    dataKey='_id'
+    [tableStyle]='{"min-width": "60rem"}'
+>
+    <ng-template #caption>
+        <div class='flex justify-between'>
+            <p-iconfield iconPosition='left'>
+                <p-inputicon>
+                    <i class='fa-solid fa-magnifying-glass'></i>
+                </p-inputicon>
+                <input pInputText type='text' pSize='small' placeholder='Search keyword' />
+            </p-iconfield>
+            <p-button variant='text' size='small' icon='fa-solid fa-rotate-right' />
+        </div>
+    </ng-template>
+
+    <ng-template #header>
+        <tr>
+            <th></th>
+            <th class='text-[12px]'>
+                Category
+            </th>
+            <th class='text-[12px]'>
+                Expense Total
+            </th>
+            <th class='text-[12px]'>
+                Expense Date
+            </th>
+            <th class='text-[12px]'>
+                Created At
+            </th>
+            <th class='text-[12px] flex justify-center'>Actions</th>
+        </tr>
+    </ng-template>
+
+    <ng-template #body let-entry let-expanded='expanded'>
+        <tr class='parent-row'>
+            <td>
+                <p-button type='button' pRipple [pRowToggler]='entry' [text]='true' [rounded]='true'
+                    [plain]='true' [icon]='expanded ? "pi pi-chevron-down" : "pi pi-chevron-right"'
+                    size='small' />
+            </td>
+            <td class='tracking-wide font-semibold text-sm'>{{ entry.category.name }}</td>
+            <td class='font-semibold text-[#f87171] text-sm'>
+                <i class='fa-solid fa-indian-rupee-sign text-[13px]'></i>&nbsp;{{ getExpenseTotal(entry.items)
+                }}
+            </td>
+            <td class='tracking-wide text-[13px] italic text-[#fff]'>{{ entry.date | date : 'dd-MMM-yyyy' }}
+            </td>
+            <td class='tracking-wide text-[13px] italic text-[#fff]'>
+                {{entry.createdAt | date : 'dd-MMM-yyyy hh:mm a'}}
+            </td>
+            <td class='flex justify-center items-center'>
+                <p-button (click)='onEditExpenseClick.emit(entry);' class='edit-entry-btn'
+                    icon='fa-solid fa-pencil' variant='text' size='small' />
+                <p-button (click)='showDeleteEntryConfirmation(entry._id);' icon='fa-solid fa-trash' variant='text'
+                    severity='danger' size='small' />
+            </td>
+        </tr>
+    </ng-template>
+
+    <!-- Expandable Row Content -->
+    <ng-template #expandedrow let-entry>
+        <tr class='expanded-tr'>
+            <td colspan='6'>
+                <div>
+                    <p-table [value]='entry.items' dataKey='item._id'>
+                        <ng-template #header>
+                            <tr>
+                                <th class='text-[12px]'>Item Name</th>
+                                <th class='text-[12px]'>Price</th>
+                                <th class='text-[12px]'>Quantity</th>
+                                <th class='text-[12px]'>Total Amount</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template #body let-item>
+                            <tr>
+                                <td class='tracking-wide text-[aqua] italic text-sm'>{{ item.item.name }}</td>
+                                <td class='text-[#f87171] font-bold text-sm'><i class='fa-solid fa-indian-rupee-sign text-[13px]'></i>&nbsp;{{
+                                    item.item.price }}</td>
+                                <td class='text-[orange] font-bold text-sm'>{{ item.qty }}</td>
+                                <td class='text-[#03d47c] font-bold text-sm'><i class='fa-solid fa-indian-rupee-sign text-[13px]'></i>&nbsp;{{
+                                    item.item.price * item.qty }}</td>
+                            </tr>
+                        </ng-template>
+                        
+                    </p-table>
+                </div>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<ng-template #emptyTable>
+    <div class="relative w-full">
+        <p-table [value]="products" [tableStyle]="{ 'min-width': '50rem', 'z-index': '0!important' }">
+            <ng-template #header>
+                <tr>
+                    <th class='text-[12px]'>Category</th>
+                    <th class='text-[12px]'>Expense Total</th>
+                    <th class='text-[12px]'>Date</th>
+                    <th class='text-[12px]'>CreatedAt</th>
+                    <th class='text-[12px]'>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template #body let-product>
+                <tr>
+                    <td><p-skeleton /></td>
+                    <td><p-skeleton /></td>
+                    <td><p-skeleton /></td>
+                    <td><p-skeleton /></td>
+                    <td><p-skeleton /></td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</ng-template>
+
+<!-- DELETE ENTRY CONFIRMATION MODAL -->
+<p-confirmdialog #cd>
+    <ng-template 
+        #headless 
+        let-message 
+        let-onAccept='onAccept' 
+        let-onReject='onReject'
+    >
+        <div class='flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded'>
+            <div class='rounded-full bg-[#03d47c] text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20'>
+                <i class='pi pi-question !text-5xl'></i>
+            </div>
+            <span class='font-bold text-2xl block mb-2 mt-6'>{{ message.header }}</span>
+            <p class='mb-0'>{{ message.message }}</p>
+            <div class='flex items-center gap-2 mt-6'>
+                <p-button 
+                    class='confirm-delete-btn' 
+                    label='Delete' 
+                    (onClick)='onAccept()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+                <p-button 
+                    label='Cancel' 
+                    [outlined]='true' 
+                    (onClick)='onReject()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>

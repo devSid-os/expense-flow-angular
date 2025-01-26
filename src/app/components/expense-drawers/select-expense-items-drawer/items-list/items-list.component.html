@@ -1,0 +1,111 @@
+<div 
+    class='w-full flex flex-col' 
+    [ngClass]='{"pb-[90px]": itemsCartArray.length > 0}'
+>
+    <ng-container *ngIf='items.length > 0;else noItemsPlacholder;'>
+        @for(item of items;track item._id) {
+        <div class='w-full px-3 py-6 expense-items-div'>
+            <p class='text-black mb-1'>{{item.name}}</p>
+            <div class='flex justify-between gap-2 items-start'>
+                <div class='flex flex-col gap-2'>
+                    <p class='text-sm text-gray-500 font-[600]'>PRICE</p>
+                    <p class='font-[600] text-black'>
+                        <i class='fa-solid fa-indian-rupee-sign'></i>&nbsp;{{item.price}}
+                    </p>
+                    <div class='flex items-center gap-2 item-actions-btns'>
+                        <p-button 
+                            (click)="onEditItem.emit(item)" 
+                            icon='fa-solid fa-pencil'
+                            severity='info' 
+                            size='small' 
+                            [text]='true' 
+                        />
+                        <p-button 
+                            (click)='showDeleteItemConfirmation(item);' 
+                            icon='fa-solid fa-trash-can'
+                            size='small' 
+                            [text]='true' 
+                        />
+                    </div>
+                </div>
+                <p-button 
+                    (click)='addItemToCart(item);' 
+                    *ngIf='item._id && !itemsCart[item._id];'
+                    class='add-item-btn' 
+                    label='Add' 
+                    icon='fa-solid fa-plus' 
+                    size='small' 
+                />
+                <!-- ADD/REMOVE QTY BTN -->
+                <div 
+                    *ngIf='item._id && itemsCart[item._id] && itemsCart[item._id]?.qty && itemsCart[item._id].qty > 0'
+                    class='flex items-center rounded-md overflow-hidden' 
+                    style='border: 1px solid #175cd3;'
+                >
+
+                    <!-- DECREASE QTY BTN -->
+                    <button 
+                        class='text-[red] bg-[#e8f0ff] text-sm p-2'
+                        (click)='removeItemFromCart(item._id)'
+                    >
+                        <i class='fa-solid fa-minus'></i>
+                    </button>
+
+                    <button class='text-black text-sm p-2 px-3'>
+                        {{ itemsCart[item._id].qty}}
+                    </button>
+
+                    <!-- ADD QTY BTN -->
+                    <button 
+                        class='text-[seagreen] bg-[#e8f0ff] text-sm p-2' 
+                        (click)='addItemToCart(item)'
+                    >
+                        <i class='fa-solid fa-plus'></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        }
+    </ng-container>
+
+    <ng-template #noItemsPlacholder>
+        <div class='w-full flex flex-col gap-2 items-center'>
+            <img src='images/no_items.png' />
+            <p class='text-black font-[500]'>No Expense Items has been added yet</p>
+        </div>
+    </ng-template>
+</div>
+
+<!-- DELETE ITEM CONFIRMATION MODAL -->
+<p-confirmdialog #cd>
+    <ng-template 
+        #headless 
+        let-message 
+        let-onAccept='onAccept' 
+        let-onReject='onReject'
+    >
+        <div class='flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded'>
+            <div class='rounded-full bg-[#03d47c] text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20'>
+                <i class='pi pi-question !text-5xl'></i>
+            </div>
+            <span class='font-bold text-2xl block mb-2 mt-6'>{{ message.header }}</span>
+            <p class='mb-0'>{{ message.message }}</p>
+            <div class='flex items-center gap-2 mt-6'>
+                <p-button 
+                    class='confirm-delete-btn' 
+                    label='Delete' 
+                    (onClick)='onAccept()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+                <p-button 
+                    label='Cancel' 
+                    [outlined]='true' 
+                    (onClick)='onReject()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>

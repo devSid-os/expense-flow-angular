@@ -1,0 +1,104 @@
+:host ::ng-deep {
+    .p-scrollpanel {
+        &.custombar {
+            .p-scrollpanel-bar {
+                background-color: var(--p-primary-color);
+            }
+        }
+    }
+}
+
+
+.close-drawer-btn2 button,
+.close-drawer-btn1 button,
+.add-expItem-btn button {
+    background: transparent !important;
+    color: gray !important;
+    border: 0 !important;
+    padding: 0 !important;
+    width: max-content !important;
+}
+
+.close-drawer-btn1 button,
+.add-expItem-btn button {
+    color: rgb(23, 92, 211) !important;
+}
+
+.search-input-div .p-inputtext,
+.editExpenseItemDiv .p-inputtext {
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #bebebe !important;
+}
+
+.p-accordionpanel {
+    border: 0 !important;
+}
+
+.p-accordioncontent-content,
+.p-accordionheader {
+    background-color: #fff !important;
+    padding: .2rem !important;
+}
+
+.p-accordionheader {
+
+    .fa-plus {
+        color: rgb(23, 92, 211) !important;
+    }
+}
+
+.add-exp-item-form {
+    .p-inputtext {
+        background-color: transparent !important;
+        color: #000 !important;
+        border: 1px solid #bebebe !important;
+    }
+}
+
+.add-exp-item-form .btn button {
+    background-color: transparent !important;
+    border: 0 !important;
+    background: rgb(23, 92, 211) !important;
+    color: #fff !important;
+    letter-spacing: 1px;
+}
+
+.add-item-btn button {
+    background: transparent !important;
+    color: rgb(23, 92, 211) !important;
+    border: 1px solid rgb(23, 92, 211) !important;
+}
+
+.item-actions-btns {
+    button {
+        padding: 0 !important;
+        width: max-content !important;
+    }
+}
+
+.fa-pencil {
+    color: rgb(23, 92, 211) !important;
+}
+
+.fa-trash-can {
+    color: red !important;
+}
+
+.p-scrollpanel-bar-y {
+    background: gray !important;
+    width: 5px !important;
+}
+
+.continue-btn button {
+    background: rgb(23, 92, 211) !important;
+    color: #fff !important;
+}
+
+.expense-items-div:not(:last-child) {
+    border-bottom: 1px solid #dbd8d8;
+}
+
+.p-dialog {
+    background-color: red !important;
+}

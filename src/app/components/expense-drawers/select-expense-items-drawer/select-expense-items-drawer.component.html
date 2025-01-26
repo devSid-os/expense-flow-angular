@@ -1,0 +1,234 @@
+<!-- ADD EXPENSE DRAWER -->
+<p-drawer 
+    (onHide)='closeDrawer();' 
+    position='right' 
+    [visible]='isDrawerOpen()' 
+    [closable]='false'
+    id='addExpenseDrawer'
+>
+    <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
+        <div class='relative w-full h-[100%] py-3'>
+            <div class='px-3 flex justify-between items-center'>
+                <p-button 
+                    (click)='closeDrawer();' 
+                    class='close-drawer-btn1' 
+                    icon='fa-solid fa-arrow-left' 
+                />
+                <h6 class='text-black text-base font-[600]'>Select Expense Items</h6>
+                <p-button 
+                    (click)='closeAllDrawers();' 
+                    class='close-drawer-btn2' 
+                    icon='fa-solid fa-times' 
+                />
+            </div>
+            <!-- SEARCH ITEMS DIV -->
+            <div class='px-3 search-input-div mt-8'>
+                <p-iconfield>
+                    <p-inputicon class='fa-solid fa-magnifying-glass' />
+                    <input 
+                        pSize='small' 
+                        type='search' 
+                        pInputText 
+                        placeholder='Search for an expense item' 
+                    />
+                </p-iconfield>
+            </div>
+
+            <!-- ADD EXPENSE ITEMS DIV -->
+            <div 
+                class='px-3 py-2 mt-8' 
+                style='border-top: 1px solid #e9e9e9;border-bottom: 1px solid #e9e9e9;'
+            >
+                <p-accordion 
+                    [value]='1' 
+                    expandIcon='fa' 
+                    collapseIcon='fa'
+                >
+                    <p-accordion-panel [value]='0'>
+                        <p-accordion-header>
+                            <p-button 
+                                size='small' 
+                                icon='fa-solid fa-plus' 
+                                label='Add Expense Item'
+                                class='add-expItem-btn' 
+                            />
+                        </p-accordion-header>
+                        <p-accordion-content>
+                            <form 
+                                (ngSubmit)='addNewExpenseItem();' 
+                                class='add-exp-item-form flex flex-col gap-2 py-2'
+                                [formGroup]='addItemForm'
+                            >
+                                <div class='flex flex-col gap-1'>
+                                    <label class='text-black text-sm font-[500]'>Expense Item Name</label>
+                                    <input 
+                                        autocomplete='off' 
+                                        placeholder='Enter the name of the expense item'
+                                        type='text' 
+                                        name='itemName' 
+                                        formControlName='name' 
+                                        pInputText 
+                                        pSize='small' 
+                                    />
+                                    <ng-container *ngIf='addItemForm.get("name")?.dirty'>
+                                        <p-message 
+                                            *ngIf='addItemForm.get("name")?.hasError("required")'
+                                            variant='simple' 
+                                            severity='error' 
+                                            size='small'
+                                        >
+                                            Item name is a required field
+                                        </p-message>
+                                    </ng-container>
+                                </div>
+
+                                <div class='flex flex-col gap-1'>
+                                    <label class='text-black text-sm font-[500]'>Price</label>
+                                    <p-iconfield>
+                                        <p-inputicon class='fa-solid fa-indian-rupee-sign' />
+                                        <input 
+                                            formControlName='price' 
+                                            pSize='small' 
+                                            autocomplete='off' 
+                                            type='number'
+                                            pInputText 
+                                            placeholder='Enter expense item price' 
+                                        />
+                                    </p-iconfield>
+                                    <ng-container *ngIf='addItemForm.get("price")?.dirty'>
+                                        <p-message
+                                            *ngIf='!addItemForm.get("price")?.hasError("pattern") && addItemForm.get("price")?.hasError("required")'
+                                            variant='simple' 
+                                            severity='error' 
+                                            size='small'
+                                        >
+                                            Item price is a required field
+                                        </p-message>
+                                        <p-message
+                                            *ngIf='addItemForm.get("price")?.hasError("pattern") && !addItemForm.get("price")?.hasError("required")'
+                                            variant='simple' 
+                                            severity='error' 
+                                            size='small'
+                                        >
+                                            Enter a valid price (only numbers, max 2 decimal places).
+                                        </p-message>
+                                    </ng-container>
+                                </div>
+                                <p-button type='submit' class='btn' size='small' label='Add Item' />
+                            </form>
+                        </p-accordion-content>
+                    </p-accordion-panel>
+                </p-accordion>
+            </div>
+
+            <!-- ITEMS LIST -->
+            <ng-container [ngSwitch]="editExpenseDrawerOpen()">
+                <ng-container *ngSwitchCase="true">
+                    <app-items-list 
+                        (onEditItem)="onEditExpenseItem($event);"
+                        [itemsCartArray]="editItemsCartArray()"
+                        [items]="items()" 
+                        [itemsCart]="editItemsCart()"
+                    ></app-items-list>
+                    <div 
+                        *ngIf='editItemsCartArray().length' 
+                        class='bg-white p-3 fixed bottom-0 right-0 w-full'
+                        style='border-top: 1px solid #bebebe;'
+                    >
+                        <div class='flex justify-between items-center'>
+                            <div>
+                                <p class='text-[gray]'>{{editItemsCartArray().length}} Items</p>
+                                <p class='text-black text-xl font-semibold flex items-center'>
+                                    <i class='text-base fa-solid fa-indian-rupee-sign'></i>&nbsp;{{editCartTotalAmount()}}
+                                </p>
+                            </div>
+                            <p-button (click)='closeDrawer()' label='Continue' class='continue-btn' />
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-container *ngSwitchCase="false">
+                    <app-items-list 
+                        (onEditItem)="onEditExpenseItem($event);"
+                        [itemsCartArray]="itemsCartArray()" 
+                        [items]="items()"
+                        [itemsCart]="itemsCart()"
+                    ></app-items-list>
+                    <div 
+                        *ngIf='itemsCartArray().length' 
+                        class='bg-white p-3 fixed bottom-0 right-0 w-full'
+                        style='border-top: 1px solid #bebebe;'
+                    >
+                        <div class='flex justify-between items-center'>
+                            <div>
+                                <p class='text-[gray]'>{{itemsCartArray().length}} Items</p>
+                                <p class='text-black text-xl font-semibold flex items-center'>
+                                    <i class='text-base fa-solid fa-indian-rupee-sign'></i>&nbsp;{{cartTotalAmount()}}
+                                </p>
+                            </div>
+
+                            <p-button (click)='closeDrawer()' label='Continue' class='continue-btn' />
+                        </div>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </p-scrollpanel>
+
+</p-drawer>
+
+<p-toast position='bottom-center' />
+
+<!-- EDIT ITEM FORM DIALOG -->
+<p-dialog 
+    header='Edit Category' 
+    [modal]='true' 
+    [(visible)]='showEditItemDialog' 
+    [style]='{ width: "25rem" }'
+>
+    <form [formGroup]='editItemForm'>
+        <div class='editExpenseItemDiv flex flex-col gap-1 mb-8'>
+            <label for='itemName' class='tracking-wide'>Expense Item Name</label>
+            <input 
+                pInputText 
+                formControlName='name' 
+                name='itemName' 
+                id='itemName' 
+                class='flex-auto' 
+                autocomplete='off'
+                type='text' 
+            />
+
+        </div>
+        <div class='editExpenseItemDiv flex flex-col gap-1 mb-8'>
+            <label for='itemPrice' class='tracking-wide'>Price</label>
+            <input 
+                pInputText 
+                formControlName='price' 
+                name='itemPrice' 
+                id='itemPrice' 
+                class='flex-auto'
+                autocomplete='off' 
+                type='number' 
+            />
+
+        </div>
+        <div class='flex justify-end gap-2'>
+            <p-button 
+                [disabled]='loading()' 
+                type='button' 
+                size='small' 
+                label='Cancel' 
+                severity='secondary'
+                (click)='closeEditExpenseModal();' 
+            />
+            <p-button 
+                [disabled]='loading()' 
+                type='submit' 
+                size='small' 
+                class='editCategory-btn' 
+                label='Edit'
+                (click)='editUserExpenseItem();' 
+            />
+        </div>
+    </form>
+</p-dialog>

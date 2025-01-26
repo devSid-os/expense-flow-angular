@@ -1,0 +1,160 @@
+<!-- ADD EXPENSE DRAWER -->
+<p-drawer 
+    (onHide)='closeDrawer();' 
+    position='right' 
+    [visible]='isDrawerOpen()' 
+    [closable]='false'
+    id='editExpenseDrawer'
+>
+    <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
+        <div class='w-full h-[100%] pb-2 bg-white'>
+            <div class='p-3'>
+                <h6 class='text-black text-lg font-[500]'>Edit Expense</h6>
+            </div>
+            <hr class='border-1 border-[#e6e0e0]' />
+
+            <!-- EXPENSE ENTRY FORM -->
+            <form 
+                (ngSubmit)="updateExpenseEntry();"
+                style='padding-bottom: 30px;'
+                [formGroup]='editEntryForm' 
+                class='p-3 px-4 flex flex-col gap-4 overflow-y-auto'
+            >
+                <!-- DATE DIV -->
+                <div class='expenseDateInput flex flex-col gap-1'>
+                    <label class='text-black font-[500]'>Expense Date</label>
+                    <p-datepicker 
+                        formControlName='date' 
+                        [fluid]='true' 
+                        name='expenseDate' 
+                        [maxDate]='today'
+                        [iconDisplay]='"input"' 
+                        [showIcon]='true' 
+                        inputId='icondisplay' 
+                    />
+                </div>
+
+
+                <!-- SELECT CATEGORY DIV -->
+                <div>
+                    <div 
+                        style='border: 1px solid #e9e9e9;'
+                        class='expenseCategoryDiv text-black p-2 pb-4 rounded-md flex flex-col gap-3 rounded-bl-none rounded-br-none'
+                    >
+                        <div class='flex items-center'>
+                            <i class='fa-solid fa-layer-group text-[gray] text-sm mt-[2px]'></i>&nbsp;&nbsp;
+                            <p class='text-black'>Expense Category</p>
+                        </div>
+
+                        <p-select 
+                            formControlName='category' 
+                            name='expenseCategory' 
+                            [options]='categoriesOptions()'
+                            placeholder='Select a Category' 
+                            size='small' 
+                            [editable]='true'
+                            optionLabel='name' 
+                            optionValue='_id' 
+                            class='w-full' 
+                        />
+
+                    </div>
+
+                    <!-- ADD/EDIT CATEGORY DIV -->
+                    <div 
+                        style='border: 1px solid #e9e9e9;border-top: 0;' 
+                        class='p-2 rounded-bl-md rounded-br-md'
+                    >
+                        <div 
+                            *ngIf='!isAddNewCategory && !isEditCategory' 
+                            class='flex justify-between items-center'
+                        >
+                            <p-button 
+                                (click)='showAddNewCategoryForm();' 
+                                pRipple 
+                                label='Add New Category'
+                                class='add-category-btn' 
+                                icon='fa-solid fa-plus' 
+                                size='small' 
+                            />
+                            <p-button 
+                                (click)='isEditCategory = true;' 
+                                class='edit-categories-btn' 
+                                pRipple 
+                                label='Edit'
+                                size='small' 
+                            />
+                        </div>
+
+                        <!-- ADD NEW CATEGORY FORM -->
+                        <app-add-category *ngIf='isAddNewCategory' (onCloseCategoryForm)="closeAddNewCategoryForm();"></app-add-category>
+
+                        <!-- EDIT CATEGORY FORM DIV -->
+                        <app-edit-category-list *ngIf='isEditCategory' (onEditCategoryClick)="showEditCategoryModal($event)" (onCloseEditCategoryModal)="isEditCategory=false;"></app-edit-category-list>
+                    </div>
+                </div>
+
+                <!-- SELECT EXPENSE ITEMS DIV -->
+                <div 
+                    style='border: 1px solid #e9e9e9;'
+                    class='expenseCategoryDiv p-3 pb-4 rounded-md flex flex-col gap-3'
+                >
+                    <p class='text-black font-semibold'>Expense Item Details</p>
+
+                    <div class='w-full flex flex-col'>
+                        @for (item of cartItemsArray();track item.item._id) {
+                            <div class='w-full flex justify-between py-2'>
+                                <div>
+                                    <p class='text-black'>{{item.item.name}}</p>
+                                    <p class='text-[gray] text-sm flex items-center gap-2 tracking-wide'>
+                                        <span>{{item.qty}}</span>
+                                        <span>x</span>
+                                        <span>
+                                            <i style='font-size: .8rem;' class='text-sm fa-solid fa-indian-rupee-sign'></i>{{item.item.price}}
+                                        </span>
+                                    </p>
+                                </div>
+                                <p class='text-black font-semibold'>
+                                    <i class='fa-solid fa-indian-rupee-sign'></i>{{calculateItemsTotal(item.item.price, item.qty)}}
+                                </p>
+                            </div>
+                        }
+                    </div>
+
+                    <p-button 
+                        (click)='openExpenseItemsDrawer();' 
+                        class='select-expense-items-btn' 
+                        [label]='cartItemsArray().length > 0 ? "Add More Items" : "Select Expense Items"' icon='fa-solid fa-plus' size='small' 
+                    />
+                </div>
+
+                <!-- TOTAL AMOUNT DIV -->
+                <div class='flex flex-col gap-1' *ngIf='cartItemsArray().length'>
+                    <p class='text-black font-[500]'>Total Amount</p>
+                    <input disabled [value]='cartTotal()' class='total-amt-inp-disabled' type='number' pInputText pSize='small' />
+                </div>
+
+                <!-- EXPENSE ENTRY DESCRIPTION DIV -->
+                <div class='entryDescriptionInputDiv flex flex-col'>
+                    <label class='text-black font-[500]' for='entryDescription'>Description</label>
+                    <input 
+                        autocomplete='off' 
+                        placeholder='Enter Description' 
+                        pInputText 
+                        type='text' 
+                        formControlName='description' 
+                        name='entryDescription' 
+                        id='entryDescription' 
+                    />
+                </div>
+
+                <!-- SUBMIT BUTTON -->
+                <p-button type='submit' class='submit-form-btn' label='Update Entry' />
+            </form>
+        </div>
+    </p-scrollpanel>
+</p-drawer>
+
+<app-edit-category-form *ngIf="editCategoryData" [editCategoryData]="editCategoryData" [showEditCategoryDialog]="showEditCategoryDialog" (onCloseEditCategoryDialog)="closeEditCategoryModal()"></app-edit-category-form>
+
+<p-toast position='bottom-center' />

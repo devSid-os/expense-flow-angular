@@ -1,0 +1,31 @@
+<div class='flex flex-col'>
+    <div class='flex items-center mb-1 px-2'>
+        <app-profile-avatar></app-profile-avatar>
+        <div>
+            <p class='tracking-wide text-sm'>{{userData().name}}</p>
+            <p class='text-[#76847e] text-[12px]'>{{userData().email}}</p>
+        </div>
+    </div>
+    <p-divider />
+    <div class='cursor-pointer flex items-center p-2 px-3 hover:bg-[#313131]'>
+        <i class='fa-solid'
+            [ngClass]='{"fa-circle-question text-[#03d47c]": !userData().verified, "fa-circle-check text-[#33b2f0]": userData().verified}'>
+        </i>&nbsp;&nbsp;
+        <p class='text-sm tracking-wider'>
+            {{userData().verified ? 'Account Verified' : 'Verify your Account'}}
+        </p>
+    </div>
+    <p-divider />
+    <div class='cursor-pointer flex items-center p-2 px-3 hover:bg-[#313131]'>
+        <i class='fa-solid fa-key text-[orange]'>
+        </i>&nbsp;&nbsp;
+        <p class='text-sm tracking-wider'>
+            Change Password
+        </p>
+    </div>
+    <p-divider />
+    <div (click)='signOut.emit(true);' class='cursor-pointer flex items-center p-2 px-3 hover:bg-[#313131]'>
+        <i class='fa-solid fa-right-from-bracket text-[red]'></i>&nbsp;&nbsp;
+        <p class='text-sm tracking-wider'>Sign out</p>
+    </div>
+</div>

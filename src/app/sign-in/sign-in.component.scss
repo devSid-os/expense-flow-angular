@@ -1,0 +1,39 @@
+.p-inputgroupaddon {
+    background-color: transparent !important;
+    border: 1px solid #bebebe !important;
+    border-right: 0 !important;
+}
+
+.p-password {
+    width: 100% !important;
+}
+
+.p-inputtext {
+    width: 100% !important;
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #bebebe !important;
+}
+
+.custom-sign-in-btn>.p-button {
+    width: 100% !important;
+    background-color: #f39c12 !important;
+    border: #f39c12 !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+
+    &:hover {
+        background-color: #27ae60 !important;
+    }
+}
+
+.p-divider-content {
+    user-select: none;
+    background-color: #ffF !important;
+    color: #000 !important;
+    font-size: 1rem !important;
+    font-weight: 300 !important;
+    // padding: 0 20px !important;
+    background-color: transparent !important;
+    color: #fff !important;
+}

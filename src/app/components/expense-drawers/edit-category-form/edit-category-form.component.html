@@ -1,0 +1,47 @@
+<!-- EDIT CATEGORY FORM DIALOG -->
+<p-dialog 
+    header='Edit Category' 
+    [modal]='true' 
+    [(visible)]='showEditCategoryDialog' 
+    [style]='{ width: "25rem" }'
+>
+    <form [formGroup]='editCategoryForm'>
+        <div class='editCategoryInputDiv flex flex-col gap-1 mb-8'>
+            <label for='cateoryName' class='tracking-wide'>Category Name</label>
+            <input 
+                pInputText 
+                formControlName='name' 
+                name='cateoryName' 
+                id='cateoryName' 
+                class='flex-auto'
+                autocomplete='off' 
+            />
+            <p-message 
+                variant='simple' 
+                class='form-error-message' 
+                size='small' 
+                severity='error'
+                [text]='formErrors.updateCategoryForm' 
+                *ngIf='formErrors.updateCategoryForm' 
+            />
+        </div>
+        <div class='flex justify-end gap-2'>
+            <p-button 
+                [disabled]='loading()' 
+                type='button' 
+                size='small' 
+                label='Cancel' 
+                severity='secondary'
+                (click)='closeDialog()' 
+            />
+            <p-button 
+                [disabled]='loading()' 
+                type='submit' 
+                size='small' 
+                class='editCategory-btn' 
+                label='Edit'
+                (click)='updateExpenseCategory();' 
+            />
+        </div>
+    </form>
+</p-dialog>

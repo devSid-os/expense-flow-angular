@@ -1,0 +1,11 @@
+<form [formGroup]='addCategoryForm' (ngSubmit)='addNewCategory();' class='w-full'>
+    <div class='expenseCategoryInputDiv flex items-center gap-2'>
+        <input pSize='small' type='text' placeholder='Enter Category Name' name='expenseCategoryName'
+            formControlName='name' pInputText autocomplete='off' />
+        <p-button [disabled]='loading()' type='submit' pTooltip='Add Category' tooltipPosition='left' delay='700'
+            icon='fa-solid fa-check' />
+        <p-button [disabled]='loading()' type='button' icon='fa-solid fa-times' (click)='closeAddNewCategoryForm();' />
+    </div>
+    <p-message variant='simple' class='form-error-message' size='small' severity='error'
+        [text]='categoryFormError' *ngIf='categoryFormError' />
+</form>

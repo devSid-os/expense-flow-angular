@@ -1,0 +1,44 @@
+.active-time-filter {
+    color: #fff;
+    background-color: #1a3d32;
+}
+
+.p-dialog {
+    background: #072419 !important;
+    border: 1px solid #072419 !important;
+
+    .p-dialog-header {
+        padding: .5rem 1rem;
+
+        span {
+            font-size: 1rem;
+        }
+    }
+
+    .p-dialog-content {
+        padding: 0 1rem 1rem .5rem;
+    }
+}
+
+.p-button-text.p-button-plain:not(:disabled):hover {
+    background: transparent !important;
+}
+
+.filter-chips .p-chip {
+    font-size: .7rem !important;
+    font-weight: bold;
+}
+
+.filtered-chips .p-chip {
+    font-size: .7rem !important;
+    color: black !important;
+    font-weight: bold;
+}
+
+.p-datepicker {
+    width: 100%!important;
+}
+
+.p-datepicker-day-selected {
+    background: orange !important;
+}

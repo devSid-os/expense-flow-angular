@@ -1,0 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    font-family: "Noto Sans", serif;
+    font-optical-sizing: auto;
+    font-weight: normal;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+:host ::ng-deep {
+    .p-scrollpanel {
+        &.custombar {
+            .p-scrollpanel-bar {
+                background-color: var(--p-primary-color);
+            }
+        }
+    }
+}
+
+.p-drawer-right {
+    width: 100% !important;
+
+    .p-drawer-content {
+        background: #fff !important;
+    }
+}
+
+.expenseDateInput .p-inputtext,
+.expenseCategoryInputDiv .p-inputtext,
+.editCategoryInputDiv .p-inputtext,
+.entryDescriptionInputDiv .p-inputtext {
+    // width: 60% !important;
+    color: #000 !important;
+    background: #fff !important;
+    border: 1px solid #e9e9e9 !important;
+}
+
+.entryDescriptionInputDiv .p-inputtext {
+    border: 1px solid #bebebe !important;
+}
+
+.expenseCategoryInputDiv button {
+    background-color: transparent !important;
+    border: 0 !important;
+
+    .fa-check {
+        color: seagreen !important;
+    }
+
+    .fa-times {
+        color: red !important;
+    }
+}
+
+.add-category-btn button,
+.edit-categories-btn button,
+.back-btn button {
+    background-color: transparent !important;
+    border: 0 !important;
+    color: rgb(23, 92, 211) !important;
+    padding: .4rem .4rem !important;
+
+    &:hover {
+        background-color: rgb(23, 92, 211, .1) !important;
+    }
+}
+
+.expenseCategoryDiv .p-select {
+    background-color: #fff !important;
+    border: 1px solid #bebebe !important;
+
+    input {
+        color: #000 !important;
+    }
+}
+
+.expenseCategoryDiv .p-select-overlay {
+    background: #fff !important;
+    border: 1px solid #bebebe !important;
+    // border-radius: 0 !important;
+
+    .p-select-option:hover:not(.p-select-option-selected),
+    .p-select-option-selected {
+        background-color: rgb(23, 92, 211, .1) !important;
+        color: rgb(23, 92, 211) !important;
+    }
+
+    .p-select-option:not(.p-select-option-selected) {
+        background: #fff !important;
+        color: #000 !important;
+    }
+
+}
+
+.form-error-message .p-message {
+    margin-top: .5rem !important;
+}
+
+.edit-category-btn button {
+    color: rgb(23, 92, 211) !important;
+    width: max-content !important;
+    padding: 0 !important;
+}
+
+.delete-category-btn button,
+.delete-file-btn button {
+    color: red !important;
+    width: max-content !important;
+    padding: 0 !important;
+}
+
+.confirm-delete-btn button,
+.editCategory-btn button {
+    background: #03d47c !important;
+}
+
+.select-expense-items-btn button {
+    background: white;
+    color: rgb(23, 92, 211) !important;
+    border: 1px solid rgb(23, 92, 211) !important;
+    width: 100% !important;
+
+    &:hover {
+        background: rgba(23, 92, 211, .1) !important;
+    }
+}
+
+.submit-form-btn button {
+    background: rgb(23, 92, 211) !important;
+    color: #fff !important;
+    width: 100% !important;
+}
+
+.total-amt-inp-disabled .p-inputtext {
+    background: #e1dede;
+}
+
+@media screen and (min-width: 768px) {
+    .p-drawer-right {
+        width: 45% !important;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .p-drawer-right {
+        width: 32% !important;
+    }
+}

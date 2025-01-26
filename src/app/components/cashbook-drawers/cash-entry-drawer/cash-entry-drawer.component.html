@@ -1,0 +1,54 @@
+<!-- ADD CASH ENTRY DRAWER -->
+<p-drawer (onHide)='closeDrawer();' position='right' [visible]='cashEntryDrawer()' [closable]='false'>
+    <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
+        <div class='w-full h-[100%] pb-2 bg-white'>
+            <div class='p-3 flex justify-between items-center'>
+                <h6 class='text-black text-lg'>Add Cash in Entry</h6>
+                <button (click)="closeDrawer()" type="button" class="text-[red]">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <hr class='border-1 border-[#e6e0e0]' />
+
+            <!-- CASH IN/OUT CHIPS -->
+            <div class="cash-chips p-3 flex items-center gap-2">
+                <p-chip (click)="onDrawerTypeChange.emit('in')" [ngClass]="{'active-chip-in': drawerType === 'in'}"
+                    label="Cash In" />
+                <p-chip (click)="onDrawerTypeChange.emit('out')" [ngClass]="{'active-chip-out': drawerType === 'out'}"
+                    label="Cash Out" />
+            </div>
+            
+            <!-- DATE AND MODE DIV -->
+            <div class="p-3 w-full flex justify-between gap-2 items-stretch">
+                <div class='entryDateDiv flex-1 flex flex-col gap-1'>
+                    <label class='text-black font-[500]'>Expense Date</label>
+                    <p-datepicker 
+                        [fluid]='true' 
+                        name='entryDate' 
+                        [iconDisplay]='"input"' 
+                        [showIcon]='true' 
+                        inputId='icondisplay' 
+                        size="small"
+                    />
+                </div>
+    
+                <div class="entryModeDiv flex-1 flex flex-col gap-1">
+                    <label class="text-black font-[500]">Mode</label>
+                    <p-select 
+                            name='entryMode' 
+                            [options]='modeOptions'
+                            placeholder='Select a Category' 
+                            size='small' 
+                            [editable]='true'
+                            optionLabel='label' 
+                            optionValue='value' 
+                            class='w-full' 
+                        />
+                </div>
+            </div>
+
+        </div>
+
+
+    </p-scrollpanel>
+</p-drawer>

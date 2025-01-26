@@ -1,0 +1,6 @@
+<p-avatar *ngIf='userData()?.imageUrl;else letterAvatar;' [image]='userData().imageUrl' class='mr-2 cursor-pointer'
+    [size]='avatarSize' shape='circle' />
+<ng-template #letterAvatar>
+    <p-avatar [ngStyle]='{"background": "orange", "cursor": "pointer"}' [size]='avatarSize' [label]='userData().name[0]'
+        class='mr-2 cursor-pointer' size='large' shape='circle' />
+</ng-template>

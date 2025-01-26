@@ -1,0 +1,265 @@
+<div class='flex flex-col gap-4'>
+
+    <div class='hidden items-center select-none lg:flex'>
+        <img class='w-[40px] h-[40px]' src='images/finance-management.png' />&nbsp;&nbsp;
+        <p class='text-xl tracking-wide'>Expenses</p>
+    </div>
+
+    <div class='flex flex-col'>
+        <div class='w-full flex-wrap flex items-stretch gap-3 sm:gap-2 lg:gap-1'>
+            <div>
+                <button 
+                    (click)='openFilterModal("category");' 
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : expenseDataServFilters().categories().length && expenseFilterApplied()}'
+                >
+                    <i class='fa-solid fa-layer-group'></i>&nbsp;
+                    Categories
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='openFilterModal("items");' 
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : expenseDataServFilters().items().length && expenseFilterApplied()}'
+                >
+                    <i class='fa-solid fa-list-ol'></i>&nbsp;
+                    Select Items
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='openFilterModal("fromDate");'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : expenseDataServFilters().fromDate() && expenseFilterApplied()}'
+                >
+                    <i class='fa-regular fa-calendar text-[13px]'></i>&nbsp;
+                    From Date
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='openFilterModal("endDate");'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : expenseDataServFilters().endDate() && expenseFilterApplied()}'
+                >
+                    <i class='fa-regular fa-calendar text-[13px]'></i>&nbsp;
+                    To Date
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='applyTimePeriodFilter("l2d")'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : (expenseDataServFilters().timePeriod() === "l2d") && expenseFilterApplied()}'
+                >
+                    <i class='fa-solid fa-clock-rotate-left text-[13px]'></i>&nbsp;
+                    Last 2 Days
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='applyTimePeriodFilter("yesterday")'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : (expenseDataServFilters().timePeriod() === "yesterday") && expenseFilterApplied()}'
+                >
+                    <i class='fa-solid fa-clock-rotate-left text-[13px]'></i>&nbsp;
+                    Yesterday
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='applyTimePeriodFilter("today")'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#bebebe] bg-[#072419] hover:text-[#03d47c]'
+                    [ngClass]='{"text-[#03d47c!important]" : (expenseDataServFilters().timePeriod() === "today") && expenseFilterApplied()}'
+                >
+                    <i class='fa-solid fa-calendar-day text-[13px]'></i>&nbsp;
+                    Today
+                </button>
+            </div>
+            <div>
+                <button 
+                    (click)='removeAllFilters()'
+                    *ngIf='expenseFilterApplied()'
+                    type='button'
+                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#f87171] bg-[#072419] hover:text-[#03d47c]'
+                >
+                    <i class='fa-regular fa-circle-xmark text-[13px]'></i>&nbsp;
+                    Remove Filters
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <app-expense-list-table 
+            *ngIf='!expenseFilterApplied();else filteredExpenseTable;'
+            [entries]='entries()' 
+            (onPageChange)='loadExpenses($event)' 
+            (onEditExpenseClick)='showEditExpenseDrawer($event)'
+            [entriesPagination]='entriesPagination()'
+        >
+        </app-expense-list-table>
+        <ng-template #filteredExpenseTable>
+            <app-expense-list-table 
+                [entries]='filteredEntries()'
+                (onPageChange)='loadExpenses($event, true)' 
+                (onEditExpenseClick)='showEditExpenseDrawer($event)'
+                [entriesPagination]='filteredEntriesPagination()'
+            >
+            </app-expense-list-table>
+        </ng-template>
+    </div>
+</div>
+
+<p-dialog 
+    (onHide)='closeFilterModal("category")' 
+    header='FILTER BY EXPENSE CATEGORIES' 
+    [modal]='true' 
+    [(visible)]='filterModals.category'
+    [style]='{ width: "25rem" }' 
+    [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
+>
+    <ul class='flex gap-2 filter-chips flex-wrap mb-3'>
+        @for (category of categories();track category._id) {
+            <p-chip 
+                (click)='addCategoryToFilterList(category._id || "")'             
+                class='tracking-wider cursor-pointer bg-[#1a3d32!important] hover:bg-[#03d47c!important]' 
+                [label]='category.name | uppercase' 
+            />
+        }
+    </ul>
+
+    <ng-container *ngIf='filters.categories.length'>
+        <p-divider />
+        <ul class='flex gap-2 filtered-chips flex-wrap mt-3'>
+            @for (category of categories();track category._id) {
+                <ng-container *ngIf='isCategorySelected(category._id || "");'>
+                    <p-chip 
+                        (onRemove)='removeCategoryFromFilterList(category._id || "")'
+                        [removable]='true'
+                        class='tracking-wider cursor-pointer bg-[orange!important]' 
+                        [label]='category.name | uppercase' 
+                    />
+                </ng-container>
+            }
+        </ul>
+    </ng-container>
+
+    <button 
+        (click)='applyCateogryFilter()' 
+        *ngIf='filters.categories.length' 
+        type='button' 
+        class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-1 hover:bg-[#03d47c]'
+    >
+        <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
+    </button>
+</p-dialog>
+
+<p-dialog 
+    header='FILTER BY EXPENSE ITEMS' 
+    (onHide)='closeFilterModal("items")' 
+    [modal]='true' 
+    [(visible)]='filterModals.items' 
+    [style]='{ width: "25rem" }'
+    [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
+>
+    <ul class='flex gap-2 filter-chips flex-wrap mb-3'>
+        @for (item of items();track item._id) {
+            <p-chip 
+                (click)='addItemToFilteredList(item._id || "")'             
+                class='tracking-wider cursor-pointer bg-[#1a3d32!important] hover:bg-[#03d47c!important]' 
+                [label]='item.name | uppercase' 
+            />
+        }
+    </ul>
+
+    <ng-container *ngIf='filters.items.length'>
+        <p-divider />
+        <ul class='flex gap-2 filtered-chips flex-wrap mt-3'>
+            @for (item of items();track item._id) {
+                <ng-container *ngIf='isItemSelected(item._id || "");'>
+                    <p-chip 
+                        (onRemove)='removeItemFromFilteredList(item._id || "")'
+                        [removable]='true'
+                        class='tracking-wider cursor-pointer bg-[orange!important]' 
+                        [label]='item.name | uppercase' 
+                    />
+                </ng-container>
+            }
+        </ul>
+    </ng-container>
+
+    <button 
+        (click)='applyItemsFilter()' 
+        *ngIf='filters.items.length' 
+        type='button' 
+        class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-1 hover:bg-[#03d47c]'
+    >
+        <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
+    </button>
+</p-dialog>
+
+<p-dialog
+    header='SELECT FROM DATE' 
+    [modal]='true'
+    (onHide)='closeFilterModal("fromDate")'
+    [(visible)]='filterModals.fromDate'
+    [style]='{"width": "25rem"}'
+    [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
+>
+    <div class='flex justify-center'>
+        <p-datepicker class='w-full max-w-full' [maxDate]='expenseDataServFilters().endDate() || today' [(ngModel)]='filters.fromDate' [inline]='true' />
+    </div>
+
+    <button 
+        (click)='applyFromDateFilter()' 
+        type='button' 
+        class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-2 hover:bg-[#03d47c]'
+    >
+        <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
+    </button>
+</p-dialog>
+
+<p-toast [position]='"bottom-center"' />
+
+<p-dialog
+    header='SELECT END DATE' 
+    [modal]='true'
+    (onHide)='closeFilterModal("endDate")'
+    [(visible)]='filterModals.endDate'
+    [style]='{"width": "25rem"}'
+    [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
+>
+    <div class='flex justify-center'>
+        <p-datepicker class='w-full max-w-full' [maxDate]='today' [(ngModel)]='filters.endDate' [inline]='true' />
+    </div>
+
+    <button 
+        (click)='applyEndDateFilter()' 
+        type='button' 
+        class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-2 hover:bg-[#03d47c]'
+    >
+        <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
+    </button>
+</p-dialog>
+
+<app-edit-expense-drawer 
+    *ngIf='editExpenseDrawerOpen() && editExpenseDrawerData'
+    [expenseEntry]='editExpenseDrawerData'
+>
+</app-edit-expense-drawer>
+
+<p-toast [position]='"bottom-center"' />
+
+<!-- ADD EXPENSE DRAWER -->
+<app-add-expense-drawer></app-add-expense-drawer>
+<!-- EXPENSE ITEMS DRAWER -->
+<app-select-expense-items-drawer></app-select-expense-items-drawer>

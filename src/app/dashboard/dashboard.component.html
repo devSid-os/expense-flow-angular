@@ -1,0 +1,133 @@
+<ng-container *ngIf='isUserAuthorized() && userPayload();'>
+    <div class='w-full h-screen max-h-screen overflow-hidden bg-[#061b09]'>
+        <div class='w-full h-full flex'>
+            <!-- ASIDE DASH -->
+            <div class='hidden w-[24%] h-full lg:block'>
+                <div 
+                    class='relative w-full h-full flex flex-col gap-4 p-4' 
+                    style='border-right: 1px solid #1a3d32;'
+                >
+                    <div class='flex items-center'>
+                        <!-- PROFILE AVATAR -->
+                        <app-profile-avatar 
+                            [avatarSize]='"large"' 
+                            (click)='toggleProfilePopover($event);'
+                        >
+                        </app-profile-avatar>
+    
+                        <!-- PROFILE POPOVER -->
+                         <p-popover #profilePopover>
+                             <app-profile-popover (onSignout)='signOut();'></app-profile-popover>
+                         </p-popover>
+    
+                        <h3 
+                            class='font-bold text-lg' 
+                            style='word-break: break-all;'
+                        >
+                            ExpenseFlow&nbsp;
+                            <span class='text-[#bebebe] text-sm'>/</span>&nbsp;
+                            <span class='font-normal text-base text-[#bebebe] tracking-wider'>
+                                {{selectedMenuItem().name}}
+                            </span>
+                        </h3>
+                    </div>
+
+                    <!-- MENU ITEMS -->
+                    <p-menu [model]='menuitems' />
+    
+                    <!-- MENU FOOTER -->
+                    <div 
+                        class='absolute bottom-0 left-0 w-full' 
+                        style='border-top: 1px solid #1a3d32;'
+                    >
+                        <div class='p-4 flex justify-around items-center'>
+                            <div class='flex flex-col items-center gap-1 cursor-pointer group'>
+                                <i class='fa-solid fa-gear group-hover:text-[#03d47c]'></i>
+                                <span class='text-[#bebebe] select-none tracking-wider text-[12px]'>Settings</span>
+                            </div>
+                            <!-- SIGNOUT BUTTON -->
+                            <div 
+                                (click)='signOut();' 
+                                class='flex flex-col items-center gap-1 cursor-pointer group'
+                            >
+                                <i class='fa-solid fa-right-from-bracket group-hover:text-[red]'></i>
+                                <span class='text-[#bebebe] select-none tracking-wider text-[12px]'>Sign out</span>
+                            </div>
+                            <!-- ADD EXPENSE BUTTON -->
+                            <p-button 
+                                (click)='showAddExpenseDrawer();' 
+                                icon='fa-solid fa-plus' 
+                                size='large'
+                                class='add-expense-btn' 
+                                [rounded]='true'
+                            >
+                            </p-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- DASHBOARD CONTENT -->
+            <div 
+                style='transition: width .2s ease-in;' 
+                class='w-full p-4 lg:w-[76%] overflow-y-auto'
+            >
+                <div class='flex flex-wrap items-center lg:hidden'>
+                    <app-profile-avatar 
+                        [avatarSize]='"large"'
+                    >
+                    </app-profile-avatar>
+    
+                    <h3 class='font-bold text-xl'>
+                        ExpenseFlow
+                    </h3>
+                </div>
+    
+                <p-button 
+                    pRipple 
+                    (click)='mobileMenuItemDrawerOpen = true;' 
+                    class='lg:hidden'
+                    [style]='{"margin-top": ".8rem", "color": "#bebebe", "background": "#1a3d32", "border": "1px solid #1a3d32", "width": "100%", "margin-bottom": "1rem"}'
+                    [icon]='selectedMenuItem().icon' 
+                    [label]='selectedMenuItem().name' 
+                    [rounded]='true' 
+                />
+
+                <!-- RENDER COMPONENTS BASED ON ROUTES -->
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+    
+    <p-drawer 
+        [style]='{height: "auto"}' 
+        [closable]='false' 
+        [(visible)]='mobileMenuItemDrawerOpen' 
+        position='bottom'
+    >
+        <ul>
+            @for (item of menuitems;track item.label) {
+            <li 
+                pRipple 
+                (click)='onMenuItemClick(item.label, item.icon, item["link"])'
+                [ngClass]='{"bg-[#1a3d32]": selectedMenuItem().name === item.label}'
+                class='flex justify-between items-center p-3 px-4 cursor-pointer group hover:bg-[#1a3d32]'
+            >
+                <div class='flex gap-4 items-center'>
+                    <i 
+                        [ngClass]='{"text-[#03d47c]": selectedMenuItem().name === item.label}'
+                        class='{{item.icon}} group-hover:text-[#03d47c]'>
+                    </i>
+                    <span 
+                        [ngClass]='{"text-[#fff]":selectedMenuItem().name === item.label}'
+                        class='text-lg text-[#bebebe] group-hover:text-[#fff]'
+                    >
+                        {{item.label}}
+                    </span>
+                </div>
+    
+            </li>
+            }
+        </ul>
+    </p-drawer>
+</ng-container>
