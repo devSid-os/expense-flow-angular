@@ -136,7 +136,12 @@ export class AddExpenseDrawerComponent {
     const entryCategory = this.entryForm.get('category')?.value;
     const entryItems = this.entryForm.get('items')?.value;
     const entryDescription = this.entryForm.get('description')?.value;
-    this._expenseApiServ.createExpenseEntry(entryDate, entryCategory, entryItems, entryDescription, this._userId)
+    this._expenseApiServ.createExpenseEntry({
+      date: entryDate,
+      category: entryCategory,
+      items: entryItems,
+      description: entryDescription
+    }, this._userId)
       .pipe(take(1))
       .subscribe({
         next: (response: any) => {
@@ -152,6 +157,6 @@ export class AddExpenseDrawerComponent {
           if (error.status === 400) this._messageServ.add({ summary: 'Error', detail: error.error.error, severity: 'error' });
           this._loadingServ.loading.set(false);
         }
-      })
+      });
   }
 }

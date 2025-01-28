@@ -23,11 +23,11 @@ import { DatePicker } from 'primeng/datepicker';
 // APP COMPONENTS IMPORT
 import { ExpenseListTableComponent } from './expense-list-table/expense-list-table.component';
 import { EditExpenseDrawerComponent } from '../../components/expense-drawers/edit-expense-drawer/edit-expense-drawer.component';
-// MODELS IMPORT
-import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../../Models/expenses.model';
-import { PaginationModel } from '../../Models/pagination.model';
 import { AddExpenseDrawerComponent } from '../../components/expense-drawers/add-expense-drawer/add-expense-drawer.component';
 import { SelectExpenseItemsDrawerComponent } from '../../components/expense-drawers/select-expense-items-drawer/select-expense-items-drawer.component';
+// MODELS IMPORT
+import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel, FetchFilteredEntriesModel } from '../../Models/expenses.model';
+import { PaginationModel } from '../../Models/pagination.model';
 
 
 @Component({
@@ -189,7 +189,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   showEditExpenseDrawer(data: ExpenseEntryModel): void {
     this._expenseDataServ.showEditExpenseDrawer.set(true);
     this._expenseDataServ.showAddExpenseDrawer.set(false);
-    this.editExpenseDrawerData = data;
+    this.editExpenseDrawerData = { ...data };
   }
 
   removeAllFilters(): void {
@@ -198,23 +198,53 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyCateogryFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, this.filters.categories, this.expenseDataServFilters().items(), this.expenseDataServFilters().fromDate(), this.expenseDataServFilters().endDate(), this.expenseDataServFilters().timePeriod());
+    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+      categories: this.filters.categories,
+      itemsList: this.expenseDataServFilters().items(),
+      fromDate: this.expenseDataServFilters().fromDate(),
+      endDate: this.expenseDataServFilters().endDate(),
+      timePeriod: this.expenseDataServFilters().timePeriod()
+    });
   }
 
   applyItemsFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, this.expenseDataServFilters().categories(), this.filters.items, this.expenseDataServFilters().fromDate(), this.expenseDataServFilters().endDate(), this.expenseDataServFilters().timePeriod());
+    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+      categories: this.expenseDataServFilters().categories(),
+      itemsList: this.filters.items,
+      fromDate: this.expenseDataServFilters().fromDate(),
+      endDate: this.expenseDataServFilters().endDate(),
+      timePeriod: this.expenseDataServFilters().timePeriod()
+    });
   }
 
   applyFromDateFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, this.expenseDataServFilters().categories(), this.expenseDataServFilters().items(), this.filters.fromDate, this.expenseDataServFilters().endDate(), null);
+    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+      categories: this.expenseDataServFilters().categories(),
+      itemsList: this.expenseDataServFilters().items(),
+      fromDate: this.filters.fromDate,
+      endDate: this.expenseDataServFilters().endDate(),
+      timePeriod: null
+    });
   }
 
   applyEndDateFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, this.expenseDataServFilters().categories(), this.expenseDataServFilters().items(), this.expenseDataServFilters().fromDate(), this.filters.endDate, null);
+    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+      categories: this.expenseDataServFilters().categories(),
+      itemsList: this.expenseDataServFilters().items(),
+      fromDate: this.expenseDataServFilters().fromDate(),
+      endDate: this.filters.endDate,
+      timePeriod: null
+    });
   }
 
   applyTimePeriodFilter(period: 'l2d' | 'yesterday' | 'today'): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, this.expenseDataServFilters().categories(), this.expenseDataServFilters().items(), null, null, period);
+    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+      categories: this.expenseDataServFilters().categories(),
+      itemsList: this.expenseDataServFilters().items(),
+      fromDate: this.expenseDataServFilters().fromDate(),
+      endDate: this.expenseDataServFilters().endDate(),
+      timePeriod: period
+    });
   }
 
   loadExpenses(event: any, isFilteredPaginate: boolean = false): void {
@@ -226,14 +256,20 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     }
     else {
       if (pageNumber === this.filteredEntriesPagination().currentPage) return;
-      this.getFilteredEntries(this._userId, pageNumber, pageSize, this.expenseDataServFilters().categories(), this.expenseDataServFilters().items(), this.expenseDataServFilters().fromDate(), this.expenseDataServFilters().endDate(), this.expenseDataServFilters().timePeriod());
+      this.getFilteredEntries(this._userId, pageNumber, pageSize, {
+        categories: this.expenseDataServFilters().categories(),
+        itemsList: this.expenseDataServFilters().items(),
+        fromDate: this.expenseDataServFilters().fromDate(),
+        endDate: this.expenseDataServFilters().endDate(),
+        timePeriod: this.expenseDataServFilters().timePeriod()
+      });
     }
   }
 
   // API FUNCTIONS
-  getFilteredEntries(userId: string, pageNo: number, pageSize: number, categories: string[], itemsList: string[], fromDate: Date | null, endDate: Date | null, timePeriod: 'l2d' | 'yesterday' | 'today' | null): void {
+  getFilteredEntries(userId: string, pageNo: number, pageSize: number, data: FetchFilteredEntriesModel): void {
     this._loadingServ.loading.set(true);
-    this._expenseApiServ.getFilteredUserEntries(categories, itemsList, fromDate, endDate, timePeriod, userId, pageNo, pageSize)
+    this._expenseApiServ.getFilteredUserEntries(data, userId, pageNo, pageSize)
       .pipe(take(1))
       .subscribe({
         next: (response: any) => {

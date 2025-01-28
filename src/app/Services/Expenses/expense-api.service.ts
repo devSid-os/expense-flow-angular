@@ -4,6 +4,7 @@ import { environment } from '../../../enviroments/enviroment';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { ExpenseDataService } from './expense-data.service';
 import { UserAccountService } from '../account.service';
+import { CreateExpenseEntryModel, FetchFilteredEntriesModel, UpdateExpenseEntryModel } from '../../Models/expenses.model';
 
 @Injectable({
     providedIn: 'root'
@@ -61,7 +62,7 @@ export class ExpenseApiService {
     }
 
     updateExpenseCategory(name: string, categoryId: string, userId: string): Observable<Object> {
-        return this._http.put(`${this._BASEURL}/updateCategory/${userId}`, { name, categoryId }, { withCredentials: true })
+        return this._http.put(`${this._BASEURL}/updateCategory`, { name, categoryId, id: userId }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
@@ -115,7 +116,7 @@ export class ExpenseApiService {
     }
 
     updateUserExpenseItem(name: string, price: number, itemId: string, userId: string): Observable<Object> {
-        return this._http.put(`${this._BASEURL}/editItem/${userId}`, { name, price, itemId }, { withCredentials: true })
+        return this._http.put(`${this._BASEURL}/updateItem`, { name, price, itemId, id: userId }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
@@ -153,8 +154,15 @@ export class ExpenseApiService {
             );
     }
 
-    createExpenseEntry(date: Date, category: string, items: { item: string, qty: number }[], description: string, userId: string): Observable<Object> {
-        return this._http.post(`${this._BASEURL}/createEntry`, { date, category, items, description, id: userId }, { withCredentials: true })
+    private _formatDateToLocal(date: Date) {
+        const parsedDate = new Date(date);
+        const offsetDate = new Date(parsedDate.getTime() - parsedDate.getTimezoneOffset() * 60000);
+        return offsetDate.toISOString().split('T')[0]; // Extract only the date part (YYYY-MM-DD)
+    }
+
+    createExpenseEntry(data: CreateExpenseEntryModel, userId: string): Observable<Object> {
+        data.date = this._formatDateToLocal(data.date as Date);
+        return this._http.post(`${this._BASEURL}/createEntry`, { ...data, id: userId }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 201) {
@@ -197,14 +205,9 @@ export class ExpenseApiService {
             );
     }
 
-    updateUserExpenseEntry(date: Date, category: string, items: { item: string, qty: number }[], description: string, entryId: string, userId: string) {
-        return this._http.put(`${this._BASEURL}/updateEntry/${userId}`, {
-            date,
-            category,
-            items,
-            description,
-            entryId
-        }, { withCredentials: true })
+    updateUserExpenseEntry(data: UpdateExpenseEntryModel, userId: string) {
+        data.date = this._formatDateToLocal(data.date as Date);
+        return this._http.put(`${this._BASEURL}/updateEntry`, {...data, id:userId}, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
@@ -215,13 +218,9 @@ export class ExpenseApiService {
             )
     }
 
-    getFilteredUserEntries(categories: string[], itemsList: string[], fromDate: Date | null, endDate: Date | null, timePeriod: 'l2d' | 'yesterday' | 'today' | null, userId: string, page: number, limit: number): Observable<Object> {
+    getFilteredUserEntries(data: FetchFilteredEntriesModel, userId: string, page: number, limit: number): Observable<Object> {
         return this._http.post(`${this._BASEURL}/getFilteredEntries`, {
-            categories,
-            itemsList,
-            fromDate,
-            endDate,
-            timePeriod,
+            ...data,
             page,
             limit,
             id: userId
@@ -235,16 +234,16 @@ export class ExpenseApiService {
                             pageSize: response.pageSize,
                             currentPage: response.page
                         });
-                        this._expenseDataServ.filters().categories.set(categories);
-                        this._expenseDataServ.filters().items.set(itemsList);
-                        if (timePeriod !== null) {
+                        this._expenseDataServ.filters().categories.set([...data.categories]);
+                        this._expenseDataServ.filters().items.set([...data.itemsList]);
+                        if (data.timePeriod !== null) {
                             this._expenseDataServ.filters().fromDate.set(null);
                             this._expenseDataServ.filters().endDate.set(null);
-                            this._expenseDataServ.filters().timePeriod.set(timePeriod);
+                            this._expenseDataServ.filters().timePeriod.set(data.timePeriod);
                         }
                         else {
-                            this._expenseDataServ.filters().fromDate.set(fromDate);
-                            this._expenseDataServ.filters().endDate.set(endDate);
+                            this._expenseDataServ.filters().fromDate.set(data.fromDate);
+                            this._expenseDataServ.filters().endDate.set(data.endDate);
                             this._expenseDataServ.filters().timePeriod.set(null);
                         }
                         this._expenseDataServ.expenseFilterApplied.set(true);

@@ -1,54 +1,138 @@
 <!-- ADD CASH ENTRY DRAWER -->
-<p-drawer (onHide)='closeDrawer();' position='right' [visible]='cashEntryDrawer()' [closable]='false'>
+<p-drawer 
+    (onHide)='closeDrawer();' 
+    position='right' 
+    [visible]='cashEntryDrawer()' 
+    [closable]='false'
+>
     <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
-        <div class='w-full h-[100%] pb-2 bg-white'>
+        <div class='relative w-full h-[100%] min-h-screen pb-2'>
             <div class='p-3 flex justify-between items-center'>
                 <h6 class='text-black text-lg'>Add Cash in Entry</h6>
-                <button (click)="closeDrawer()" type="button" class="text-[red]">
-                    <i class="fa-solid fa-xmark"></i>
+                <button (click)='closeDrawer()' type='button' class='text-[#175cd3]'>
+                    <i class='fa-solid fa-xmark'></i>
                 </button>
             </div>
             <hr class='border-1 border-[#e6e0e0]' />
 
             <!-- CASH IN/OUT CHIPS -->
-            <div class="cash-chips p-3 flex items-center gap-2">
-                <p-chip (click)="onDrawerTypeChange.emit('in')" [ngClass]="{'active-chip-in': drawerType === 'in'}"
-                    label="Cash In" />
-                <p-chip (click)="onDrawerTypeChange.emit('out')" [ngClass]="{'active-chip-out': drawerType === 'out'}"
-                    label="Cash Out" />
+            <div class='cash-chips p-3 flex items-center gap-2'>
+                <p-chip 
+                    (click)='onDrawerTypeChange.emit("in")' 
+                    [ngClass]='{"active-chip-in": drawerType === "in"}'
+                    label='Cash In' 
+                />
+                <p-chip 
+                    (click)='onDrawerTypeChange.emit("out")' 
+                    [ngClass]='{"active-chip-out": drawerType === "out"}'
+                    label='Cash Out' 
+                />
             </div>
-            
-            <!-- DATE AND MODE DIV -->
-            <div class="p-3 w-full flex justify-between gap-2 items-stretch">
-                <div class='entryDateDiv flex-1 flex flex-col gap-1'>
-                    <label class='text-black font-[500]'>Expense Date</label>
-                    <p-datepicker 
-                        [fluid]='true' 
-                        name='entryDate' 
-                        [iconDisplay]='"input"' 
-                        [showIcon]='true' 
-                        inputId='icondisplay' 
-                        size="small"
-                    />
-                </div>
-    
-                <div class="entryModeDiv flex-1 flex flex-col gap-1">
-                    <label class="text-black font-[500]">Mode</label>
-                    <p-select 
-                            name='entryMode' 
-                            [options]='modeOptions'
-                            placeholder='Select a Category' 
-                            size='small' 
-                            [editable]='true'
-                            optionLabel='label' 
-                            optionValue='value' 
-                            class='w-full' 
+
+            <!-- ENTRY FORM -->
+            <form [formGroup]='entryForm' (ngSubmit)='createCashbookEntry()'>
+                <!-- DATE AND MODE DIV -->
+                <div class='p-3 w-full flex justify-between gap-2 items-stretch'>
+                    <div class='entryDateDiv flex-1 flex flex-col gap-1'>
+                        <label class='text-black'>Expense Date</label>
+                        <p-datepicker 
+                            formControlName='date'
+                            [fluid]='true' 
+                            name='entryDate' 
+                            [iconDisplay]='"input"' 
+                            [showIcon]='true' 
+                            inputId='icondisplay' 
+                            size='small'
                         />
+                    </div>
+        
+                    <!-- MODE DIV -->
+                    <div class='entryModeDiv flex-1 flex flex-col gap-1'>
+                        <label class='text-black'>Mode</label>
+                        <p-select 
+                                formControlName='mode'
+                                name='entryMode' 
+                                [options]='modeOptions'
+                                placeholder='Select a Category' 
+                                size='small' 
+                                [editable]='true'
+                                optionLabel='label' 
+                                optionValue='value' 
+                                class='w-full' 
+                            />
+                    </div>
                 </div>
-            </div>
+
+                <!-- AMOUNT DIV -->
+                <div class='p-3 w-full flex flex-col gap-1'>
+                    <label class='text-black'>Amount</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon>
+                            <i class='fa-solid fa-indian-rupee-sign'></i>
+                        </p-inputgroup-addon>
+                        <input 
+                            formControlName='amount' 
+                            pInputText 
+                            name='entryAmount' 
+                            placeholder='Enter amount' 
+                            type='number' 
+                            pSize='small' 
+                        />
+                    </p-inputgroup>
+                </div>
+
+                <!-- DESCRIPTION DIV -->
+                <div class='entryDescriptionDiv p-3 w-full flex flex-col gap-1'>
+                    <label class='text-black'>Description</label>
+                    <textarea 
+                        formControlName='description' 
+                        name='entryDescription' 
+                        rows='5' 
+                        cols='30' 
+                        placeholder='Enter Description' 
+                        pTextarea
+                    ></textarea>
+                </div>
+
+                <!-- ATTACH FILE INPUT DIV -->
+                <div class='w-full p-3 flex flex-col gap-2 items-start'>
+
+                    <div 
+                        *ngIf='uploadedFileUrl()' 
+                        class='relative w-[75px] h-[75px] cursor-pointer'
+                    >
+                        <div class='overflow-hidden w-[75px] h-[75px] rounded-md' style='border: 1px solid gray;'>
+                            <img [src]='uploadedFileUrl()' class='w-full h-full object-cover' />
+                        </div>
+                        <button 
+                            (click)='removeMediaUrl()' 
+                            class='absolute top-[-6px] right-[-6px] w-[15px] h-[15px] flex items-center justify-center rounded-full bg-[red] text-[#fff] hover:bg-red-600' 
+                            type='button'
+                        >
+                            &times;
+                        </button>
+                    </div>
+
+                    <button 
+                        (click)='onUploadFileClick()'
+                        type='button' 
+                        class='mb-[6rem] px-4 text-[#4863d4] font-[500] rounded-[3px] py-1 hover:bg-[#4863d4] hover:text-[white]' 
+                        style='border: 1px solid #4863d4;'
+                    >
+                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attach Bill / Media
+                    </button>
+                </div>
+
+                <!-- SAVE ENTRY BTN DIV -->
+                <div class='p-3 fixed bottom-0 left-0 w-full'>
+                    <button type='submit' class='rounded-[4px] w-full py-2 text-white bg-[#175cd3]'>
+                        Save Entry
+                    </button>
+                </div>
+            </form>
 
         </div>
-
-
     </p-scrollpanel>
 </p-drawer>
+
+<p-toast position='bottom-center' />

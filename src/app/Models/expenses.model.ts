@@ -20,3 +20,26 @@ export interface ExpenseEntryModel {
     total: number,
     _id: string
 }
+
+export interface UpdateExpenseEntryModel {
+    entryId: string,
+    date: Date | string,
+    category: string,
+    items: { item: string, qty: number }[],
+    description?: string
+}
+
+export interface CreateExpenseEntryModel {
+    date: Date | string,
+    category: string,
+    items: { item: string, qty: number }[],
+    description?: string
+}
+
+export interface FetchFilteredEntriesModel {
+    categories: string[],
+    itemsList: string[],
+    fromDate: Date | null,
+    endDate: Date | null,
+    timePeriod: 'l2d' | 'yesterday' | 'today' | null
+}

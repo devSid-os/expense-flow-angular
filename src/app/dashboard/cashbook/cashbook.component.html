@@ -1,4 +1,7 @@
-<div (click)="closeAllMenus()" class='flex flex-col gap-4 min-h-[100%]'>
+<div 
+    (click)='closeAllMenus()' 
+    class='flex flex-col gap-4 min-h-[100%]'
+>
 
     <div class='hidden items-center select-none lg:flex'>
         <img class='w-[40px] h-[40px]' src='images/cashbook_logo4.png' />&nbsp;&nbsp;
@@ -6,81 +9,88 @@
     </div>
 
     <div>
-        <div class="flex flex-wrap items-stretch gap-2">
+        <div class='flex flex-wrap items-stretch gap-2'>
             <button
-                [ngClass]="{'rounded-bl-none rounded-br-none': menus.duration, 'rounded-bl-md rounded-br-md': !menus.duration}"
-                (click)="toggleMenus('duration', menus.duration);$event.stopPropagation()"
-                class="relative flex items-center justify-between bg-[#072419] min-w-[11rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider">
+                [ngClass]='{"rounded-bl-none rounded-br-none": menus.duration, "rounded-bl-md rounded-br-md": !menus.duration}'
+                (click)='toggleMenus("duration", menus.duration);$event.stopPropagation()'
+                class='relative flex items-center justify-between bg-[#072419] min-w-[11rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider'
+            >
                 Duration: {{getDurationName(dataServFilters().duration())}}&nbsp;
-                <i class="fa-solid fa-caret-down"></i>
-                <ng-container *ngIf="menus.duration">
-                    <ng-container *ngTemplateOutlet="durationMenu"></ng-container>
+                <i class='fa-solid fa-caret-down'></i>
+                <ng-container *ngIf='menus.duration'>
+                    <ng-container *ngTemplateOutlet='durationMenu'></ng-container>
                 </ng-container>
             </button>
 
             <button
-                [ngClass]="{'rounded-bl-none rounded-br-none': menus.type, 'rounded-bl-md rounded-br-md': !menus.type}"
-                (click)="toggleMenus('type', menus.type);$event.stopPropagation()"
-                class="relative flex items-center justify-between bg-[#072419] min-w-[10rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider">
+                [ngClass]='{"rounded-bl-none rounded-br-none": menus.type, "rounded-bl-md rounded-br-md": !menus.type}'
+                (click)='toggleMenus("type", menus.type);$event.stopPropagation()'
+                class='relative flex items-center justify-between bg-[#072419] min-w-[10rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider'
+            >
                 Type: {{getTypeName(dataServFilters().type())}}&nbsp;
-                <i class="fa-solid fa-caret-down"></i>
-                <ng-container *ngIf="menus.type">
-                    <ng-container *ngTemplateOutlet="typeMenu"></ng-container>
+                <i class='fa-solid fa-caret-down'></i>
+                <ng-container *ngIf='menus.type'>
+                    <ng-container *ngTemplateOutlet='typeMenu'></ng-container>
                 </ng-container>
             </button>
 
             <button
-                [ngClass]="{'rounded-bl-none rounded-br-none': menus.mode, 'rounded-bl-md rounded-br-md': !menus.mode}"
-                (click)="toggleMenus('mode', menus.mode);$event.stopPropagation()"
-                class="relative flex items-center justify-between bg-[#072419] min-w-[12rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider">
+                [ngClass]='{"rounded-bl-none rounded-br-none": menus.mode, "rounded-bl-md rounded-br-md": !menus.mode}'
+                (click)='toggleMenus("mode", menus.mode);$event.stopPropagation()'
+                class='relative flex items-center justify-between bg-[#072419] min-w-[12rem] px-2 py-2 rounded-tr-md rounded-tl-md text-sm tracking-wider'
+            >
                 Payment Mode: {{getModeName(dataServFilters().mode())}}&nbsp;
-                <i class="fa-solid fa-caret-down"></i>
-                <ng-container *ngIf="menus.mode">
-                    <ng-container *ngTemplateOutlet="modeMenu"></ng-container>
+                <i class='fa-solid fa-caret-down'></i>
+                <ng-container *ngIf='menus.mode'>
+                    <ng-container *ngTemplateOutlet='modeMenu'></ng-container>
                 </ng-container>
             </button>
         </div>
 
-        <div class="flex flex-wrap gap-2 mt-4">
+        <div class='flex flex-wrap gap-2 mt-4'>
             <button 
-                (click)="openCashEntryDrawer('in')" 
-                type="button" 
-                class="p-2 rounded-sm bg-[seagreen] text-white font-bold text-sm min-w-[7.5rem] hover:bg-[#2b7d4e]"
+                (click)='openCashEntryDrawer("in")' type='button'
+                class='p-2 rounded-sm bg-[seagreen] text-white font-bold text-sm min-w-[7.5rem] hover:bg-[#2b7d4e]'
             >
-                <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Cash In
+                <i class='fa-solid fa-plus'></i>&nbsp;&nbsp;Cash In
             </button>
             <button 
-                (click)="openCashEntryDrawer('out')" 
-                type="button" 
-                class="p-2 rounded-sm bg-red-600 text-white font-bold text-sm min-w-[7.5rem] hover:bg-red-700"
+                (click)='openCashEntryDrawer("out")' type='button'
+                class='p-2 rounded-sm bg-red-600 text-white font-bold text-sm min-w-[7.5rem] hover:bg-red-700'
             >
-                <i class="fa-solid fa-minus"></i>&nbsp;&nbsp;Cash Out
+                <i class='fa-solid fa-minus'></i>&nbsp;&nbsp;Cash Out
             </button>
         </div>
 
-        <div class="flex flex-col gap-2 md:flex-row mt-4">
+        <div class='flex flex-col gap-2 md:flex-row mt-4'>
             <!-- CASH IN DIV -->
-            <div class="p-2 px-4 flex-1 flex items-center gap-4 rounded-sm bg-[#072419]">
-                <i class="text-[#03d47c] rounded-full text-sm fa-solid fa-plus"></i>
-                <div class="flex flex-col gap-1">
-                    <p class="text-sm tracking-wide italic">CASH IN</p>
-                    <p class="text-sm tracking-wide"><i class="text-[13px] fa fa-indian-rupee-sign"></i>&nbsp;{{cashIn() | number: '1.2-2'}}</p>
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
+                <i class='text-[#03d47c] rounded-full text-sm fa-solid fa-plus'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>CASH IN</p>
+                    <p class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashIn() | number: '1.2-2'}}
+                    </p>
                 </div>
             </div>
             <!-- CASH OUT DIV -->
-            <div class="p-2 px-4 flex-1 flex items-center gap-4 rounded-sm bg-[#072419]">
-                <i class="text-red-600 text-sm fa-solid fa-minus"></i>
-                <div class="flex flex-col gap-1">
-                    <p class="text-sm tracking-wide italic">CASH OUT</p>
-                    <p class="text-sm tracking-wide"><i class="text-[13px] fa fa-indian-rupee-sign"></i>&nbsp;{{cashOut() | number: '1.2-2'}}</p>
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
+                <i class='text-red-600 text-sm fa-solid fa-minus'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>CASH OUT</p>
+                    <p class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashOut() | number: '1.2-2'}}
+                    </p>
                 </div>
             </div>
             <!-- NET BALANCE DIV -->
-            <div class="p-2 px-4 flex-1 flex items-center gap-4 rounded-sm bg-[#072419]">
-                <i class="text-[#4863d4] text-sm fa-solid fa-equals"></i>
-                <div class="flex flex-col gap-1">
-                    <p class="text-sm tracking-wide italic">NET BALANCE</p>
-                    <p class="text-sm tracking-wide"><i class="text-[13px] fa fa-indian-rupee-sign"></i>&nbsp;{{cashOut() | number: '1.2-2'}}</p>
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
+                <i class='text-[#4863d4] text-sm fa-solid fa-equals'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>NET BALANCE</p>
+                    <p [ngClass]='{"text-red-400": cashIn() - cashOut() < 0}' class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{(cashIn() - cashOut()) | number: '1.2-2'}}
+                    </p>
                 </div>
             </div>
         </div>
@@ -88,61 +98,82 @@
 </div>
 
 <ng-template #durationMenu>
-    <div (click)="$event.stopPropagation()"
-        class="rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden">
-        <ul class="flex flex-col py-2">
-            <li *ngFor="let menuItem of menuItems.duration"
-                [ngClass]="{'bg-[#1a3d32] text-[#03d47c!important]': (filters.duration === menuItem.value)}"
-                (click)="setDuration(menuItem.value)"
-                class="py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]">
+    <div 
+        (click)='$event.stopPropagation()'
+        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+    >
+        <ul class='flex flex-col py-2'>
+            <li 
+                *ngFor='let menuItem of menuItems.duration'
+                [ngClass]='{"bg-[#1a3d32] text-[#03d47c!important]": (filters.duration === menuItem.value)}'
+                (click)='setDuration(menuItem.value)'
+                class='py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]'
+            >
                 {{menuItem.label}}
             </li>
         </ul>
 
-        <button *ngIf="dataServFilters().duration() !== filters.duration"
-            class="bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider">
+        <button 
+            *ngIf='dataServFilters().duration() !== filters.duration'
+            class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+        >
             FILTER
         </button>
     </div>
 </ng-template>
 
 <ng-template #typeMenu>
-    <div (click)="$event.stopPropagation()"
-        class="rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden">
-        <ul class="flex flex-col py-2">
-            <li *ngFor="let menuItem of menuItems.type"
-                [ngClass]="{'bg-[#1a3d32] text-[#03d47c!important]': (filters.type === menuItem.value)}"
-                (click)="setType(menuItem.value)"
-                class="py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]">
+    <div 
+        (click)='$event.stopPropagation()'
+        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+    >
+        <ul class='flex flex-col py-2'>
+            <li 
+                *ngFor='let menuItem of menuItems.type'
+                [ngClass]='{"bg-[#1a3d32] text-[#03d47c!important]": (filters.type === menuItem.value)}'
+                (click)='setType(menuItem.value)'
+                class='py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]'
+            >
                 {{menuItem.label}}
             </li>
         </ul>
 
-        <button *ngIf="dataServFilters().type() !== filters.type"
-            class="bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider">
+        <button 
+            *ngIf='dataServFilters().type() !== filters.type'
+            class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+        >
             FILTER
         </button>
     </div>
 </ng-template>
 
 <ng-template #modeMenu>
-    <div (click)="$event.stopPropagation()"
-        class="rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden">
-        <ul class="flex flex-col py-2">
-            <li *ngFor="let menuItem of menuItems.mode"
-                [ngClass]="{'bg-[#1a3d32] text-[#03d47c!important]': (filters.mode === menuItem.value)}"
-                (click)="setMode(menuItem.value)"
-                class="py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]">
+    <div 
+        (click)='$event.stopPropagation()'
+        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+    >
+        <ul class='flex flex-col py-2'>
+            <li 
+                *ngFor='let menuItem of menuItems.mode'
+                [ngClass]='{"bg-[#1a3d32] text-[#03d47c!important]": (filters.mode === menuItem.value)}'
+                (click)='setMode(menuItem.value)'
+                class='py-1 text-[#bebebe] font-bold text-[12px] hover:bg-[#1a3d32] hover:text-[#03d47c]'
+            >
                 {{menuItem.label}}
             </li>
         </ul>
 
-        <button *ngIf="dataServFilters().mode() !== filters.mode"
-            class="bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider">
+        <button 
+            *ngIf='dataServFilters().mode() !== filters.mode'
+            class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+        >
             FILTER
         </button>
     </div>
 </ng-template>
 
 <!-- CASH ENTRY DRAWER -->
-<app-cash-entry-drawer (onDrawerTypeChange)="setDrawerType($event);" [drawerType]="drawerType"></app-cash-entry-drawer>
+<app-cash-entry-drawer 
+    (onDrawerTypeChange)='setDrawerType($event);' 
+    [drawerType]='drawerType'>
+</app-cash-entry-drawer>

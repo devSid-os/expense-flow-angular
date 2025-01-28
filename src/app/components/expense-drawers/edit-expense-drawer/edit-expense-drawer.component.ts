@@ -35,7 +35,6 @@ import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../..
 })
 export class EditExpenseDrawerComponent implements OnInit {
 
-
   @Input('expenseEntry') expenseEntry!: ExpenseEntryModel;
   private _loadingServ: LoadingService = inject(LoadingService);
   private _expenseApiServ: ExpenseApiService = inject(ExpenseApiService);
@@ -82,7 +81,7 @@ export class EditExpenseDrawerComponent implements OnInit {
     const cart: { [itemId: string]: { item: ExpenseItemModel, qty: number } } = {};
     this.expenseEntry.items.forEach((element: { item: ExpenseItemModel, qty: number }) => {
       if (element.item._id) {
-        return cart[element.item._id] = element;
+        return cart[element.item._id] = {...element};
       }
       return null;
     });
@@ -163,7 +162,13 @@ export class EditExpenseDrawerComponent implements OnInit {
     const entryItems = this.editEntryForm.get('items')?.value;
     const entryDescription = this.editEntryForm.get('description')?.value;
     const entryId = this.editEntryForm.get('id')?.value;
-    this._expenseApiServ.updateUserExpenseEntry(entryDate, entryCategory, entryItems, entryDescription, entryId, this._userId)
+    this._expenseApiServ.updateUserExpenseEntry({
+      entryId,
+      description: entryDescription,
+      date: entryDate,
+      category: entryCategory,
+      items: entryItems
+    }, this._userId)
       .pipe(
         take(1)
       )

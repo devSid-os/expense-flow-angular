@@ -1,8 +1,11 @@
 import { Component, computed, effect, inject, OnInit, Signal } from '@angular/core';
-import { CashbookDataService } from '../../Services/Cashbook/cashbook-data.service';
 import { CommonModule } from '@angular/common';
+// SERVICES IMPORT
+import { CashbookDataService } from '../../Services/Cashbook/cashbook-data.service';
 import { UserAccountService } from '../../Services/account.service';
+// NG UI COMPONENTS PRIME IMPORTS
 import { TableModule } from 'primeng/table';
+// APP COMPONENTS IMPORT
 import { CashEntryDrawerComponent } from '../../components/cashbook-drawers/cash-entry-drawer/cash-entry-drawer.component';
 
 @Component({
