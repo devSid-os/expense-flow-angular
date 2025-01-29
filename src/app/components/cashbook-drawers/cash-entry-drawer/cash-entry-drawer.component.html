@@ -4,6 +4,7 @@
     position='right' 
     [visible]='cashEntryDrawer()' 
     [closable]='false'
+    [closeOnEscape]="false"
 >
     <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
         <div class='relative w-full h-[100%] min-h-screen pb-2'>
@@ -101,8 +102,17 @@
                         *ngIf='uploadedFileUrl()' 
                         class='relative w-[75px] h-[75px] cursor-pointer'
                     >
-                        <div class='overflow-hidden w-[75px] h-[75px] rounded-md' style='border: 1px solid gray;'>
+                        <div 
+                            (click)='openUploadedFilePreview(uploadedFileUrl() || "")' 
+                            class='relative overflow-hidden w-[75px] h-[75px] rounded-md' 
+                            style='border: 1px solid gray;'
+                        >
                             <img [src]='uploadedFileUrl()' class='w-full h-full object-cover' />
+                            <div 
+                                class='transition-opacity ease-in-out duration-150 absolute top-0 left-0 w-full h-full opacity-0 hover:opacity-70' 
+                                style='background: rgb(0,0,0);'
+                            >
+                            </div>
                         </div>
                         <button 
                             (click)='removeMediaUrl()' 
@@ -116,7 +126,7 @@
                     <button 
                         (click)='onUploadFileClick()'
                         type='button' 
-                        class='mb-[6rem] px-4 text-[#4863d4] font-[500] rounded-[3px] py-1 hover:bg-[#4863d4] hover:text-[white]' 
+                        class='mb-[6rem] text-sm px-4 text-[#4863d4] font-[500] rounded-[3px] py-1 hover:bg-[#4863d4] hover:text-[white]' 
                         style='border: 1px solid #4863d4;'
                     >
                         <i class='fa-solid fa-paperclip'></i>&nbsp;Attach Bill / Media
@@ -124,8 +134,8 @@
                 </div>
 
                 <!-- SAVE ENTRY BTN DIV -->
-                <div class='p-3 fixed bottom-0 left-0 w-full'>
-                    <button type='submit' class='rounded-[4px] w-full py-2 text-white bg-[#175cd3]'>
+                <div class='p-3 pb-2 fixed bottom-0 left-0 w-full'>
+                    <button type='submit' class='rounded-[4px] text-sm w-full py-2 text-white bg-[#175cd3]'>
                         Save Entry
                     </button>
                 </div>
@@ -134,5 +144,6 @@
         </div>
     </p-scrollpanel>
 </p-drawer>
+
 
 <p-toast position='bottom-center' />

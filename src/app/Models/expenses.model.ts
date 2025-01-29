@@ -23,14 +23,14 @@ export interface ExpenseEntryModel {
 
 export interface UpdateExpenseEntryModel {
     entryId: string,
-    date: Date | string,
+    date: Date,
     category: string,
     items: { item: string, qty: number }[],
     description?: string
 }
 
 export interface CreateExpenseEntryModel {
-    date: Date | string,
+    date: Date,
     category: string,
     items: { item: string, qty: number }[],
     description?: string

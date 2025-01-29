@@ -161,8 +161,7 @@ export class ExpenseApiService {
     }
 
     createExpenseEntry(data: CreateExpenseEntryModel, userId: string): Observable<Object> {
-        data.date = this._formatDateToLocal(data.date as Date);
-        return this._http.post(`${this._BASEURL}/createEntry`, { ...data, id: userId }, { withCredentials: true })
+        return this._http.post(`${this._BASEURL}/createEntry`, { ...data, date: this._formatDateToLocal(data.date as Date), id: userId }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 201) {
@@ -206,8 +205,7 @@ export class ExpenseApiService {
     }
 
     updateUserExpenseEntry(data: UpdateExpenseEntryModel, userId: string) {
-        data.date = this._formatDateToLocal(data.date as Date);
-        return this._http.put(`${this._BASEURL}/updateEntry`, {...data, id:userId}, { withCredentials: true })
+        return this._http.put(`${this._BASEURL}/updateEntry`, { ...data, date: this._formatDateToLocal(data.date as Date), id: userId }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
@@ -221,6 +219,8 @@ export class ExpenseApiService {
     getFilteredUserEntries(data: FetchFilteredEntriesModel, userId: string, page: number, limit: number): Observable<Object> {
         return this._http.post(`${this._BASEURL}/getFilteredEntries`, {
             ...data,
+            endDate: this._formatDateToLocal(data.endDate as Date),
+            fromDate: this._formatDateToLocal(data.fromDate as Date),
             page,
             limit,
             id: userId

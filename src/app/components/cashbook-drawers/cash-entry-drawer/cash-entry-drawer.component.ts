@@ -21,10 +21,13 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { Toast } from 'primeng/toast';
+// IMAGE VIEWER IMPORTS
+import { Lightbox, LightboxConfig, LightboxModule } from 'ngx-lightbox';
 
 @Component({
   selector: 'app-cash-entry-drawer',
-  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast],
+  standalone: true,
+  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast, LightboxModule],
   templateUrl: './cash-entry-drawer.component.html',
   styleUrl: './cash-entry-drawer.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -38,6 +41,8 @@ export class CashEntryDrawerComponent {
   private _messageServ: MessageService = inject(MessageService);
   private _loadingServ: LoadingService = inject(LoadingService);
   private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
+  private _lightbox: Lightbox = inject(Lightbox);
+  private _lightboxConfig: LightboxConfig = inject(LightboxConfig);
   private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
   readonly today = new Date();
@@ -49,10 +54,19 @@ export class CashEntryDrawerComponent {
     { label: 'Cash', value: 'cash' }
   ];
   uploadedFileUrl: WritableSignal<string | null> = signal(null);
+  previewUploadedImage: boolean = false;
 
   entryForm: FormGroup;
 
   constructor() {
+    this._lightboxConfig.resizeDuration = 1;
+    this._lightboxConfig.fadeDuration = 0;
+    this._lightboxConfig.enableTransition = false;
+    this._lightboxConfig.showDownloadButton = true;
+    this._lightboxConfig.disableScrolling = true;
+    this._lightboxConfig.centerVertically = true;
+    this._lightboxConfig.wrapAround = true;
+
     this.entryForm = this._formBuilder.group({
       date: [this.today, [Validators.required]],
       mode: ['online', [Validators.required]],
@@ -106,6 +120,15 @@ export class CashEntryDrawerComponent {
     });
   }
 
+  images = [
+    { src: 'image1.jpg', caption: 'Image 1' },
+    { src: 'image2.jpg', caption: 'Image 2' }
+  ];
+
+  openUploadedFilePreview(mediaUrl: string): void {
+    this._lightbox.open([{ src: mediaUrl, caption: '', thumb: '' }], 0);
+  }
+
   createCashbookEntry(): void {
     if (this.drawerType === null) {
       this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'An error occured, Try again later' });
@@ -136,6 +159,7 @@ export class CashEntryDrawerComponent {
     }
 
     this._loadingServ.loading.set(true);
+    this.entryForm.patchValue({ url: this.uploadedFileUrl() || '' });
     const date = this.entryForm.get('date')?.value;
     const mode = this.entryForm.get('mode')?.value;
     const amount = this.entryForm.get('amount')?.value;
@@ -149,6 +173,7 @@ export class CashEntryDrawerComponent {
             this._cashbookDataServ.cashIn.set(response.cashIn);
             this._cashbookDataServ.cashOut.set(response.cashOut);
             this.entryForm.reset();
+            this.uploadedFileUrl.set(null);
             this._loadingServ.loading.set(false);
           }
         },
