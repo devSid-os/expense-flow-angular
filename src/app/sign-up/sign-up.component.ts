@@ -74,7 +74,6 @@ export class SignUpComponent {
     this._userAccountServ.signUp(this.signUpForm.value)
       .subscribe({
         next: (response: any) => {
-          // console.log(response);
           this.signUpError = null;
           this.signUpForm.reset();
           this._messageServ.add({ severity: 'success', summary: 'Success', detail: 'Account Created Successfully', life: 3000 });

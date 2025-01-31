@@ -166,15 +166,25 @@ export class CashEntryDrawerComponent {
     const description = this.entryForm.get('description')?.value || '';
     const url = this.entryForm.get('url')?.value || '';
 
-    this._cashbookApiServ.createEntry(date, this.drawerType, mode, amount, description, url, this._userId)
+    this._cashbookApiServ.createEntry({
+      date,
+      description,
+      amount,
+      mode,
+      type: this.drawerType,
+      url
+    }, this._userId)
       .subscribe({
         next: (response: any) => {
           if (response.status === 201) {
-            this._cashbookDataServ.cashIn.set(response.cashIn);
-            this._cashbookDataServ.cashOut.set(response.cashOut);
             this.entryForm.reset();
+            this.entryForm.patchValue({
+              date: this.today,
+              mode: 'online'
+            });
             this.uploadedFileUrl.set(null);
             this._loadingServ.loading.set(false);
+            this._cashbookApiServ.reFetchEntries.next(true);
           }
         },
         error: (error: HttpErrorResponse) => {

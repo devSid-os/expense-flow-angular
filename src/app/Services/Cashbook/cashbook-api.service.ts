@@ -1,8 +1,11 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "../../../enviroments/enviroment";
-import { catchError, Observable, tap, throwError } from "rxjs";
+import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 import { UserAccountService } from "../account.service";
+import { CreateCashBookEntryModel } from "../../Models/cashbook.model";
+import { response } from "express";
+import { CashbookDataService } from "./cashbook-data.service";
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +13,10 @@ import { UserAccountService } from "../account.service";
 export class CashbookApiService {
     private _http: HttpClient = inject(HttpClient);
     private _userAccountServ: UserAccountService = inject(UserAccountService);
+    private _cashBookDataServ: CashbookDataService = inject(CashbookDataService);
     private readonly _BASEURL = `${environment.BACKEND_BASE_URL}/cashbook`;
+
+    reFetchEntries: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private handleError(error: HttpErrorResponse): Observable<never> {
         console.log("Error: ", error);
@@ -27,19 +33,50 @@ export class CashbookApiService {
     }
 
 
-    createEntry(date: Date, type: 'in' | 'out', mode: 'cash' | 'online', amount: number, description: string, url: string, userId: string): Observable<Object> {
+    createEntry(data: CreateCashBookEntryModel, userId: string): Observable<Object> {
         return this._http.post(`${this._BASEURL}/createEntry`, {
-            date: this._formatDateToLocal(date),
-            type,
-            mode,
-            amount,
-            description,
-            url,
+            ...data,
+            date: this._formatDateToLocal(data.date as Date),
             id: userId
         }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
-                    console.log(response);
+                    if (response.status === 201) {
+                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
+                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                    }
+                }),
+                catchError(this.handleError.bind(this))
+            )
+    }
+
+    getAllEntries(userId: string, page: number, pageSize: number): Observable<Object> {
+        return this._http.get(`${this._BASEURL}/getAllEntries/${userId}`, { withCredentials: true, params: { page, limit: pageSize } })
+            .pipe(
+                tap((response: any) => {
+                    if (response.status === 200) {
+                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
+                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                        this._cashBookDataServ.allCashbookEntries().data.set(response.payload);
+                        this._cashBookDataServ.allCashbookEntries().pagination.set({
+                            currentPage: response.page,
+                            totalRecords: response.totalRecords,
+                            pageSize: response.pageSize
+                        });
+                    }
+                }),
+                catchError(this.handleError.bind(this))
+            );
+    }
+
+    deleteEntry(entryId: string, userId: string): Observable<Object> {
+        return this._http.delete(`${this._BASEURL}/deleteEntry/${userId}/${entryId}`, { withCredentials: true })
+            .pipe(
+                tap((response: any) => {
+                    if (response.status === 200) {
+                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
+                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                    }
                 }),
                 catchError(this.handleError.bind(this))
             )

@@ -13,5 +13,5 @@ export const routes: Routes = [
             { path: 'expenses', loadComponent: () => import('./dashboard/expenses-list/expenses-list.component').then(mod => mod.ExpensesListComponent) },
             { path: 'cashbook', loadComponent: () => import('./dashboard/cashbook/cashbook.component').then(mod => mod.CashbookComponent) }
         ]
-    },
+    }
 ];

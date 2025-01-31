@@ -146,12 +146,12 @@
                         </div>
                     </div>
                 </ng-container>
-                <ng-container *ngSwitchCase="false">
+                <ng-container *ngSwitchCase='false'>
                     <app-items-list 
-                        (onEditItem)="onEditExpenseItem($event);"
-                        [itemsCartArray]="itemsCartArray()" 
-                        [items]="items()"
-                        [itemsCart]="itemsCart()"
+                        (onEditItem)='onEditExpenseItem($event);'
+                        [itemsCartArray]='itemsCartArray()' 
+                        [items]='items()'
+                        [itemsCart]='itemsCart()'
                     ></app-items-list>
                     <div 
                         *ngIf='itemsCartArray().length' 

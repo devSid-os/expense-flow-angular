@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, HostListener, inject, OnInit, Signal, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
+import { Component, computed, effect, HostListener, inject, OnDestroy, OnInit, Signal, signal, ViewChild, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Router, RouterOutlet } from '@angular/router';
-import { forkJoin, take } from 'rxjs';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, forkJoin, Subscription, take } from 'rxjs';
 // SERVICES IMPORT
 import { UserAccountService } from '../Services/account.service';
 import { ExpenseApiService } from '../Services/Expenses/expense-api.service';
@@ -26,29 +26,37 @@ import { ProfileAvatarComponent } from '../components/profile-avatar/profile-ava
 import { ProfilePopoverComponent } from '../components/profile-popover/profile-popover.component';
 // MODELS IMPORT
 import { UserModel } from '../Models/user.model';
+import { CashbookApiService } from '../Services/Cashbook/cashbook-api.service';
+import { CashbookDataService } from '../Services/Cashbook/cashbook-data.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [CommonModule, RouterOutlet, AvatarModule, Menu, ButtonModule, OverlayBadgeModule, BadgeModule, PopoverModule, DividerModule, DrawerModule, Ripple, ProfilePopoverComponent, ProfileAvatarComponent],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.scss'], // ✅ FIXED: Correct property name
+  styleUrls: ['./dashboard.component.scss'],
   encapsulation: ViewEncapsulation.None
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
 
-  @ViewChild('profilePopover') profilePopover!: Popover; // GET POPOVER ELEMENT FROM HTML
+  @ViewChild('profilePopover') profilePopover!: Popover;
+  private _route: ActivatedRoute = inject(ActivatedRoute);
   private _router: Router = inject(Router);
-  private _cookieServ: CookieService = inject(CookieService); // COOKIE SERVICE
-  private _loadingServ: LoadingService = inject(LoadingService); // LOADING SERVICE
-  private _userAccountServ: UserAccountService = inject(UserAccountService); // USER ACCOUNT SERVICE
-  private _expenseApiServ: ExpenseApiService = inject(ExpenseApiService); // USER EXPENSES SERVICE
-  private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService); // USER EXPENSES SERVICE
-  private readonly _userId: string | null = this._cookieServ.get('userId') || null; // GET USER ID
+  private _cookieServ: CookieService = inject(CookieService);
+  private _loadingServ: LoadingService = inject(LoadingService);
+  private _userAccountServ: UserAccountService = inject(UserAccountService);
+  private _expenseApiServ: ExpenseApiService = inject(ExpenseApiService);
+  private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
+  private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
+  private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
+  private _routerEvent$: Subscription | null = null;
+  private readonly _userId: string | null = this._cookieServ.get('userId') || null;
 
   isUserAuthorized: Signal<boolean> = computed(() => this._userAccountServ.isUserAuthorized());
-  userPayload: Signal<UserModel> = computed(() => this._userAccountServ.userPayload()); // USER PAYLOAD FROM BACKEDN
-  entriesPagination = computed(() => this._expenseDataServ.entriesPagination());
+  userPayload: Signal<UserModel> = computed(() => this._userAccountServ.userPayload());
+  private _entriesPagination = computed(() => this._expenseDataServ.entriesPagination());
+  private _cashbookEntriesPagination = computed(() => this._cashbookDataServ.allCashbookEntries().pagination());
+
 
   // COMPONENT VARIABLES
   isSmallScreen: boolean = false;
@@ -87,6 +95,31 @@ export class DashboardComponent implements OnInit {
     else if (!this.isUserAuthorized() && this._userId) {
       this._verifyUser(this._userId);
     }
+    this.updateCurrentRoute();
+    this._routerEvent$ = this._router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.updateCurrentRoute();
+      });
+  }
+
+  ngOnDestroy(): void {
+    if (this._routerEvent$ instanceof Subscription) this._routerEvent$.unsubscribe();
+  }
+
+  private updateCurrentRoute(): void {
+    const childRoute: string | undefined = this._route.firstChild?.snapshot.url.map(segment => segment.path).join('/');
+    const currentRoute = childRoute || 'dashboard'; // Default to 'dashboard' if no child
+    switch (currentRoute) {
+      case 'cashbook':
+        this.selectedMenuItem.set({ name: 'Cashbook', icon: 'fa-solid fa-wallet' });
+        break;
+      case 'expenses':
+        this.selectedMenuItem.set({ name: 'Expenses', icon: 'fa-solid fa-receipt' });
+        break;
+      default:
+        this._router.navigate(['dashboard/expenses']);
+    }
   }
 
   // SET MOBILE MENU DRAW FOR SMALL SCREENS
@@ -100,13 +133,14 @@ export class DashboardComponent implements OnInit {
   getAllUserData(userId: string): void {
     this._loadingServ.loading.set(true);
     forkJoin({
-      expenseEntries: this._expenseApiServ.getAllUserExpenseEntries(userId, this.entriesPagination().currentPage, this.entriesPagination().pageSize),
+      expenseEntries: this._expenseApiServ.getAllUserExpenseEntries(userId, this._entriesPagination().currentPage, this._entriesPagination().pageSize),
       expenseCategories: this._expenseApiServ.getAllUserExpenseCategories(userId),
-      expenseItems: this._expenseApiServ.getAllUserExpenseItems(userId)
+      expenseItems: this._expenseApiServ.getAllUserExpenseItems(userId),
+      cashbookEntries: this._cashbookApiServ.getAllEntries(userId, this._cashbookEntriesPagination().currentPage, this._cashbookEntriesPagination().pageSize)
     }).pipe(take(1))
       .subscribe({
         next: (response: any) => {
-          if (response.expenseEntries.status === 200 && response.expenseCategories.status === 200 && response.expenseItems.status === 200) {
+          if (response.expenseEntries.status === 200 && response.expenseCategories.status === 200 && response.expenseItems.status === 200 && response.cashbookEntries.status === 200) {
             this._loadingServ.loading.set(false);
           }
         },

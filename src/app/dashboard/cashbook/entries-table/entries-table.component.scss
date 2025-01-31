@@ -1,0 +1,51 @@
+.p-datatable-thead>tr>th {
+    background: transparent !important;
+    color: #bebebe !important;
+    border-bottom: transparent !important;
+}
+
+.expanded-tr:hover {
+    background-color: #072419 !important;
+}
+
+.p-datatable-tbody>tr {
+    background-color: #072419 !important;
+}
+
+.p-tag {
+    font-size: 11px !important;
+}
+
+.p-paginator {
+    background: transparent !important;
+    justify-content: flex-end !important;
+
+    .p-paginator-rpp-dropdown {
+        background: #072419 !important;
+        border: 0 !important;
+        border-radius: 4px !important;
+
+        span {
+            padding: 4px 6px !important;
+            font-size: small !important;
+        }
+    }
+}
+
+.p-paginator-page,
+.p-paginator-current {
+    font-size: small !important;
+}
+
+.p-paginator-page {
+    font-weight: 600 !important;
+}
+
+.p-paginator-page.p-paginator-page-selected {
+    background: transparent !important;
+    color: #03d47c !important;
+}
+
+.p-paginator-page:not(.p-disabled):not(.p-paginator-page-selected):hover {
+    background: transparent !important;
+}

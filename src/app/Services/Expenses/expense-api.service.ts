@@ -161,7 +161,12 @@ export class ExpenseApiService {
     }
 
     createExpenseEntry(data: CreateExpenseEntryModel, userId: string): Observable<Object> {
-        return this._http.post(`${this._BASEURL}/createEntry`, { ...data, date: this._formatDateToLocal(data.date as Date), id: userId }, { withCredentials: true })
+        return this._http.post(`${this._BASEURL}/createEntry`, {
+            ...data,
+            date: this._formatDateToLocal(data.date as Date),
+            id: userId
+        },
+            { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 201) {

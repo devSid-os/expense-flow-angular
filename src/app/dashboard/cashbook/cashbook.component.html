@@ -69,7 +69,7 @@
                 <div class='flex flex-col gap-1'>
                     <p class='text-sm tracking-wide font-[600] italic'>CASH IN</p>
                     <p class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashIn() | number: '1.2-2'}}
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashIn()| number: '1.2-2'}}
                     </p>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                 <div class='flex flex-col gap-1'>
                     <p class='text-sm tracking-wide font-[600] italic'>CASH OUT</p>
                     <p class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashOut() | number: '1.2-2'}}
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashOut() | number: '1.2-2'}}
                     </p>
                 </div>
             </div>
@@ -88,12 +88,20 @@
                 <i class='text-[#4863d4] text-sm fa-solid fa-equals'></i>
                 <div class='flex flex-col gap-1'>
                     <p class='text-sm tracking-wide font-[600] italic'>NET BALANCE</p>
-                    <p [ngClass]='{"text-red-400": cashIn() - cashOut() < 0}' class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{(cashIn() - cashOut()) | number: '1.2-2'}}
+                    <p [ngClass]='{"text-red-400": (cashStats().cashIn() - cashStats().cashOut()) < 0}' class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{(cashStats().cashIn() - cashStats().cashOut()) | number: '1.2-2'}}
                     </p>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="w-full">
+        <app-entries-table 
+            (onPageChange)="onTabelPageChange($event);" 
+            [pagination]="allCashBookEntries().pagination()" 
+            [entries]="allCashBookEntries().data()"
+        ></app-entries-table>
     </div>
 </div>
 

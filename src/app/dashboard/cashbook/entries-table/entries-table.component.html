@@ -1,0 +1,69 @@
+<p-table 
+    dataKey='_id' 
+    [value]='entries' 
+    [(selection)]='selectedEntries' 
+    [tableStyle]='{"min-width": "50rem"}'
+    [lazy]='true' 
+    [paginator]='true' 
+    [showCurrentPageReport]='true' 
+    [first]='pagination.currentPage * pagination.pageSize'
+    [rows]='pagination.pageSize' 
+    [rowsPerPageOptions]='[25, 50, 100]'
+    [currentPageReportTemplate]='"Page "+(pagination.currentPage + 1)+" of "+(getTotalPage())'
+    (onLazyLoad)='onPageChange.emit($event)' 
+    [totalRecords]='pagination.totalRecords' 
+>
+    <ng-template #header>
+        <tr>
+            <th><p-tableHeaderCheckbox /></th>
+            <th class='text-[12px]'>Date</th>
+            <th class='text-[12px]'>Amount</th>
+            <th class='text-[12px]'>Mode</th>
+            <th class='text-[12px]'>Attachment</th>
+            <th class='text-[12px]'>Created At</th>
+            <th class='text-[12px]'>Actions</th>
+        </tr>
+    </ng-template>
+    <ng-template #body let-entry>
+        <tr class='cursor-pointer hover:bg-[#1a3d32!important]'>
+            <td>
+                <p-tableCheckbox [value]='entry' />
+            </td>
+            <td class='text-[13px] italic tracking-wide'>{{entry.date | date: 'dd-MMM-yyyy'}}</td>
+            <td 
+                [ngClass]='{"text-[#f87171]": entry.type === "out", "text-[#03d47c]": entry.type === "in"}'
+                class='text-sm tracking-wide font-[500]'
+            >
+                <i class='fa-solid fa-indian-rupee-sign'></i>&nbsp;{{entry.amount}}
+            </td>
+            <td class='text-sm tracking-wide'>
+                <p-tag 
+                    [severity]='entry.mode === "online" ? "success" : "warn"' 
+                    [value]='entry.mode | uppercase' 
+                />
+            </td>
+            <td 
+                [ngClass]='{"cursor-pointer": entry.attachment}'
+                class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'
+            >
+                <ng-container *ngIf='entry.attachment;else noAttachment;'>
+                    <button (click)='openAttachmentPreview(entry.attachment)'>
+                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
+                    </button>
+                </ng-container>
+                <ng-template #noAttachment>-</ng-template>
+            </td>
+            <td class='text-[13px] italic tracking-wide'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
+            <td>
+                <p-button icon='fa-solid fa-pencil' variant='text' size='small' />
+                <p-button 
+                    (click)='deleteCashbookEntry(entry._id);' 
+                    icon='fa-solid fa-trash' 
+                    variant='text' 
+                    severity='danger' 
+                    size='small' 
+                />
+            </td>
+        </tr>
+    </ng-template>
+</p-table>

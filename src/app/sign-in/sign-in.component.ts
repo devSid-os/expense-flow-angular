@@ -98,7 +98,6 @@ export class SignInComponent implements AfterViewInit {
     this._userAccountServ.signIn(this.signInForm.get("email")?.value, this.signInForm.get("password")?.value)
       .subscribe({
         next: (response: any) => {
-          // console.log(response);
           if (response.status === 200) {
             this.signInError = null;
             this.signInForm.reset();
