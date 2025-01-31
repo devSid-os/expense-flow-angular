@@ -1,0 +1,139 @@
+<!-- ADD CASH ENTRY DRAWER -->
+<p-drawer 
+    position='right' 
+    [visible]='isViewEntryDrawerOpen' 
+    [closable]='false'
+    (onHide)='onCloseDrawer.emit(!true)'
+>
+    <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
+        <div class='relative w-full h-[100%] min-h-screen pb-2'>
+            <div class='p-3 flex justify-between items-center'>
+                <h6 class='text-black text-lg'>Entry Details</h6>
+                <button (click)='onCloseDrawer.emit(!true)' type='button' class='text-red-600 text-lg'>
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
+            </div>
+            <hr class='border-1 border-[#e6e0e0]' />
+
+            <div class='p-3 w-full'>
+                <div style='border: 1px solid #e6e0e0;' class='p-3 w-full'>
+                    <div class='flex justify-between items-center w-full'>
+                        <ng-container [ngSwitch]='entryData.type'>
+                            <div *ngSwitchCase='"in"'>
+                                <p class='text-[seagreen]'><i class='fa-solid fa-plus'></i>&nbsp;Cash In</p>
+                            </div>
+                            <div *ngSwitchCase='"out"'>
+                                <p class='text-red-500'><i class='fa-solid fa-minus'></i>&nbsp;Cash out</p>
+                            </div>
+                        </ng-container>
+                        <p class='text-black font-normal text-sm'>On {{entryData.date | date: 'dd-MMM-yyyy'}}</p>
+                    </div>
+                    <p 
+                        [ngClass]='{"text-red-500": entryData.type === "out", "text-[seagreen]": entryData.type === "in"}' 
+                        class='mt-1 text-xl font-[500]'
+                    >
+                        <i class='text-lg fa-solid fa-indian-rupee-sign'></i>&nbsp;{{entryData.amount}}
+                    </p>
+
+                    <hr class='mt-2' />
+
+                    <div *ngIf='entryData.remark' class='flex flex-col w-full mt-2'>
+                        <p class='text-[gray] font-[500] text-sm'>Remark</p>
+                        <p class='text-black'>{{entryData.remark}}</p>
+                    </div>
+
+                    <ng-container *ngIf='entryData.attachment'>
+                        <div
+                            (click)='openAttachmentPreview(entryData.attachment)' 
+                            class='relative cursor-pointer overflow-hidden w-[75px] h-[75px] rounded-md mt-2' 
+                            style='border: 1px solid gray;'
+                        >
+                            <img [src]='entryData.attachment' class='w-full h-full object-cover' />
+                            <div 
+                                class='transition-opacity ease-in-out duration-150 absolute top-0 left-0 w-full h-full' 
+                                style='background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(192, 192, 192, 0.36) 34.9%, rgba(255, 255, 255, 0) 100%);'
+                            >
+                            </div>
+                        </div>
+                    </ng-container>
+
+                    <button type='button' class='bg-[#e7f1f9] text-[#2195dd] mt-2 px-2 py-1 text-sm rounded-md'>
+                        {{entryData.mode | uppercase}}
+                    </button>
+                </div>
+            </div>
+
+            <div class='w-full p-3 pt-2'>
+                <p class='text-black font-normal'>Activities</p>
+                <div class='w-full flex flex-col gap-2 mt-2'>
+                    <div class='flex items-start gap-2'>
+                        <p class='w-[30px] h-[30px] bg-[#eee] text-[#707070] rounded-full flex flex-col items-center justify-center'>
+                            <i class='fa-solid fa-plus text-[#4863d4]'></i>
+                        </p>
+                        <div class='text-black text-sm'>
+                            <p class='font-normal tracking-wider'>Created On</p>
+                            <p class='text-[13px] text-[#595858]'>{{entryData.createdAt | date : 'dd-MMM-yyyy hh:mm a'}}</p>
+                        </div>
+                    </div>
+                    <div class='flex items-start gap-2'>
+                        <p class='w-[30px] h-[30px] bg-[#eee] text-[#707070] rounded-full flex flex-col items-center justify-center'>
+                            <i class='fa-solid fa-pencil text-[#4863d4] text-sm'></i>
+                        </p>
+                        <div class='text-black text-sm'>
+                            <p class='font-normal tracking-wider'>Last Updated On</p>
+                            <p class='text-[13px] text-[#595858]'>{{entryData.updatedAt | date : 'dd-MMM-yyyy hh:mm a'}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class='p-3 w-full absolute bottom-0 left-0'>
+                <div class='flex justify-end items-stretch gap-3'>
+                    <button 
+                        (click)='showDeleteEntryConfirmation(entryData._id)' 
+                        class='py-2 px-4 transition-all rounded-[3px] text-red-600 text-sm tracking-wide hover:bg-red-600 hover:text-white'
+                    >
+                        <i class='fa-solid fa-trash'></i>&nbsp;Delete
+                    </button>
+                    <button class='scroll-py-20 px-4 rounded-[3px] bg-[#4863d4] text-sm tracking-wide'>
+                        <i class='fa-solid fa-pencil'></i>&nbsp;&nbsp;Edit Entry
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </p-scrollpanel>
+</p-drawer>
+
+<p-confirmdialog #cd>
+    <ng-template 
+        #headless 
+        let-message 
+        let-onAccept='onAccept' 
+        let-onReject='onReject'
+    >
+        <div class='bg-[#072419] flex flex-col items-center p-8 bg-surface-0 dark:bg-surface-900 rounded'>
+            <div class='rounded-full bg-[#03d47c] text-primary-contrast inline-flex justify-center items-center h-24 w-24 -mt-20'>
+                <i class='pi pi-question !text-5xl'></i>
+            </div>
+            <span class='font-bold text-2xl block mb-2 mt-6'>{{ message.header }}</span>
+            <p class='mb-0'>{{ message.message }}</p>
+            <div class='flex items-center gap-2 mt-6'>
+                <p-button 
+                    class='confirm-delete-btn' 
+                    label='Delete' 
+                    (onClick)='onAccept()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+                <p-button 
+                    label='Cancel' 
+                    [outlined]='true' 
+                    (onClick)='onReject()' 
+                    styleClass='w-32'
+                >
+                </p-button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmdialog>
