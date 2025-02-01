@@ -95,7 +95,7 @@ export class SignInComponent implements AfterViewInit {
 
   signIn(): void {
     this._loadingServ.loading.set(true);
-    this._userAccountServ.signIn(this.signInForm.get("email")?.value, this.signInForm.get("password")?.value)
+    this._userAccountServ.signIn(this.signInForm.get('email')?.value, this.signInForm.get('password')?.value)
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {

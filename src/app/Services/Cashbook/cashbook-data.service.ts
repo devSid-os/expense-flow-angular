@@ -1,6 +1,6 @@
-import { Injectable, signal, WritableSignal } from "@angular/core";
-import { CashbookModel } from "../../Models/cashbook.model";
-import { PaginationModel } from "../../Models/pagination.model";
+import { Injectable, signal, WritableSignal } from '@angular/core';
+import { CashbookModel } from '../../Models/cashbook.model';
+import { PaginationModel } from '../../Models/pagination.model';
 
 @Injectable({
     providedIn: 'root'

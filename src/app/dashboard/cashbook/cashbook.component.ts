@@ -7,16 +7,17 @@ import { CashbookDataService } from '../../Services/Cashbook/cashbook-data.servi
 import { LoadingService } from '../../Services/loading.service';
 import { UserAccountService } from '../../Services/account.service';
 import { CashbookApiService } from '../../Services/Cashbook/cashbook-api.service';
+// NG UI COMPONENTS PRIME IMPORTS
 import { Dialog } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
 // APP COMPONENTS IMPORT
 import { CashEntryDrawerComponent } from '../../components/cashbook-drawers/cash-entry-drawer/cash-entry-drawer.component';
 import { EntriesTableComponent } from './entries-table/entries-table.component';
 import { ViewEntryDrawerComponent } from '../../components/cashbook-drawers/view-entry-drawer/view-entry-drawer.component';
+import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/update-entry-drawer/update-entry-drawer.component';
 // MODELS IMPORT
 import { CashbookModel } from '../../Models/cashbook.model';
 import { PaginationModel } from '../../Models/pagination.model';
-import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/update-entry-drawer/update-entry-drawer.component';
 
 @Component({
   selector: 'app-cashbook',

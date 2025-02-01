@@ -15,7 +15,7 @@
 
             <!-- EXPENSE ENTRY FORM -->
             <form 
-                (ngSubmit)="updateExpenseEntry();"
+                (ngSubmit)='updateExpenseEntry();'
                 style='padding-bottom: 30px;'
                 [formGroup]='editEntryForm' 
                 class='p-3 px-4 flex flex-col gap-4 overflow-y-auto'
@@ -87,10 +87,10 @@
                         </div>
 
                         <!-- ADD NEW CATEGORY FORM -->
-                        <app-add-category *ngIf='isAddNewCategory' (onCloseCategoryForm)="closeAddNewCategoryForm();"></app-add-category>
+                        <app-add-category *ngIf='isAddNewCategory' (onCloseCategoryForm)='closeAddNewCategoryForm();'></app-add-category>
 
                         <!-- EDIT CATEGORY FORM DIV -->
-                        <app-edit-category-list *ngIf='isEditCategory' (onEditCategoryClick)="showEditCategoryModal($event)" (onCloseEditCategoryModal)="isEditCategory=false;"></app-edit-category-list>
+                        <app-edit-category-list *ngIf='isEditCategory' (onEditCategoryClick)='showEditCategoryModal($event)' (onCloseEditCategoryModal)='isEditCategory=false;'></app-edit-category-list>
                     </div>
                 </div>
 
@@ -155,6 +155,6 @@
     </p-scrollpanel>
 </p-drawer>
 
-<app-edit-category-form *ngIf="editCategoryData" [editCategoryData]="editCategoryData" [showEditCategoryDialog]="showEditCategoryDialog" (onCloseEditCategoryDialog)="closeEditCategoryModal()"></app-edit-category-form>
+<app-edit-category-form *ngIf='editCategoryData' [editCategoryData]='editCategoryData' [showEditCategoryDialog]='showEditCategoryDialog' (onCloseEditCategoryDialog)='closeEditCategoryModal()'></app-edit-category-form>
 
 <p-toast position='bottom-center' />

@@ -89,14 +89,14 @@
                         <!-- ADD NEW CATEGORY FORM -->
                         <app-add-category 
                             *ngIf='isAddNewCategory' 
-                            (onCloseCategoryForm)="isAddNewCategory=false;"
+                            (onCloseCategoryForm)='isAddNewCategory=false;'
                         >
                         </app-add-category>
                         <!-- EDIT CATEGORY FORM DIV -->
                         <app-edit-category-list 
                             *ngIf='isEditCategory' 
-                            (onEditCategoryClick)="showEditCategoryModal($event)" 
-                            (onCloseEditCategoryModal)="isEditCategory=false;"
+                            (onEditCategoryClick)='showEditCategoryModal($event)' 
+                            (onCloseEditCategoryModal)='isEditCategory=false;'
                         >
                         </app-edit-category-list>
                     </div>
@@ -165,10 +165,10 @@
 
 <!-- EDIT CATEGORY FORM DIALOG -->
 <app-edit-category-form 
-    *ngIf="editCategoryData" 
-    [editCategoryData]="editCategoryData" 
-    [showEditCategoryDialog]="showEditCategoryDialog" 
-    (onCloseEditCategoryDialog)="closeEditCategoryModal()"
+    *ngIf='editCategoryData' 
+    [editCategoryData]='editCategoryData' 
+    [showEditCategoryDialog]='showEditCategoryDialog' 
+    (onCloseEditCategoryDialog)='closeEditCategoryModal()'
 >
 </app-edit-category-form>
 

@@ -18,7 +18,7 @@ export class ExpenseApiService {
     fetchExpenseEntries = new BehaviorSubject<boolean>(false);
 
     private handleError(error: HttpErrorResponse): Observable<never> {
-        console.log("Error: ", error);
+        console.log('Error: ', error);
         if (error.status === 401) {
             this._userAccountServ.resetCredentials();
         }

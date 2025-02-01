@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../enviroments/enviroment';
 import { LoadingService } from './loading.service';
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable({
     providedIn: 'root'
@@ -20,7 +20,7 @@ export class SupaBaseService {
     async deleteFileFromUrl(fileUrl: string, bucketName: string): Promise<void> {
         // Extract the file name (or path) from the URL
         const urlParts = fileUrl.split('/');
-        const fileName = urlParts[urlParts.length - 1]; // Get the last part after the last "/"
+        const fileName = urlParts[urlParts.length - 1];
 
 
         const { data, error } = await this.supabase.storage.from(bucketName).remove([fileName]);

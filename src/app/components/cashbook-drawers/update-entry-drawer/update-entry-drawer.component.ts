@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Renderer2, signal, Signal, WritableSignal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Lightbox, LightboxConfig, LightboxModule } from 'ngx-lightbox';
+// SERVICES IMPORT
+import { CashbookDataService } from '../../../Services/Cashbook/cashbook-data.service';
+import { MessageService } from 'primeng/api';
+import { SupaBaseService } from '../../../Services/supabase.service';
+import { LoadingService } from '../../../Services/loading.service';
+import { UserAccountService } from '../../../Services/account.service';
+import { CashbookApiService } from '../../../Services/Cashbook/cashbook-api.service';
+// NG UI COMPONENTS PRIME IMPORTS
 import { ButtonModule } from 'primeng/button';
 import { Chip } from 'primeng/chip';
 import { DatePickerModule } from 'primeng/datepicker';
@@ -13,14 +21,10 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { Toast } from 'primeng/toast';
-import { CashbookDataService } from '../../../Services/Cashbook/cashbook-data.service';
+// MODELS IMPORT
 import { CashbookModel } from '../../../Models/cashbook.model';
-import { MessageService } from 'primeng/api';
-import { SupaBaseService } from '../../../Services/supabase.service';
-import { LoadingService } from '../../../Services/loading.service';
-import { UserAccountService } from '../../../Services/account.service';
-import { CashbookApiService } from '../../../Services/Cashbook/cashbook-api.service';
-import { HttpErrorResponse } from '@angular/common/http';
+// IMAGE VIEWER IMPORT
+import { Lightbox, LightboxConfig, LightboxModule } from 'ngx-lightbox';
 
 @Component({
   selector: 'app-update-entry-drawer',

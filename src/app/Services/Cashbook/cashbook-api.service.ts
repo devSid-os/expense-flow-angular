@@ -1,11 +1,10 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { inject, Injectable } from "@angular/core";
-import { environment } from "../../../enviroments/enviroment";
-import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
-import { UserAccountService } from "../account.service";
-import { CreateCashBookEntryModel, UpdateCashBookEntryModel } from "../../Models/cashbook.model";
-import { response } from "express";
-import { CashbookDataService } from "./cashbook-data.service";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { environment } from '../../../enviroments/enviroment';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
+import { UserAccountService } from '../account.service';
+import { CreateCashBookEntryModel, UpdateCashBookEntryModel } from '../../Models/cashbook.model';
+import { CashbookDataService } from './cashbook-data.service';
 
 @Injectable({
     providedIn: 'root'
@@ -19,7 +18,7 @@ export class CashbookApiService {
     reFetchEntries: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
     private handleError(error: HttpErrorResponse): Observable<never> {
-        console.log("Error: ", error);
+        console.log('Error: ', error);
         if (error.status === 401) {
             this._userAccountServ.resetCredentials();
         }

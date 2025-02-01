@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output, ViewEncapsulation } from '@angular/core';
+// NG UI COMPONENTS PRIME IMPORTS
 import { TableModule } from 'primeng/table';
-import { CashbookModel } from '../../../Models/cashbook.model';
 import { FormsModule } from '@angular/forms';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
-import { Lightbox, LightboxConfig } from 'ngx-lightbox';
+// MODELS IMPORT
+import { CashbookModel } from '../../../Models/cashbook.model';
 import { PaginationModel } from '../../../Models/pagination.model';
+// IMAGE VIEWER IMPORT
+import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 
 @Component({
   selector: 'app-entries-table',

@@ -1,6 +1,6 @@
 <p-table 
     #expenseTable 
-    *ngIf="entries.length;else emptyTable"
+    *ngIf='entries.length;else emptyTable'
     [lazy]='true' 
     [paginator]='true' 
     [showCurrentPageReport]='true' 
@@ -104,8 +104,8 @@
 </p-table>
 
 <ng-template #emptyTable>
-    <div class="relative w-full">
-        <p-table [value]="products" [tableStyle]="{ 'min-width': '50rem', 'z-index': '0!important' }">
+    <div class='relative w-full'>
+        <p-table [value]='products' [tableStyle]='{ "min-width": "50rem", "z-index": "0!important" }'>
             <ng-template #header>
                 <tr>
                     <th class='text-[12px]'>Category</th>

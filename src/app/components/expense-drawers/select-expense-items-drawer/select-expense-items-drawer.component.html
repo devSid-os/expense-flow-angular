@@ -122,13 +122,13 @@
             </div>
 
             <!-- ITEMS LIST -->
-            <ng-container [ngSwitch]="editExpenseDrawerOpen()">
-                <ng-container *ngSwitchCase="true">
+            <ng-container [ngSwitch]='editExpenseDrawerOpen()'>
+                <ng-container *ngSwitchCase='true'>
                     <app-items-list 
-                        (onEditItem)="onEditExpenseItem($event);"
-                        [itemsCartArray]="editItemsCartArray()"
-                        [items]="items()" 
-                        [itemsCart]="editItemsCart()"
+                        (onEditItem)='onEditExpenseItem($event);'
+                        [itemsCartArray]='editItemsCartArray()'
+                        [items]='items()' 
+                        [itemsCart]='editItemsCart()'
                     ></app-items-list>
                     <div 
                         *ngIf='editItemsCartArray().length' 

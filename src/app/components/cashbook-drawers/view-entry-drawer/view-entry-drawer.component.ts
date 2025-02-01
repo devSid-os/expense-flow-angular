@@ -2,16 +2,20 @@ import { CommonModule } from '@angular/common';
 import { take } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+// SERVICES IMPORT
 import { LoadingService } from '../../../Services/loading.service';
 import { UserAccountService } from '../../../Services/account.service';
 import { CashbookApiService } from '../../../Services/Cashbook/cashbook-api.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
+// NG UI COMPONENTS PRIME IMPORTS
 import { DrawerModule } from 'primeng/drawer';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
-import { CashbookModel } from '../../../Models/cashbook.model';
-import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ButtonModule } from 'primeng/button';
+// MODELS IMPORT
+import { CashbookModel } from '../../../Models/cashbook.model';
+// IMAGE VIEWER IMPORT
+import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 
 @Component({
   selector: 'app-view-entry-drawer',
