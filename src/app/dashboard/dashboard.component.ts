@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isUserAuthorized: Signal<boolean> = computed(() => this._userAccountServ.isUserAuthorized());
   userPayload: Signal<UserModel> = computed(() => this._userAccountServ.userPayload());
-  private _entriesPagination = computed(() => this._expenseDataServ.entriesPagination());
+  private _entriesPagination = computed(() => this._expenseDataServ.allEntries().pagination());
   private _cashbookEntriesPagination = computed(() => this._cashbookDataServ.allCashbookEntries().pagination());
 
 

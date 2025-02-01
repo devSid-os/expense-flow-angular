@@ -68,11 +68,14 @@ export class AddExpenseDrawerComponent {
     });
 
     effect(() => {
-      const cart = this.cartItemsArray().map(item => ({ item: item.item?._id, qty: item.qty }));
+      const cart: {
+        item: ExpenseItemModel;
+        qty: number;
+      }[] = this.cartItemsArray().map(item => ({ item: item.item, qty: item.qty }));
 
       this.entryForm.patchValue({
         items: cart
-      })
+      });
     });
   }
 

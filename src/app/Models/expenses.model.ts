@@ -1,17 +1,17 @@
 export interface ExpenseItemModel {
     name: string,
     price: number,
-    _id?: string
+    _id: string
 };
 
 export interface ExpenseCategoryModel {
     name: string,
-    _id?: string
+    _id: string
 };
 
 export interface ExpenseEntryModel {
-    items: [{ item: ExpenseItemModel, qty: number }],
-    category: { _id: string, name: string },
+    items: [{ item: { name: string, price: number, _id: string }, qty: number }],
+    category: string,
     date: Date,
     description?: string,
     total: number,
@@ -22,14 +22,14 @@ export interface UpdateExpenseEntryModel {
     entryId: string,
     date: Date,
     category: string,
-    items: { item: string, qty: number }[],
+    items: { item: { name: string, price: number, _id: string }, qty: number }[],
     description?: string
 }
 
 export interface CreateExpenseEntryModel {
     date: Date,
     category: string,
-    items: { item: string, qty: number }[],
+    items: { item: { name: string, price: number, _id: string }, qty: number }[],
     description?: string
 }
 

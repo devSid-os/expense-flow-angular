@@ -42,7 +42,7 @@ export class EditCategoryListComponent {
   showDeleteCategoryConfirmation(category: ExpenseCategoryModel): void {
     this._confirmationServ.confirm({
       header: `Delete category ${category.name}`,
-      message: `All the expenses entries related to '${category.name}' will be effected.`,
+      message: `Are you sure, you want to delete this category?`,
       accept: () => {
         if (category._id) this.deleteCategory(category._id);
       },

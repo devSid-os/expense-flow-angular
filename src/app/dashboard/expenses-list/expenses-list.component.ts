@@ -47,8 +47,10 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   private _messageService: MessageService = inject(MessageService);
   readonly today: Date = new Date();
 
-  entriesPagination: Signal<PaginationModel> = computed(() => this._expenseDataServ.entriesPagination());
-  entries: Signal<ExpenseEntryModel[]> = computed(() => this._expenseDataServ.entries());
+  allEntries: Signal<{
+    data: Signal<ExpenseEntryModel[]>;
+    pagination: Signal<PaginationModel>;
+  }> = computed(() => this._expenseDataServ.allEntries());
   categories: Signal<ExpenseCategoryModel[]> = computed(() => this._expenseDataServ.categories());
   items: Signal<ExpenseItemModel[]> = computed(() => this._expenseDataServ.items());
 
@@ -74,9 +76,11 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     fromDate: false,
     endDate: false
   }
-
-  filteredEntriesPagination: Signal<PaginationModel> = computed(() => this._expenseDataServ.filteredEntriesPagination());
-  filteredEntries: Signal<ExpenseEntryModel[]> = computed(() => this._expenseDataServ.filteredEntries());
+  
+  filteredEntries: Signal<{
+    data: Signal<ExpenseEntryModel[]>;
+    pagination: Signal<PaginationModel>;
+  }> = computed(() => this._expenseDataServ.filteredEntries());
   fetchEntries$: Subscription | null = null;
 
   editExpenseDrawerOpen: Signal<boolean> = computed(() => this._expenseDataServ.showEditExpenseDrawer());
@@ -92,8 +96,9 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     this.fetchEntries$ = this._expenseApiServ.fetchExpenseEntries
       .subscribe({
         next: (fetchData: boolean) => {
-          if (fetchData && this._userId) {
-            this.getAllUserExpenseEntries(this._userId, this.entriesPagination().currentPage, this.entriesPagination().pageSize);
+          if (fetchData === true) {
+            this.getAllUserExpenseEntries(this._userId, this.allEntries().pagination().currentPage, this.allEntries().pagination().pageSize);
+            this._expenseApiServ.fetchExpenseEntries.next(false);
           }
         }
       });
@@ -116,15 +121,15 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     return false;
   }
 
-  addCategoryToFilterList(categoryId: string): void {
-    if (this.isCategorySelected(categoryId)) {
+  addCategoryToFilterList(category: string): void {
+    if (this.isCategorySelected(category)) {
       return;
     }
-    this.filters.categories.push(categoryId);
+    this.filters.categories.push(category);
   }
 
-  removeCategoryFromFilterList(categoryId: string): void {
-    this.filters.categories = this.filters.categories.filter(id => id !== categoryId);
+  removeCategoryFromFilterList(category: string): void {
+    this.filters.categories = this.filters.categories.filter(id => id !== category);
   }
 
   openFilterModal(modalName: string): void {
@@ -198,7 +203,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyCateogryFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+    this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.filters.categories,
       itemsList: this.expenseDataServFilters().items(),
       fromDate: this.expenseDataServFilters().fromDate(),
@@ -208,7 +213,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyItemsFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+    this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.expenseDataServFilters().categories(),
       itemsList: this.filters.items,
       fromDate: this.expenseDataServFilters().fromDate(),
@@ -218,7 +223,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyFromDateFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+    this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.expenseDataServFilters().categories(),
       itemsList: this.expenseDataServFilters().items(),
       fromDate: this.filters.fromDate,
@@ -228,7 +233,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyEndDateFilter(): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+    this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.expenseDataServFilters().categories(),
       itemsList: this.expenseDataServFilters().items(),
       fromDate: this.expenseDataServFilters().fromDate(),
@@ -238,7 +243,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   applyTimePeriodFilter(period: 'l2d' | 'yesterday' | 'today'): void {
-    this.getFilteredEntries(this._userId, this.filteredEntriesPagination().currentPage, this.filteredEntriesPagination().pageSize, {
+    this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.expenseDataServFilters().categories(),
       itemsList: this.expenseDataServFilters().items(),
       fromDate: this.expenseDataServFilters().fromDate(),
@@ -251,11 +256,11 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     const pageSize = event.rows;
     const pageNumber = (event.first / pageSize);
     if (isFilteredPaginate) {
-      if (pageNumber === this.entriesPagination().currentPage) return;
+      if (pageNumber === this.allEntries().pagination().currentPage) return;
       this.getAllUserExpenseEntries(this._userId, pageNumber, pageSize);
     }
     else {
-      if (pageNumber === this.filteredEntriesPagination().currentPage) return;
+      if (pageNumber === this.filteredEntries().pagination().currentPage) return;
       this.getFilteredEntries(this._userId, pageNumber, pageSize, {
         categories: this.expenseDataServFilters().categories(),
         itemsList: this.expenseDataServFilters().items(),

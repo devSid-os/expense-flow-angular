@@ -1,9 +1,20 @@
 export interface CreateCashBookEntryModel {
-    date: Date, type: 'in' | 'out',
+    date: Date,
+    type: 'in' | 'out',
     mode: 'cash' | 'online',
     amount: number,
-    description?: string,
+    remark?: string,
     url?: string
+}
+
+export interface UpdateCashBookEntryModel {
+    date: Date,
+    type: 'in' | 'out',
+    mode: 'cash' | 'online',
+    amount: number,
+    remark?: string,
+    url?: string,
+    entryId: string,
 }
 
 export interface CashbookModel {
@@ -13,6 +24,8 @@ export interface CashbookModel {
     amount: number,
     remark?: string,
     attachment?: string,
-    id: string,
-    user: string
+    _id: string,
+    user: string,
+    createdAt: Date,
+    updatedAt: Date
 }

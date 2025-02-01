@@ -1,26 +1,29 @@
-import { Component, computed, effect, inject, OnDestroy, OnInit, Signal } from '@angular/core';
+import { Subscription, take } from 'rxjs';
+import { Component, computed, effect, inject, OnDestroy, OnInit, Signal, ViewEncapsulation } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 // SERVICES IMPORT
 import { CashbookDataService } from '../../Services/Cashbook/cashbook-data.service';
+import { LoadingService } from '../../Services/loading.service';
 import { UserAccountService } from '../../Services/account.service';
-// NG UI COMPONENTS PRIME IMPORTS
+import { CashbookApiService } from '../../Services/Cashbook/cashbook-api.service';
+import { Dialog } from 'primeng/dialog';
+import { DatePickerModule } from 'primeng/datepicker';
 // APP COMPONENTS IMPORT
 import { CashEntryDrawerComponent } from '../../components/cashbook-drawers/cash-entry-drawer/cash-entry-drawer.component';
 import { EntriesTableComponent } from './entries-table/entries-table.component';
+import { ViewEntryDrawerComponent } from '../../components/cashbook-drawers/view-entry-drawer/view-entry-drawer.component';
 // MODELS IMPORT
 import { CashbookModel } from '../../Models/cashbook.model';
-import { CashbookApiService } from '../../Services/Cashbook/cashbook-api.service';
-import { Subscription, take } from 'rxjs';
-import { response } from 'express';
-import { HttpErrorResponse } from '@angular/common/http';
-import { LoadingService } from '../../Services/loading.service';
 import { PaginationModel } from '../../Models/pagination.model';
+import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/update-entry-drawer/update-entry-drawer.component';
 
 @Component({
   selector: 'app-cashbook',
-  imports: [CommonModule, CashEntryDrawerComponent, EntriesTableComponent],
+  imports: [CommonModule, CashEntryDrawerComponent, EntriesTableComponent, ViewEntryDrawerComponent, Dialog, DatePickerModule, UpdateEntryDrawerComponent],
   templateUrl: './cashbook.component.html',
-  styleUrl: './cashbook.component.scss'
+  styleUrl: './cashbook.component.scss',
+  encapsulation: ViewEncapsulation.None
 })
 export class CashbookComponent implements OnInit, OnDestroy {
   private _userAccountServ: UserAccountService = inject(UserAccountService);
@@ -55,6 +58,8 @@ export class CashbookComponent implements OnInit, OnDestroy {
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._cashbookDataServ.allCashbookEntries());
 
+  isViewEntryDrawerOpen: boolean = false;
+  showCustomDurationModal: boolean = false;
 
   drawerType: 'out' | 'in' | null = null;
 
@@ -75,6 +80,7 @@ export class CashbookComponent implements OnInit, OnDestroy {
         { label: 'Yesterday', value: 'yesterday' },
         { label: 'This Month', value: 'this_month' },
         { label: 'Last Month', value: 'last_month' },
+        { label: 'Custom', value: 'custom' }
       ],
       type: [
         { label: 'All', value: 'all' },
@@ -88,6 +94,8 @@ export class CashbookComponent implements OnInit, OnDestroy {
       ]
     }
 
+  viewEntryData: CashbookModel | null = null;
+  updateEntryData: CashbookModel | null = null;
 
   constructor() {
     effect(() => {
@@ -103,8 +111,9 @@ export class CashbookComponent implements OnInit, OnDestroy {
     this.filters.mode = this.dataServFilters().mode();
     this.reFetchEntries$ = this._cashbookApiServ.reFetchEntries.subscribe({
       next: (value: boolean) => {
-        if (value) {
+        if (value === true) {
           this.fetchAllCashBookEntries(this._userId, this.allCashBookEntries().pagination().currentPage, this.allCashBookEntries().pagination().pageSize);
+          this._cashbookApiServ.reFetchEntries.next(false);
         }
       }
     });
@@ -112,6 +121,30 @@ export class CashbookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.reFetchEntries$ instanceof Subscription) this.reFetchEntries$.unsubscribe();
+  }
+
+  closeCustomDurationModal(): void {
+    this.showCustomDurationModal = false;
+  }
+
+  openUpdateCashEntryDrawer(entryData: CashbookModel): void {
+    this.updateEntryData = entryData;
+    this._cashbookDataServ.updateCashEntryDrawer.set(true);
+  }
+
+  closeUpdateCashEntryDrawer(): void {
+    this.updateEntryData = null;
+    this._cashbookDataServ.updateCashEntryDrawer.set(false);
+  }
+
+  openViewEntryDrawer(entry: CashbookModel): void {
+    this.isViewEntryDrawerOpen = true;
+    this.viewEntryData = entry;
+  }
+
+  closeViewEntryDrawer(): void {
+    this.isViewEntryDrawerOpen = false;
+    this.viewEntryData = null;
   }
 
   toggleMenus(menuName: string, open: boolean): void {
@@ -155,6 +188,10 @@ export class CashbookComponent implements OnInit, OnDestroy {
   }
 
   setDuration(value: string): void {
+    if (value === 'custom') {
+      this.showCustomDurationModal = true;
+      this.closeAllMenus();
+    }
     this.filters.duration = value;
   }
 
@@ -203,7 +240,6 @@ export class CashbookComponent implements OnInit, OnDestroy {
   }
 
   onTabelPageChange(event: any, isFilteredPaginate: boolean = false): void {
-    console.log(event);
     const pageSize = event.rows;
     const pageNumber = (event.first / pageSize);
     if (pageNumber === this.allCashBookEntries().pagination().currentPage) return;

@@ -120,7 +120,7 @@ export class ItemsListComponent {
   showDeleteItemConfirmation(item: ExpenseItemModel): void {
     this._confirmationServ.confirm({
       header: `Delete item ${item.name}`,
-      message: `All the expenses related to '${item.name}' will be deleted.`,
+      message: `Are you sure, you want to delete this item?`,
       accept: () => {
         if (item._id) this.deleteUserExpenseItem(item._id);
       },

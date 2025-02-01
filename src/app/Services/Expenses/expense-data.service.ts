@@ -7,15 +7,18 @@ import { PaginationModel } from '../../Models/pagination.model';
 })
 export class ExpenseDataService {
 
-    // USER EXPENSE ENTRIES PAGINATION
-    entriesPagination: WritableSignal<PaginationModel> = signal({
-        totalRecords: 0,
-        currentPage: 0,
-        pageSize: 25
-    });
-
-    // ALL USER EXPENSE ENTRIES
-    entries: WritableSignal<ExpenseEntryModel[]> = signal([]);
+    // ALL EXPENSE ENTRIES DATA AND PAGINATION
+    allEntries: WritableSignal<{
+        data: WritableSignal<ExpenseEntryModel[]>,
+        pagination: WritableSignal<PaginationModel>
+    }> = signal({
+        data: signal([]),
+        pagination: signal({
+            totalRecords: 0,
+            currentPage: 0,
+            pageSize: 25
+        })
+    })
 
     // ALL USER EXPENSE CATEGORIES
     categories: WritableSignal<ExpenseCategoryModel[]> = signal([]);
@@ -41,15 +44,19 @@ export class ExpenseDataService {
     // EDIT CART TOTAL
     editCartTotalAmount: Signal<number> = computed(() => this.editItemsCartArray().reduce((acc, item) => { return acc + (item.item.price * item.qty) }, 0));
 
-    // FILTERED USER EXPENSE ENTRIES
-    filteredEntriesPagination: WritableSignal<PaginationModel> = signal({
-        totalRecords: 0,
-        currentPage: 0,
-        pageSize: 25
-    });
+    // FILTERED EXPENSE ENTRIES AND PAGINATION
+    filteredEntries: WritableSignal<{
+        data: WritableSignal<ExpenseEntryModel[]>,
+        pagination: WritableSignal<PaginationModel>
+    }> = signal({
+        data: signal([]),
+        pagination: signal({
+            totalRecords: 0,
+            currentPage: 0,
+            pageSize: 25
+        })
+    })
 
-    // FILTERED EXPENSE ENTRIES
-    filteredEntries: WritableSignal<ExpenseEntryModel[]> = signal([]);
     expenseFilterApplied: WritableSignal<boolean> = signal(false);
     filters: WritableSignal<{
         items: WritableSignal<string[]>,
@@ -76,11 +83,11 @@ export class ExpenseDataService {
         this.filters().fromDate.set(null);
         this.filters().endDate.set(null);
         this.filters().timePeriod.set(null);
-        this.filteredEntriesPagination.set({
+        this.filteredEntries().pagination.set({
             totalRecords: 0,
             pageSize: 25,
             currentPage: 0
         });
-        this.filteredEntries.set([]);
+        this.filteredEntries().data.set([]);
     }
 }

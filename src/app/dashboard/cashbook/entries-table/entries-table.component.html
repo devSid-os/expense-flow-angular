@@ -21,13 +21,13 @@
             <th class='text-[12px]'>Mode</th>
             <th class='text-[12px]'>Attachment</th>
             <th class='text-[12px]'>Created At</th>
-            <th class='text-[12px]'>Actions</th>
+            <!-- <th class='text-[12px]'>Actions</th> -->
         </tr>
     </ng-template>
     <ng-template #body let-entry>
-        <tr class='cursor-pointer hover:bg-[#1a3d32!important]'>
+        <tr (click)='onTableRowClick.emit(entry);' class='cursor-pointer hover:bg-[#1a3d32!important]'>
             <td>
-                <p-tableCheckbox [value]='entry' />
+                <p-tableCheckbox (click)='$event.stopPropagation();' [value]='entry' />
             </td>
             <td class='text-[13px] italic tracking-wide'>{{entry.date | date: 'dd-MMM-yyyy'}}</td>
             <td 
@@ -47,14 +47,14 @@
                 class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'
             >
                 <ng-container *ngIf='entry.attachment;else noAttachment;'>
-                    <button (click)='openAttachmentPreview(entry.attachment)'>
+                    <button (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation()'>
                         <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
                     </button>
                 </ng-container>
                 <ng-template #noAttachment>-</ng-template>
             </td>
             <td class='text-[13px] italic tracking-wide'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
-            <td>
+            <!-- <td>
                 <p-button icon='fa-solid fa-pencil' variant='text' size='small' />
                 <p-button 
                     (click)='deleteCashbookEntry(entry._id);' 
@@ -63,7 +63,7 @@
                     severity='danger' 
                     size='small' 
                 />
-            </td>
+            </td> -->
         </tr>
     </ng-template>
 </p-table>

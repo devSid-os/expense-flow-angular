@@ -69,13 +69,12 @@ export class SelectExpenseItemsDrawerComponent {
   constructor() {
     this.addItemForm = this._formBuilder.group({
       name: ['', [Validators.required]],
-      price: [0, [Validators.required, Validators.pattern(/^\d+(\.\d{0,2})?$/)]],
-      id: [this._userId, [Validators.required]]
+      price: [0, [Validators.required, Validators.pattern(/^\d+(\.\d{0,2})?$/)]]
     });
     this.editItemForm = this._formBuilder.group({
       name: ['', [Validators.required]],
       price: [0, [Validators.required, Validators.pattern(/^\d+(\.\d{0,2})?$/)]],
-      itemId: [this._userId, [Validators.required]]
+      itemId: ['', [Validators.required]]
     });
   }
 
@@ -123,14 +122,13 @@ export class SelectExpenseItemsDrawerComponent {
     }
 
     this._loadingServ.loading.set(true);
-    this._expenseApiServ.addNewExpenseItem(this.addItemForm.get('name')?.value, this.addItemForm.get('price')?.value, this.addItemForm.get('id')?.value)
+    this._expenseApiServ.addNewExpenseItem(this.addItemForm.get('name')?.value, this.addItemForm.get('price')?.value, this._userId)
       .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 201) {
             this._messageServ.clear();
             this.addItemForm.reset();
-            this.addItemForm.patchValue({ id: this._userId });
           }
           this._loadingServ.loading.set(false);
         },
@@ -145,6 +143,10 @@ export class SelectExpenseItemsDrawerComponent {
 
   editUserExpenseItem(): void {
     if (this.editItemForm.invalid) {
+      if (this.editItemForm.get('itemId')?.hasError('required')) {
+        this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'Item id cannot be empty' });
+        return;
+      }
       if (this.editItemForm.get('name')?.hasError('required')) {
         this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'Item name cannot be empty' });
         return;
@@ -171,9 +173,9 @@ export class SelectExpenseItemsDrawerComponent {
           if (response.status === 200) {
             this.showEditItemDialog = false;
             this.editItemForm.reset();
+            this._loadingServ.loading.set(false);
             this._expenseApiServ.fetchExpenseEntries.next(true);
           }
-          this._loadingServ.loading.set(false);
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 400) {

@@ -101,18 +101,18 @@
     <div>
         <app-expense-list-table 
             *ngIf='!expenseFilterApplied();else filteredExpenseTable;'
-            [entries]='entries()' 
+            [entries]='allEntries().data()' 
             (onPageChange)='loadExpenses($event)' 
             (onEditExpenseClick)='showEditExpenseDrawer($event)'
-            [entriesPagination]='entriesPagination()'
+            [entriesPagination]='allEntries().pagination()'
         >
         </app-expense-list-table>
         <ng-template #filteredExpenseTable>
             <app-expense-list-table 
-                [entries]='filteredEntries()'
+                [entries]='filteredEntries().data()'
                 (onPageChange)='loadExpenses($event, true)' 
                 (onEditExpenseClick)='showEditExpenseDrawer($event)'
-                [entriesPagination]='filteredEntriesPagination()'
+                [entriesPagination]='filteredEntries().pagination()'
             >
             </app-expense-list-table>
         </ng-template>
@@ -130,7 +130,7 @@
     <ul class='flex gap-2 filter-chips flex-wrap mb-3'>
         @for (category of categories();track category._id) {
             <p-chip 
-                (click)='addCategoryToFilterList(category._id || "")'             
+                (click)='addCategoryToFilterList(category.name)'             
                 class='tracking-wider cursor-pointer bg-[#1a3d32!important] hover:bg-[#03d47c!important]' 
                 [label]='category.name | uppercase' 
             />
@@ -141,9 +141,9 @@
         <p-divider />
         <ul class='flex gap-2 filtered-chips flex-wrap mt-3'>
             @for (category of categories();track category._id) {
-                <ng-container *ngIf='isCategorySelected(category._id || "");'>
+                <ng-container *ngIf='isCategorySelected(category.name || "");'>
                     <p-chip 
-                        (onRemove)='removeCategoryFromFilterList(category._id || "")'
+                        (onRemove)='removeCategoryFromFilterList(category.name || "")'
                         [removable]='true'
                         class='tracking-wider cursor-pointer bg-[orange!important]' 
                         [label]='category.name | uppercase' 

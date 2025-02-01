@@ -69,7 +69,7 @@ export class EditExpenseDrawerComponent implements OnInit {
     });
 
     effect(() => {
-      const cart = this.cartItemsArray().map(item => ({ item: item.item?._id, qty: item.qty }));
+      const cart = this.cartItemsArray().map(item => ({ item: item.item, qty: item.qty }));
 
       this.editEntryForm.patchValue({
         items: cart
@@ -81,7 +81,7 @@ export class EditExpenseDrawerComponent implements OnInit {
     const cart: { [itemId: string]: { item: ExpenseItemModel, qty: number } } = {};
     this.expenseEntry.items.forEach((element: { item: ExpenseItemModel, qty: number }) => {
       if (element.item._id) {
-        return cart[element.item._id] = {...element};
+        return cart[element.item._id] = { ...element };
       }
       return null;
     });
@@ -89,7 +89,7 @@ export class EditExpenseDrawerComponent implements OnInit {
     const expenseDate = new Date(this.expenseEntry.date);
     this.editEntryForm.patchValue({
       date: expenseDate,
-      category: this.expenseEntry.category._id,
+      category: this.expenseEntry.category,
       items: this.expenseEntry.items,
       description: this.expenseEntry.description || '',
       id: this.expenseEntry._id

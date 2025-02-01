@@ -3,7 +3,7 @@ import { inject, Injectable } from "@angular/core";
 import { environment } from "../../../enviroments/enviroment";
 import { BehaviorSubject, catchError, Observable, tap, throwError } from "rxjs";
 import { UserAccountService } from "../account.service";
-import { CreateCashBookEntryModel } from "../../Models/cashbook.model";
+import { CreateCashBookEntryModel, UpdateCashBookEntryModel } from "../../Models/cashbook.model";
 import { response } from "express";
 import { CashbookDataService } from "./cashbook-data.service";
 
@@ -71,6 +71,22 @@ export class CashbookApiService {
 
     deleteEntry(entryId: string, userId: string): Observable<Object> {
         return this._http.delete(`${this._BASEURL}/deleteEntry/${userId}/${entryId}`, { withCredentials: true })
+            .pipe(
+                tap((response: any) => {
+                    if (response.status === 200) {
+                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
+                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                    }
+                }),
+                catchError(this.handleError.bind(this))
+            )
+    }
+
+    updateEntry(data: UpdateCashBookEntryModel, userId: string): Observable<Object> {
+        return this._http.put(`${this._BASEURL}/updateEntry`, {
+            ...data,
+            id: userId
+        }, { withCredentials: true })
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {

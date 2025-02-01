@@ -25,6 +25,7 @@ export class CashbookDataService {
     });
 
     cashEntryDrawer: WritableSignal<boolean> = signal(false);
+    updateCashEntryDrawer: WritableSignal<boolean> = signal(false);
 
     allCashbookEntries: WritableSignal<{
         data: WritableSignal<CashbookModel[]>,

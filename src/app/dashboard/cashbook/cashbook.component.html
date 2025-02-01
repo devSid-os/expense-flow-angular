@@ -47,6 +47,38 @@
             </button>
         </div>
 
+        <div class='flex flex-col gap-2 md:flex-row mt-4'>
+            <!-- CASH IN DIV -->
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#1a3d32]'>
+                <i class='text-[#03d47c] rounded-full text-sm fa-solid fa-plus'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>CASH IN</p>
+                    <p class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashIn()| number: '1.2-2'}}
+                    </p>
+                </div>
+            </div>
+            <!-- CASH OUT DIV -->
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#1a3d32]'>
+                <i class='text-red-600 text-sm fa-solid fa-minus'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>CASH OUT</p>
+                    <p class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashOut() | number: '1.2-2'}}
+                    </p>
+                </div>
+            </div>
+            <!-- NET BALANCE DIV -->
+            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#1a3d32]'>
+                <i class='text-[#4863d4] text-sm fa-solid fa-equals'></i>
+                <div class='flex flex-col gap-1'>
+                    <p class='text-sm tracking-wide font-[600] italic'>NET BALANCE</p>
+                    <p [ngClass]='{"text-red-400": (cashStats().cashIn() - cashStats().cashOut()) < 0}' class='text-sm tracking-wide'>
+                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{(cashStats().cashIn() - cashStats().cashOut()) | number: '1.2-2'}}
+                    </p>
+                </div>
+            </div>
+        </div>
         <div class='flex flex-wrap gap-2 mt-4'>
             <button 
                 (click)='openCashEntryDrawer("in")' type='button'
@@ -61,46 +93,14 @@
                 <i class='fa-solid fa-minus'></i>&nbsp;&nbsp;Cash Out
             </button>
         </div>
-
-        <div class='flex flex-col gap-2 md:flex-row mt-4'>
-            <!-- CASH IN DIV -->
-            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
-                <i class='text-[#03d47c] rounded-full text-sm fa-solid fa-plus'></i>
-                <div class='flex flex-col gap-1'>
-                    <p class='text-sm tracking-wide font-[600] italic'>CASH IN</p>
-                    <p class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashIn()| number: '1.2-2'}}
-                    </p>
-                </div>
-            </div>
-            <!-- CASH OUT DIV -->
-            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
-                <i class='text-red-600 text-sm fa-solid fa-minus'></i>
-                <div class='flex flex-col gap-1'>
-                    <p class='text-sm tracking-wide font-[600] italic'>CASH OUT</p>
-                    <p class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{cashStats().cashOut() | number: '1.2-2'}}
-                    </p>
-                </div>
-            </div>
-            <!-- NET BALANCE DIV -->
-            <div class='p-2 px-4 flex-1 flex items-center gap-4 rounded-[4px] shadow-lg bg-[#072419]'>
-                <i class='text-[#4863d4] text-sm fa-solid fa-equals'></i>
-                <div class='flex flex-col gap-1'>
-                    <p class='text-sm tracking-wide font-[600] italic'>NET BALANCE</p>
-                    <p [ngClass]='{"text-red-400": (cashStats().cashIn() - cashStats().cashOut()) < 0}' class='text-sm tracking-wide'>
-                        <i class='text-[13px] fa fa-indian-rupee-sign'></i>&nbsp;{{(cashStats().cashIn() - cashStats().cashOut()) | number: '1.2-2'}}
-                    </p>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <div class="w-full">
+    <div class='w-full'>
         <app-entries-table 
-            (onPageChange)="onTabelPageChange($event);" 
-            [pagination]="allCashBookEntries().pagination()" 
-            [entries]="allCashBookEntries().data()"
+            (onTableRowClick)='openViewEntryDrawer($event);'
+            (onPageChange)='onTabelPageChange($event);' 
+            [pagination]='allCashBookEntries().pagination()' 
+            [entries]='allCashBookEntries().data()'
         ></app-entries-table>
     </div>
 </div>
@@ -108,7 +108,7 @@
 <ng-template #durationMenu>
     <div 
         (click)='$event.stopPropagation()'
-        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+        class='z-50 rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
     >
         <ul class='flex flex-col py-2'>
             <li 
@@ -122,7 +122,7 @@
         </ul>
 
         <button 
-            *ngIf='dataServFilters().duration() !== filters.duration'
+            *ngIf='dataServFilters().duration() !== filters.duration && filters.duration !== "custom"'
             class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
         >
             FILTER
@@ -133,7 +133,7 @@
 <ng-template #typeMenu>
     <div 
         (click)='$event.stopPropagation()'
-        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+        class='z-50 rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
     >
         <ul class='flex flex-col py-2'>
             <li 
@@ -158,7 +158,7 @@
 <ng-template #modeMenu>
     <div 
         (click)='$event.stopPropagation()'
-        class='rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
+        class='z-50 rounded-bl-md rounded-br-md w-full absolute left-0 top-[100%] bg-[#072419] overflow-hidden'
     >
         <ul class='flex flex-col py-2'>
             <li 
@@ -180,8 +180,46 @@
     </div>
 </ng-template>
 
+<!-- SELECT CUSTOM DATE RANGE -->
+<p-dialog
+header='CUSTOM DATE RANGE' 
+[modal]='true'  
+(onHide)='closeCustomDurationModal()'
+[(visible)]='showCustomDurationModal'
+[style]='{"width": "25rem", "background": "#072419"}'
+[breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
+>
+    <div class='custom-date-range-div flex justify-center bg-[#072419!important]'>
+        <p-datepicker selectionMode='range' readonlyInput='true' class='bg-[#072419!important] w-full max-w-full' [inline]='true' />
+    </div>
+
+    <button 
+        type='button' 
+        class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-2 hover:bg-[#03d47c]'
+    >
+        <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
+    </button>
+</p-dialog>
+
 <!-- CASH ENTRY DRAWER -->
 <app-cash-entry-drawer 
     (onDrawerTypeChange)='setDrawerType($event);' 
     [drawerType]='drawerType'>
 </app-cash-entry-drawer>
+
+<!-- VIEW ENTRY DRAWER -->
+<app-view-entry-drawer 
+    *ngIf='viewEntryData' 
+    (onCloseDrawer)='closeViewEntryDrawer();' 
+    (onEditClick)='openUpdateCashEntryDrawer($event);'
+    [entryData]='viewEntryData' 
+    [isViewEntryDrawerOpen]='isViewEntryDrawerOpen'
+></app-view-entry-drawer>
+
+<!-- UPDATE ENTRY DRAWER -->
+<app-update-entry-drawer
+    *ngIf='updateEntryData'
+    [entryData]='updateEntryData'
+    (onCloseDrawer)='closeUpdateCashEntryDrawer();'
+    (onSuccessfullUpdate)='viewEntryData=$event;'
+></app-update-entry-drawer>
