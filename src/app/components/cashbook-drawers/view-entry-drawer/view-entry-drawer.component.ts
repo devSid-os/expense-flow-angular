@@ -32,6 +32,7 @@ export class ViewEntryDrawerComponent {
   @Input('isViewEntryDrawerOpen') isViewEntryDrawerOpen!: boolean;
   @Input('entryData') entryData!: CashbookModel;
   @Output('onCloseDrawer') onCloseDrawer: EventEmitter<false> = new EventEmitter<false>();
+  @Output('onEditClick') onEditClick: EventEmitter<CashbookModel> = new EventEmitter<CashbookModel>();
 
   constructor() {
     this._lightboxConfig.resizeDuration = 1;

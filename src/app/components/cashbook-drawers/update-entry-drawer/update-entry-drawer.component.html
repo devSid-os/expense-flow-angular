@@ -2,14 +2,13 @@
 <p-drawer 
     (onHide)='closeDrawer();' 
     position='right' 
-    [visible]='cashEntryDrawer()' 
+    [visible]='updateCashEntryDrawer()' 
     [closable]='false'
-    [closeOnEscape]='false'
 >
     <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
         <div class='relative w-full h-[100%] min-h-screen pb-2'>
             <div class='p-3 flex justify-between items-center'>
-                <h6 class='text-black text-lg'>Add Cash in Entry</h6>
+                <h6 class='text-black text-lg'>Update Cash Entry</h6>
                 <button (click)='closeDrawer()' type='button' class='text-[#175cd3]'>
                     <i class='fa-solid fa-xmark'></i>
                 </button>
@@ -19,19 +18,19 @@
             <!-- CASH IN/OUT CHIPS -->
             <div class='cash-chips p-3 flex items-center gap-2'>
                 <p-chip 
-                    (click)='onDrawerTypeChange.emit("in")' 
-                    [ngClass]='{"active-chip-in": drawerType === "in"}'
+                    (click)='updateDrawerType("in")' 
+                    [ngClass]='{"active-chip-in": getDrawerType() === "in"}'
                     label='Cash In' 
                 />
                 <p-chip 
-                    (click)='onDrawerTypeChange.emit("out")' 
-                    [ngClass]='{"active-chip-out": drawerType === "out"}'
+                    (click)='updateDrawerType("out")' 
+                    [ngClass]='{"active-chip-out": getDrawerType() === "out"}'
                     label='Cash Out' 
                 />
             </div>
 
             <!-- ENTRY FORM -->
-            <form [formGroup]='entryForm' (ngSubmit)='createCashbookEntry()'>
+            <form (ngSubmit)='updateCashEntry();' [formGroup]='entryForm'>
                 <!-- DATE AND MODE DIV -->
                 <div class='p-3 w-full flex justify-between gap-2 items-stretch'>
                     <div class='entryDateDiv flex-1 flex flex-col gap-1'>
@@ -136,7 +135,7 @@
                 <!-- SAVE ENTRY BTN DIV -->
                 <div class='p-3 pb-2 fixed bottom-0 left-0 w-full'>
                     <button type='submit' class='rounded-[4px] text-sm w-full py-2 text-white bg-[#175cd3]'>
-                        Save Entry
+                        Update Entry
                     </button>
                 </div>
             </form>
@@ -144,6 +143,5 @@
         </div>
     </p-scrollpanel>
 </p-drawer>
-
 
 <p-toast position='bottom-center' />

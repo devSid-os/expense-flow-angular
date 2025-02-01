@@ -1,0 +1,68 @@
+.p-scrollpanel-bar {
+    background: gray !important;
+    width: 5px !important;
+}
+
+.cash-chips .p-chip {
+    font-size: .8rem !important;
+    background: #fff !important;
+    color: #000 !important;
+    border: 1px solid #bebebe;
+    letter-spacing: .005rem;
+    user-select: none;
+    padding: .3rem .6rem !important;
+    cursor: pointer;
+}
+
+.cash-chips .active-chip-in {
+    background: seagreen !important;
+    color: #fff !important;
+    border: 1px solid seagreen !important;
+}
+
+.cash-chips .active-chip-out {
+    background: red !important;
+    color: #fff !important;
+    border: 1px solid red !important;
+}
+
+.p-drawer-right {
+    width: 100% !important;
+
+    .p-drawer-content {
+        background: #fff !important;
+    }
+}
+
+.entryDateDiv .p-inputtext {
+    padding: .3rem !important;
+    font-weight: normal !important;
+}
+
+.entryModeDiv .p-select {
+    background-color: #fff !important;
+    border: 1px solid #bebebe !important;
+
+    input {
+        color: #000 !important;
+    }
+}
+
+.entryDescriptionDiv .p-textarea {
+    background-color: #fff !important;
+    color: #000 !important;
+    min-height: 50px !important;
+    border: 1px solid #bebebe !important;
+}
+
+@media screen and (min-width: 768px) {
+    .p-drawer-right {
+        width: 45% !important;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .p-drawer-right {
+        width: 35% !important;
+    }
+}

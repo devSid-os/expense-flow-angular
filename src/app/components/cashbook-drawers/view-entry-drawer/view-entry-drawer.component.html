@@ -95,7 +95,10 @@
                     >
                         <i class='fa-solid fa-trash'></i>&nbsp;Delete
                     </button>
-                    <button class='scroll-py-20 px-4 rounded-[3px] bg-[#4863d4] text-sm tracking-wide'>
+                    <button
+                        (click)='onEditClick.emit(entryData);'
+                        class='scroll-py-20 px-4 rounded-[3px] bg-[#4863d4] text-sm tracking-wide'
+                    >
                         <i class='fa-solid fa-pencil'></i>&nbsp;&nbsp;Edit Entry
                     </button>
                 </div>
