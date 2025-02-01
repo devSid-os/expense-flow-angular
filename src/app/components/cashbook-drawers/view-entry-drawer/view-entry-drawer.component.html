@@ -20,17 +20,17 @@
                     <div class='flex justify-between items-center w-full'>
                         <ng-container [ngSwitch]='entryData.type'>
                             <div *ngSwitchCase='"in"'>
-                                <p class='text-[seagreen]'><i class='fa-solid fa-plus'></i>&nbsp;Cash In</p>
+                                <p class='font-[500] text-[seagreen]'><i class='fa-solid fa-plus text-sm'></i>&nbsp;Cash In</p>
                             </div>
                             <div *ngSwitchCase='"out"'>
-                                <p class='text-red-500'><i class='fa-solid fa-minus'></i>&nbsp;Cash out</p>
+                                <p class='font-[500] text-red-500'><i class='fa-solid fa-minus text-sm'></i>&nbsp;Cash out</p>
                             </div>
                         </ng-container>
                         <p class='text-black font-normal text-sm'>On {{entryData.date | date: 'dd-MMM-yyyy'}}</p>
                     </div>
                     <p 
                         [ngClass]='{"text-red-500": entryData.type === "out", "text-[seagreen]": entryData.type === "in"}' 
-                        class='mt-1 text-xl font-[500]'
+                        class='mt-1 text-xl'
                     >
                         <i class='text-lg fa-solid fa-indian-rupee-sign'></i>&nbsp;{{entryData.amount}}
                     </p>

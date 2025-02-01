@@ -29,3 +29,10 @@ export interface CashbookModel {
     createdAt: Date,
     updatedAt: Date
 }
+
+export interface FilteredEntriesModel {
+    duration: 'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all',
+    type: 'in' | 'out' | 'all',
+    mode: 'cash' | 'online' | 'all',
+    customDateRange: Date[]
+};

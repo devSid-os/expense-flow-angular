@@ -21,7 +21,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { Toast } from 'primeng/toast';
 // APP COMPONENTS IMPORT
 import { AddCategoryComponent } from '../add-category/add-category.component';
-import { EditCategoryListComponent } from "../edit-category-list/edit-category-list.component";
+import { EditCategoryListComponent } from '../edit-category-list/edit-category-list.component';
 import { EditCategoryFormComponent } from '../edit-category-form/edit-category-form.component';
 // MODELS IMPORT
 import { ExpenseCategoryModel, ExpenseItemModel } from '../../../Models/expenses.model';

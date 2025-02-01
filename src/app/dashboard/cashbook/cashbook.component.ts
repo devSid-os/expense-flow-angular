@@ -2,6 +2,7 @@ import { Subscription, take } from 'rxjs';
 import { Component, computed, effect, inject, OnDestroy, OnInit, Signal, ViewEncapsulation } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 // SERVICES IMPORT
 import { CashbookDataService } from '../../Services/Cashbook/cashbook-data.service';
 import { LoadingService } from '../../Services/loading.service';
@@ -16,12 +17,12 @@ import { EntriesTableComponent } from './entries-table/entries-table.component';
 import { ViewEntryDrawerComponent } from '../../components/cashbook-drawers/view-entry-drawer/view-entry-drawer.component';
 import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/update-entry-drawer/update-entry-drawer.component';
 // MODELS IMPORT
-import { CashbookModel } from '../../Models/cashbook.model';
+import { CashbookModel, FilteredEntriesModel } from '../../Models/cashbook.model';
 import { PaginationModel } from '../../Models/pagination.model';
 
 @Component({
   selector: 'app-cashbook',
-  imports: [CommonModule, CashEntryDrawerComponent, EntriesTableComponent, ViewEntryDrawerComponent, Dialog, DatePickerModule, UpdateEntryDrawerComponent],
+  imports: [CommonModule, CashEntryDrawerComponent, EntriesTableComponent, ViewEntryDrawerComponent, Dialog, DatePickerModule, UpdateEntryDrawerComponent, FormsModule],
   templateUrl: './cashbook.component.html',
   styleUrl: './cashbook.component.scss',
   encapsulation: ViewEncapsulation.None
@@ -40,14 +41,15 @@ export class CashbookComponent implements OnInit, OnDestroy {
   }> = computed(() => this._cashbookDataServ.userCashStats());
 
   dataServFilters: Signal<{
-    duration: Signal<string>;
+    duration: Signal<'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all'>;
     type: Signal<'in' | 'out' | 'all'>;
     mode: Signal<'cash' | 'online' | 'all'>;
+    customDateRange: Signal<Date[]>
   }> = computed(() => this._cashbookDataServ.selectedFilters());
   filters: {
     type: 'all' | 'in' | 'out',
     mode: 'all' | 'cash' | 'online',
-    duration: string
+    duration: 'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all'
   } = {
       duration: 'all',
       type: 'all',
@@ -58,6 +60,13 @@ export class CashbookComponent implements OnInit, OnDestroy {
     data: Signal<CashbookModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._cashbookDataServ.allCashbookEntries());
+
+  filteredCashBookEntries: Signal<{
+    data: Signal<CashbookModel[]>;
+    pagination: Signal<PaginationModel>;
+  }> = computed(() => this._cashbookDataServ.filteredCashbookEntires());
+
+  filtersApplied: Signal<boolean> = computed(() => this._cashbookDataServ.filtersApplied());
 
   isViewEntryDrawerOpen: boolean = false;
   showCustomDurationModal: boolean = false;
@@ -70,8 +79,10 @@ export class CashbookComponent implements OnInit, OnDestroy {
     mode: false
   }
 
+  dateRange: Date[] = [];
+
   menuItems: {
-    duration: { label: string, value: string }[],
+    duration: { label: string, value: 'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all' }[],
     type: { label: 'All' | 'Cash In' | 'Cash Out', value: 'all' | 'in' | 'out' }[],
     mode: { label: 'All' | 'Cash' | 'Online', value: 'all' | 'cash' | 'online' }[]
   } = {
@@ -122,6 +133,10 @@ export class CashbookComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.reFetchEntries$ instanceof Subscription) this.reFetchEntries$.unsubscribe();
+  }
+
+  onDateRangeChange() {
+
   }
 
   closeCustomDurationModal(): void {
@@ -188,9 +203,10 @@ export class CashbookComponent implements OnInit, OnDestroy {
     this.filters.type = value;
   }
 
-  setDuration(value: string): void {
+  setDuration(value: 'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all'): void {
     if (value === 'custom') {
       this.showCustomDurationModal = true;
+      this.dateRange = this._cashbookDataServ.selectedFilters().customDateRange();
       this.closeAllMenus();
     }
     this.filters.duration = value;
@@ -218,7 +234,7 @@ export class CashbookComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDurationName(value: string): string {
+  getDurationName(value: 'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all'): string {
     switch (value) {
       case 'all':
         return 'All'
@@ -240,11 +256,49 @@ export class CashbookComponent implements OnInit, OnDestroy {
     });
   }
 
+  applyTypeFilter(): void {
+    this.fetchFilteredCashBookEntries(this._userId, this.filteredCashBookEntries().pagination().currentPage, this.filteredCashBookEntries().pagination().pageSize, {
+      type: this.filters.type,
+      mode: this.dataServFilters().mode(),
+      duration: this.dataServFilters().duration(),
+      customDateRange: this.dataServFilters().duration() === 'custom' ? this.dataServFilters().customDateRange() : []
+    });
+  }
+
+  applyModeFilter(): void {
+    this.fetchFilteredCashBookEntries(this._userId, this.filteredCashBookEntries().pagination().currentPage, this.filteredCashBookEntries().pagination().pageSize, {
+      type: this.dataServFilters().type(),
+      mode: this.filters.mode,
+      duration: this.dataServFilters().duration(),
+      customDateRange: this.dataServFilters().duration() === 'custom' ? this.dataServFilters().customDateRange() : []
+    });
+  }
+
+  applyDurationFilter(): void {
+    this.fetchFilteredCashBookEntries(this._userId, this.filteredCashBookEntries().pagination().currentPage, this.filteredCashBookEntries().pagination().pageSize, {
+      type: this.dataServFilters().type(),
+      mode: this.dataServFilters().mode(),
+      duration: this.filters.duration,
+      customDateRange: this.filters.duration === 'custom' ? this.dateRange : []
+    });
+  }
+
   onTabelPageChange(event: any, isFilteredPaginate: boolean = false): void {
     const pageSize = event.rows;
     const pageNumber = (event.first / pageSize);
-    if (pageNumber === this.allCashBookEntries().pagination().currentPage) return;
-    this.fetchAllCashBookEntries(this._userId, pageNumber, pageSize);
+    if (isFilteredPaginate) {
+      if (pageNumber === this.filteredCashBookEntries().pagination().currentPage) return;
+      this.fetchFilteredCashBookEntries(this._userId, pageNumber, pageSize, {
+        type: this.dataServFilters().type(),
+        mode: this.dataServFilters().mode(),
+        duration: this.dataServFilters().duration(),
+        customDateRange: this.dataServFilters().duration() === 'custom' ? this.dataServFilters().customDateRange() : []
+      });
+    }
+    else {
+      if (pageNumber === this.allCashBookEntries().pagination().currentPage) return;
+      this.fetchAllCashBookEntries(this._userId, pageNumber, pageSize);
+    }
   }
 
   // API CALL FUNCTIONS
@@ -262,5 +316,24 @@ export class CashbookComponent implements OnInit, OnDestroy {
           this._loadingServ.loading.set(false);
         }
       })
+  }
+
+  fetchFilteredCashBookEntries(userId: string, page: number, pageSize: number, data: FilteredEntriesModel): void {
+    this._loadingServ.loading.set(true);
+    this._cashbookApiServ.getFilteredEntries(data, page, pageSize, userId)
+      .pipe(take(1))
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 200) {
+            this.closeAllMenus();
+            this.showCustomDurationModal = false;
+            this.dateRange = [];
+            this._loadingServ.loading.set(false);
+          }
+        },
+        error: (error: HttpErrorResponse) => {
+          this._loadingServ.loading.set(false);
+        }
+      });
   }
 }

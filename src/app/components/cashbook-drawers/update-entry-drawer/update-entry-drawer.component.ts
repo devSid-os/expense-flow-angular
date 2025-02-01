@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, inject, Input, OnInit, Output, Renderer2, signal, Signal, WritableSignal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { take } from 'rxjs';
 // SERVICES IMPORT
 import { CashbookDataService } from '../../../Services/Cashbook/cashbook-data.service';
 import { MessageService } from 'primeng/api';
@@ -48,6 +49,7 @@ export class UpdateEntryDrawerComponent implements OnInit {
   @Input('entryData') entryData!: CashbookModel;
   @Output('onCloseDrawer') onCloseDrawer: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output('onSuccessfullUpdate') onSuccessfullUpdate: EventEmitter<CashbookModel> = new EventEmitter<CashbookModel>();
+  readonly today = new Date();
   uploadedFileUrl: WritableSignal<string | null> = signal(null);
   entryForm: FormGroup;
   updateCashEntryDrawer: Signal<boolean> = computed(() => this._cashbookDataServ.updateCashEntryDrawer());
@@ -192,6 +194,7 @@ export class UpdateEntryDrawerComponent implements OnInit {
       remark: this.entryForm.get('remark')?.value || null,
       url: this.uploadedFileUrl() || undefined
     }, this._userId)
+      .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {

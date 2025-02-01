@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../enviroments/enviroment';
 import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { UserAccountService } from '../account.service';
-import { CreateCashBookEntryModel, UpdateCashBookEntryModel } from '../../Models/cashbook.model';
+import { CreateCashBookEntryModel, FilteredEntriesModel, UpdateCashBookEntryModel } from '../../Models/cashbook.model';
 import { CashbookDataService } from './cashbook-data.service';
 
 @Injectable({
@@ -31,7 +31,6 @@ export class CashbookApiService {
         return offsetDate.toISOString().split('T')[0]; // Extract only the date part (YYYY-MM-DD)
     }
 
-
     createEntry(data: CreateCashBookEntryModel, userId: string): Observable<Object> {
         return this._http.post(`${this._BASEURL}/createEntry`, {
             ...data,
@@ -47,25 +46,6 @@ export class CashbookApiService {
                 }),
                 catchError(this.handleError.bind(this))
             )
-    }
-
-    getAllEntries(userId: string, page: number, pageSize: number): Observable<Object> {
-        return this._http.get(`${this._BASEURL}/getAllEntries/${userId}`, { withCredentials: true, params: { page, limit: pageSize } })
-            .pipe(
-                tap((response: any) => {
-                    if (response.status === 200) {
-                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
-                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
-                        this._cashBookDataServ.allCashbookEntries().data.set(response.payload);
-                        this._cashBookDataServ.allCashbookEntries().pagination.set({
-                            currentPage: response.page,
-                            totalRecords: response.totalRecords,
-                            pageSize: response.pageSize
-                        });
-                    }
-                }),
-                catchError(this.handleError.bind(this))
-            );
     }
 
     deleteEntry(entryId: string, userId: string): Observable<Object> {
@@ -91,6 +71,62 @@ export class CashbookApiService {
                     if (response.status === 200) {
                         this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
                         this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                    }
+                }),
+                catchError(this.handleError.bind(this))
+            )
+    }
+
+    getAllEntries(userId: string, page: number, pageSize: number): Observable<Object> {
+        return this._http.get(`${this._BASEURL}/getAllEntries/${userId}`, { withCredentials: true, params: { page, limit: pageSize } })
+            .pipe(
+                tap((response: any) => {
+                    if (response.status === 200) {
+                        this._cashBookDataServ.filteredCashbookEntires().data.set([]);
+                        this._cashBookDataServ.filteredCashbookEntires().pagination.set({
+                            currentPage: 0,
+                            totalRecords: 0,
+                            pageSize: 25
+                        });
+                        this._cashBookDataServ.selectedFilters().mode.set('all');
+                        this._cashBookDataServ.selectedFilters().type.set('all');
+                        this._cashBookDataServ.selectedFilters().duration.set('all');
+                        this._cashBookDataServ.selectedFilters().customDateRange.set([]);
+                        this._cashBookDataServ.filtersApplied.set(false);
+                        this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
+                        this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
+                        this._cashBookDataServ.allCashbookEntries().data.set(response.payload);
+                        this._cashBookDataServ.allCashbookEntries().pagination.set({
+                            currentPage: response.page,
+                            totalRecords: response.totalRecords,
+                            pageSize: response.pageSize
+                        });
+                    }
+                }),
+                catchError(this.handleError.bind(this))
+            );
+    }
+
+    getFilteredEntries(data: FilteredEntriesModel, page: number, pageSize: number, userId: string) {
+        return this._http.post(`${this._BASEURL}/getFilteredEntries`, {
+            ...data,
+            id: userId,
+            customDateRange: data.duration === 'custom' ? [this._formatDateToLocal(data.customDateRange[0]), this._formatDateToLocal(data.customDateRange[1])] : []
+        }, { withCredentials: true, params: { page, limit: pageSize } })
+            .pipe(
+                tap((response: any) => {
+                    if (response.status === 200) {
+                        this._cashBookDataServ.filteredCashbookEntires().data.set(response.payload);
+                        this._cashBookDataServ.filteredCashbookEntires().pagination.set({
+                            currentPage: response.page,
+                            totalRecords: response.totalRecords,
+                            pageSize: response.pageSize
+                        });
+                        this._cashBookDataServ.selectedFilters().duration.set(data.duration || 'all');
+                        this._cashBookDataServ.selectedFilters().mode.set(data.mode || 'all');
+                        this._cashBookDataServ.selectedFilters().type.set(data.type || 'all');
+                        this._cashBookDataServ.selectedFilters().customDateRange.set(data.customDateRange || []);
+                        this._cashBookDataServ.filtersApplied.set(true);
                     }
                 }),
                 catchError(this.handleError.bind(this))

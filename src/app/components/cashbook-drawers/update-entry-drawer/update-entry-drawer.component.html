@@ -36,6 +36,7 @@
                     <div class='entryDateDiv flex-1 flex flex-col gap-1'>
                         <label class='text-black'>Expense Date</label>
                         <p-datepicker 
+                            [maxDate]="today"
                             formControlName='date'
                             [fluid]='true' 
                             name='entryDate' 

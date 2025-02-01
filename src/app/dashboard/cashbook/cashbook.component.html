@@ -96,12 +96,22 @@
     </div>
 
     <div class='w-full'>
-        <app-entries-table 
-            (onTableRowClick)='openViewEntryDrawer($event);'
-            (onPageChange)='onTabelPageChange($event);' 
-            [pagination]='allCashBookEntries().pagination()' 
-            [entries]='allCashBookEntries().data()'
-        ></app-entries-table>
+        <ng-container [ngSwitch]='filtersApplied()'>
+            <app-entries-table 
+                *ngSwitchCase='false'
+                (onTableRowClick)='openViewEntryDrawer($event);'
+                (onPageChange)='onTabelPageChange($event);' 
+                [pagination]='allCashBookEntries().pagination()' 
+                [entries]='allCashBookEntries().data()'
+            ></app-entries-table>
+            <app-entries-table 
+                *ngSwitchCase='true'
+                (onTableRowClick)='openViewEntryDrawer($event);'
+                (onPageChange)='onTabelPageChange($event, true);' 
+                [pagination]='filteredCashBookEntries().pagination()' 
+                [entries]='filteredCashBookEntries().data()'
+            ></app-entries-table>
+        </ng-container>
     </div>
 </div>
 
@@ -124,6 +134,7 @@
         <button 
             *ngIf='dataServFilters().duration() !== filters.duration && filters.duration !== "custom"'
             class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+            (click)='applyDurationFilter()'
         >
             FILTER
         </button>
@@ -149,6 +160,7 @@
         <button 
             *ngIf='dataServFilters().type() !== filters.type'
             class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+            (click)='applyTypeFilter()'
         >
             FILTER
         </button>
@@ -174,6 +186,7 @@
         <button 
             *ngIf='dataServFilters().mode() !== filters.mode'
             class='bg-[#03d47c] text-white font-bold w-full py-1 tracking-wider'
+            (click)='applyModeFilter()'
         >
             FILTER
         </button>
@@ -190,12 +203,14 @@ header='CUSTOM DATE RANGE'
 [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
 >
     <div class='custom-date-range-div flex justify-center bg-[#072419!important]'>
-        <p-datepicker selectionMode='range' readonlyInput='true' class='bg-[#072419!important] w-full max-w-full' [inline]='true' />
+        <p-datepicker [(ngModel)]="dateRange" selectionMode='range' readonlyInput='true' class='bg-[#072419!important] w-full max-w-full' [inline]='true' />
     </div>
 
     <button 
+        [disabled]='dateRange.length !== 2'
         type='button' 
         class='bg-[orange] text-white text-sm cursor-pointer w-full mt-4 rounded-md py-2 hover:bg-[#03d47c]'
+        (click)='applyDurationFilter()'
     >
         <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
     </button>

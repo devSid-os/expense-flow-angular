@@ -7,13 +7,15 @@ import { PaginationModel } from '../../Models/pagination.model';
 })
 export class CashbookDataService {
     selectedFilters: WritableSignal<{
-        duration: WritableSignal<string>;
+        duration: WritableSignal<'today' | 'yesterday' | 'this_month' | 'last_month' | 'custom' | 'all'>;
         type: WritableSignal<'in' | 'out' | 'all'>;
         mode: WritableSignal<'cash' | 'online' | 'all'>;
+        customDateRange: WritableSignal<Date[]>
     }> = signal({
         duration: signal('all'),
         type: signal('all'),
-        mode: signal('all')
+        mode: signal('all'),
+        customDateRange: signal([])
     });
 
     userCashStats: WritableSignal<{
@@ -38,4 +40,18 @@ export class CashbookDataService {
             pageSize: 25
         })
     });
+
+    filteredCashbookEntires: WritableSignal<{
+        data: WritableSignal<CashbookModel[]>,
+        pagination: WritableSignal<PaginationModel>
+    }> = signal({
+        data: signal([]),
+        pagination: signal({
+            currentPage: 0,
+            totalRecords: 0,
+            pageSize: 25
+        })
+    });
+
+    filtersApplied: WritableSignal<boolean> = signal(false);
 }

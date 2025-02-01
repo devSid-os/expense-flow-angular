@@ -14,8 +14,8 @@ export interface ExpenseEntryModel {
     category: string,
     date: Date,
     description?: string,
-    total: number,
-    _id: string
+    _id: string,
+    createdAt: Date
 }
 
 export interface UpdateExpenseEntryModel {

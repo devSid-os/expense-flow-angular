@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, EventEmitter, inject, Input, Output, Renderer2, signal, Signal, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { take } from 'rxjs';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 // SERVICES IMPORT
 import { LoadingService } from '../../../Services/loading.service';
@@ -55,7 +56,6 @@ export class CashEntryDrawerComponent {
   ];
   uploadedFileUrl: WritableSignal<string | null> = signal(null);
   previewUploadedImage: boolean = false;
-
   entryForm: FormGroup;
 
   constructor() {
@@ -169,6 +169,7 @@ export class CashEntryDrawerComponent {
       type: this.drawerType,
       url
     }, this._userId)
+      .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 201) {

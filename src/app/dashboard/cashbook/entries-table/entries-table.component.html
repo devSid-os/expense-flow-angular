@@ -29,7 +29,7 @@
             <td>
                 <p-tableCheckbox (click)='$event.stopPropagation();' [value]='entry' />
             </td>
-            <td class='text-[13px] italic tracking-wide'>{{entry.date | date: 'dd-MMM-yyyy'}}</td>
+            <td class='text-sm italic tracking-wider'>{{entry.date | date: 'dd-MMM-yyyy'}}</td>
             <td 
                 [ngClass]='{"text-[#f87171]": entry.type === "out", "text-[#03d47c]": entry.type === "in"}'
                 class='text-sm tracking-wide font-[500]'
@@ -53,7 +53,7 @@
                 </ng-container>
                 <ng-template #noAttachment>-</ng-template>
             </td>
-            <td class='text-[13px] italic tracking-wide'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
+            <td class='text-sm italic tracking-wider'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
             <!-- <td>
                 <p-button icon='fa-solid fa-pencil' variant='text' size='small' />
                 <p-button 
