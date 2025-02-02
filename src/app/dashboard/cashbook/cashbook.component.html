@@ -9,7 +9,7 @@
     </div>
 
     <div>
-        <div class='flex flex-wrap items-stretch gap-2'>
+        <div class='flex flex-wrap items-stretch gap-2 md:gap-3'>
             <button
                 [ngClass]='{"rounded-bl-none rounded-br-none": menus.duration, "rounded-bl-md rounded-br-md": !menus.duration}'
                 (click)='toggleMenus("duration", menus.duration);$event.stopPropagation()'
@@ -82,13 +82,13 @@
         <div class='flex flex-wrap gap-2 mt-4'>
             <button 
                 (click)='openCashEntryDrawer("in")' type='button'
-                class='p-2 rounded-sm bg-[seagreen] text-white font-bold text-sm min-w-[7.5rem] hover:bg-[#2b7d4e]'
+                class='p-2 rounded-sm bg-[seagreen] text-white font-bold text-[13px] min-w-[7.5rem] hover:bg-[#2b7d4e]'
             >
                 <i class='fa-solid fa-plus'></i>&nbsp;&nbsp;Cash In
             </button>
             <button 
                 (click)='openCashEntryDrawer("out")' type='button'
-                class='p-2 rounded-sm bg-red-600 text-white font-bold text-sm min-w-[7.5rem] hover:bg-red-700'
+                class='p-2 rounded-sm bg-red-600 text-white font-bold text-[13px] min-w-[7.5rem] hover:bg-red-700'
             >
                 <i class='fa-solid fa-minus'></i>&nbsp;&nbsp;Cash Out
             </button>

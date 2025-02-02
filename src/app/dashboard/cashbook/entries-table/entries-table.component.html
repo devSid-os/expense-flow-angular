@@ -13,6 +13,24 @@
     (onLazyLoad)='onPageChange.emit($event)' 
     [totalRecords]='pagination.totalRecords' 
 >
+    <ng-template #caption>
+        <div class='flex items-center justify-between gap-2 flex-wrap'>
+            <span class='font-bold'>Cashbook</span>
+            <div class='flex items-center gap-4'>
+                <button title='REMOVE ALL FILTERS' class='text-sm font-[500] tracking-wide text-[#03d47c]'>
+                    <i class='fa-solid fa-download'></i>&nbsp;DOWNLOAD REPORT
+                </button>
+                <button 
+                    (click)='removeAllFilters();'
+                    *ngIf='filtersApplied()' 
+                    title='REMOVE ALL FILTERS' 
+                    class='text-sm tracking-wide text-red-400 hover:text-red-500'
+                >
+                    <i class='fa-solid fa-filter-circle-xmark'></i>&nbsp;REMOVE FILTERS
+                </button>
+            </div>
+        </div>
+    </ng-template>
     <ng-template #header>
         <tr>
             <th><p-tableHeaderCheckbox /></th>
@@ -21,7 +39,6 @@
             <th class='text-[12px]'>Mode</th>
             <th class='text-[12px]'>Attachment</th>
             <th class='text-[12px]'>Created At</th>
-            <!-- <th class='text-[12px]'>Actions</th> -->
         </tr>
     </ng-template>
     <ng-template #body let-entry>
@@ -54,16 +71,6 @@
                 <ng-template #noAttachment>-</ng-template>
             </td>
             <td class='text-sm italic tracking-wider'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
-            <!-- <td>
-                <p-button icon='fa-solid fa-pencil' variant='text' size='small' />
-                <p-button 
-                    (click)='deleteCashbookEntry(entry._id);' 
-                    icon='fa-solid fa-trash' 
-                    variant='text' 
-                    severity='danger' 
-                    size='small' 
-                />
-            </td> -->
         </tr>
     </ng-template>
 </p-table>

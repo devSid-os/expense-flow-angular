@@ -177,11 +177,11 @@ export class ExpenseApiService {
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
-                        this._expenseDataServ.allEntries().data.set(response.payload);
+                        this._expenseDataServ.allEntries().data.set(response.payload[0].data);
                         this._expenseDataServ.allEntries().pagination.set({
-                            totalRecords: response.totalRecords,
-                            currentPage: response.page,
-                            pageSize: response.pageSize
+                            currentPage: response.payload[0].pagination.page,
+                            totalRecords: response.payload[0].pagination.totalRecords,
+                            pageSize: response.payload[0].pagination.pageSize
                         });
                         this._expenseDataServ.expenseFilterApplied.set(false);
                     }
@@ -215,10 +215,11 @@ export class ExpenseApiService {
     }
 
     getFilteredUserEntries(data: FetchFilteredEntriesModel, userId: string, page: number, limit: number): Observable<Object> {
+        console.log(data)
         return this._http.post(`${this._BASEURL}/getFilteredEntries`, {
             ...data,
             endDate: data.endDate ? this._formatDateToLocal(data.endDate as Date) : null,
-            fromDate: data.endDate ? this._formatDateToLocal(data.fromDate as Date) : null,
+            fromDate: data.fromDate ? this._formatDateToLocal(data.fromDate as Date) : null,
             page,
             limit,
             id: userId
@@ -226,11 +227,11 @@ export class ExpenseApiService {
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
-                        this._expenseDataServ.filteredEntries().data.set(response.payload);
+                        this._expenseDataServ.filteredEntries().data.set(response.payload[0].data);
                         this._expenseDataServ.filteredEntries().pagination.set({
-                            totalRecords: response.totalRecords,
-                            pageSize: response.pageSize,
-                            currentPage: response.page
+                            currentPage: response.payload[0].pagination.page,
+                            totalRecords: response.payload[0].pagination.totalRecords,
+                            pageSize: response.payload[0].pagination.pageSize
                         });
                         this._expenseDataServ.filters().categories.set([...data.categories]);
                         this._expenseDataServ.filters().items.set([...data.itemsList]);

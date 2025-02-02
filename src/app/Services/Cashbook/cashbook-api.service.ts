@@ -82,24 +82,14 @@ export class CashbookApiService {
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
-                        this._cashBookDataServ.filteredCashbookEntires().data.set([]);
-                        this._cashBookDataServ.filteredCashbookEntires().pagination.set({
-                            currentPage: 0,
-                            totalRecords: 0,
-                            pageSize: 25
-                        });
-                        this._cashBookDataServ.selectedFilters().mode.set('all');
-                        this._cashBookDataServ.selectedFilters().type.set('all');
-                        this._cashBookDataServ.selectedFilters().duration.set('all');
-                        this._cashBookDataServ.selectedFilters().customDateRange.set([]);
-                        this._cashBookDataServ.filtersApplied.set(false);
+                        this._cashBookDataServ.resetAllFilters();
                         this._cashBookDataServ.userCashStats().cashIn.set(response.cashIn);
                         this._cashBookDataServ.userCashStats().cashOut.set(response.cashOut);
-                        this._cashBookDataServ.allCashbookEntries().data.set(response.payload);
+                        this._cashBookDataServ.allCashbookEntries().data.set(response.payload[0].data);
                         this._cashBookDataServ.allCashbookEntries().pagination.set({
-                            currentPage: response.page,
-                            totalRecords: response.totalRecords,
-                            pageSize: response.pageSize
+                            currentPage: response.payload[0].pagination.page,
+                            totalRecords: response.payload[0].pagination.totalRecords,
+                            pageSize: response.payload[0].pagination.pageSize
                         });
                     }
                 }),
@@ -116,11 +106,11 @@ export class CashbookApiService {
             .pipe(
                 tap((response: any) => {
                     if (response.status === 200) {
-                        this._cashBookDataServ.filteredCashbookEntires().data.set(response.payload);
+                        this._cashBookDataServ.filteredCashbookEntires().data.set(response.payload[0].data);
                         this._cashBookDataServ.filteredCashbookEntires().pagination.set({
-                            currentPage: response.page,
-                            totalRecords: response.totalRecords,
-                            pageSize: response.pageSize
+                            currentPage: response.payload[0].pagination.page,
+                            totalRecords: response.payload[0].pagination.totalRecords,
+                            pageSize: response.payload[0].pagination.pageSize
                         });
                         this._cashBookDataServ.selectedFilters().duration.set(data.duration || 'all');
                         this._cashBookDataServ.selectedFilters().mode.set(data.mode || 'all');

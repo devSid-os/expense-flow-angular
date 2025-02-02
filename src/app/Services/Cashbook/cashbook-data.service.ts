@@ -54,4 +54,18 @@ export class CashbookDataService {
     });
 
     filtersApplied: WritableSignal<boolean> = signal(false);
+
+    resetAllFilters(): void {
+        this.selectedFilters().duration.set('all');
+        this.selectedFilters().mode.set('all');
+        this.selectedFilters().type.set('all');
+        this.selectedFilters().customDateRange.set([]);
+        this.filteredCashbookEntires().data.set([]);
+        this.filteredCashbookEntires().pagination.set({
+            currentPage: 0,
+            totalRecords: 0,
+            pageSize: 25
+        });
+        this.filtersApplied.set(false);
+    }
 }
