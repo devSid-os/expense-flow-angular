@@ -18,7 +18,7 @@ export class ExpenseDataService {
             currentPage: 0,
             pageSize: 25
         })
-    })
+    });
 
     // ALL USER EXPENSE CATEGORIES
     categories: WritableSignal<ExpenseCategoryModel[]> = signal([]);
@@ -76,6 +76,8 @@ export class ExpenseDataService {
     showAddExpenseDrawer: WritableSignal<boolean> = signal(false);
     showExpenseItemsDrawer: WritableSignal<boolean> = signal(false);
     showEditExpenseDrawer: WritableSignal<boolean> = signal(false);
+    showViewEntryDrawer: WritableSignal<boolean> = signal(false);
+    viewEntryData: WritableSignal<ExpenseEntryModel | null> = signal(null);
 
     resetFilters(): void {
         this.filters().categories.set([]);

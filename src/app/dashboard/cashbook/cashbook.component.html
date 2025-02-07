@@ -203,7 +203,14 @@ header='CUSTOM DATE RANGE'
 [breakpoints]='{ "1199px": "75vw", "575px": "90vw" }'
 >
     <div class='custom-date-range-div flex justify-center bg-[#072419!important]'>
-        <p-datepicker [(ngModel)]="dateRange" selectionMode='range' readonlyInput='true' class='bg-[#072419!important] w-full max-w-full' [inline]='true' />
+        <p-datepicker 
+            [(ngModel)]='dateRange' 
+            selectionMode='range' 
+            readonlyInput='true' 
+            class='bg-[#072419!important] w-full max-w-full' 
+            [inline]='true' 
+            [maxDate]='today'
+        />
     </div>
 
     <button 

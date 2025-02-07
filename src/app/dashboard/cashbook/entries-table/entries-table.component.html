@@ -17,14 +17,13 @@
         <div class='flex items-center justify-between gap-2 flex-wrap'>
             <span class='font-bold'>Cashbook</span>
             <div class='flex items-center gap-4'>
-                <button title='REMOVE ALL FILTERS' class='text-sm font-[500] tracking-wide text-[#03d47c]'>
+                <button title='REMOVE ALL FILTERS' class='text-[13px] font-[500] tracking-wide text-[#03d47c]'>
                     <i class='fa-solid fa-download'></i>&nbsp;DOWNLOAD REPORT
                 </button>
                 <button 
                     (click)='removeAllFilters();'
                     *ngIf='filtersApplied()' 
-                    title='REMOVE ALL FILTERS' 
-                    class='text-sm tracking-wide text-red-400 hover:text-red-500'
+                    class='text-[13px] font-[500] tracking-wide text-red-400 hover:text-red-500'
                 >
                     <i class='fa-solid fa-filter-circle-xmark'></i>&nbsp;REMOVE FILTERS
                 </button>
@@ -35,10 +34,10 @@
         <tr>
             <th><p-tableHeaderCheckbox /></th>
             <th class='text-[12px]'>Date</th>
+            <th class='text-[12px]'>Expense Entry</th>
             <th class='text-[12px]'>Amount</th>
             <th class='text-[12px]'>Mode</th>
             <th class='text-[12px]'>Attachment</th>
-            <th class='text-[12px]'>Created At</th>
         </tr>
     </ng-template>
     <ng-template #body let-entry>
@@ -46,31 +45,55 @@
             <td>
                 <p-tableCheckbox (click)='$event.stopPropagation();' [value]='entry' />
             </td>
-            <td class='text-sm italic tracking-wider'>{{entry.date | date: 'dd-MMM-yyyy'}}</td>
+            <td class='text-sm italic tracking-wider'>
+                <ng-container [ngSwitch]='entry.entryType'>
+                    <ng-container *ngSwitchCase='"cashbook"'>{{entry.date | date: 'dd-MMM-yyyy'}}</ng-container>
+                    <ng-container *ngSwitchCase='"expense"'>{{entry.expenseEntry.date | date: 'dd-MMM-yyyy'}}</ng-container>
+                </ng-container>
+            </td>
+            <td class='text-sm text-[#bebebe] font-[500] tracking-wider'>{{(entry?.expenseEntry?.category | titlecase) || '-'}}</td>
             <td 
                 [ngClass]='{"text-[#f87171]": entry.type === "out", "text-[#03d47c]": entry.type === "in"}'
                 class='text-sm tracking-wide font-[500]'
             >
-                <i class='fa-solid fa-indian-rupee-sign'></i>&nbsp;{{entry.amount}}
+                <i class='fa-solid fa-indian-rupee-sign mr-[2px]'></i>
+                <ng-container [ngSwitch]='entry.entryType'>
+                    <ng-container *ngSwitchCase='"cashbook"'>{{entry.amount}}</ng-container>
+                    <ng-container *ngSwitchCase='"expense"'>{{getItemsTotal(entry.expenseEntry.items)}}</ng-container>
+                </ng-container>
             </td>
             <td class='text-sm tracking-wide'>
-                <p-tag 
-                    [severity]='entry.mode === "online" ? "success" : "warn"' 
-                    [value]='entry.mode | uppercase' 
-                />
+                <ng-container [ngSwitch]='entry.entryType'>
+                    <p-tag 
+                        *ngSwitchCase='"cashbook"'
+                        [severity]='entry.mode === "online" ? "success" : "warn"' 
+                        [value]='entry.mode | uppercase' 
+                    />
+                    <p-tag 
+                        *ngSwitchCase='"expense"'
+                        [severity]='entry.expenseEntry.mode === "online" ? "success" : "warn"' 
+                        [value]='entry.expenseEntry.mode | uppercase' 
+                    />
+                </ng-container>
             </td>
             <td 
                 [ngClass]='{"cursor-pointer": entry.attachment}'
                 class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'
             >
-                <ng-container *ngIf='entry.attachment;else noAttachment;'>
-                    <button (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation()'>
-                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
-                    </button>
+                <ng-container *ngIf='entry?.attachment || entry?.expenseEntry?.attachment;else noAttachment;'>
+                    <ng-container [ngSwitch]='entry.entryType'>
+                        <button *ngSwitchCase='"cashbook"' (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation()'>
+                            <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
+                        </button>
+
+                        <button *ngSwitchCase='"expense"' (click)='openAttachmentPreview(entry.expenseEntry.attachment);$event.stopPropagation()'>
+                            <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
+                        </button>
+
+                    </ng-container>
                 </ng-container>
                 <ng-template #noAttachment>-</ng-template>
             </td>
-            <td class='text-sm italic tracking-wider'>{{entry.createdAt | date: 'dd-MMM-yyyy hh:mm a'}}</td>
         </tr>
     </ng-template>
 </p-table>

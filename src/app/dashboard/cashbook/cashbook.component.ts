@@ -19,6 +19,7 @@ import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/up
 // MODELS IMPORT
 import { CashbookModel, FilteredEntriesModel } from '../../Models/cashbook.model';
 import { PaginationModel } from '../../Models/pagination.model';
+import { ExpenseDataService } from '../../Services/Expenses/expense-data.service';
 
 @Component({
   selector: 'app-cashbook',
@@ -32,7 +33,9 @@ export class CashbookComponent implements OnInit, OnDestroy {
   private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
   private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
   private _loadingServ: LoadingService = inject(LoadingService);
+  private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
+  readonly today = new Date();
 
   reFetchEntries$: Subscription | null = null;
   cashStats: Signal<{
@@ -135,10 +138,6 @@ export class CashbookComponent implements OnInit, OnDestroy {
     if (this.reFetchEntries$ instanceof Subscription) this.reFetchEntries$.unsubscribe();
   }
 
-  onDateRangeChange() {
-
-  }
-
   closeCustomDurationModal(): void {
     this.showCustomDurationModal = false;
   }
@@ -154,8 +153,17 @@ export class CashbookComponent implements OnInit, OnDestroy {
   }
 
   openViewEntryDrawer(entry: CashbookModel): void {
-    this.isViewEntryDrawerOpen = true;
-    this.viewEntryData = entry;
+    console.log(entry)
+    switch (entry.entryType) {
+      case 'cashbook':
+        this.isViewEntryDrawerOpen = true;
+        this.viewEntryData = entry;
+        break;
+      case 'expense':
+        this._expenseDataServ.showViewEntryDrawer.set(true);
+        this._expenseDataServ.viewEntryData.set(entry.expenseEntry!);
+        break;
+    }
   }
 
   closeViewEntryDrawer(): void {

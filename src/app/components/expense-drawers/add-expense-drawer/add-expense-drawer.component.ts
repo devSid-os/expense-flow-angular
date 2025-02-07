@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, Signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, effect, inject, Renderer2, signal, Signal, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -6,6 +6,7 @@ import { take } from 'rxjs';
 // SERVICES IMPORT
 import { UserAccountService } from '../../../Services/account.service';
 import { ExpenseApiService } from '../../../Services/Expenses/expense-api.service';
+import { SupaBaseService } from '../../../Services/supabase.service';
 import { ExpenseDataService } from '../../../Services/Expenses/expense-data.service';
 import { LoadingService } from '../../../Services/loading.service';
 import { MessageService } from 'primeng/api';
@@ -23,12 +24,13 @@ import { Toast } from 'primeng/toast';
 import { AddCategoryComponent } from '../add-category/add-category.component';
 import { EditCategoryListComponent } from '../edit-category-list/edit-category-list.component';
 import { EditCategoryFormComponent } from '../edit-category-form/edit-category-form.component';
+import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
 import { ExpenseCategoryModel, ExpenseItemModel } from '../../../Models/expenses.model';
 
 @Component({
   selector: 'app-add-expense-drawer',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, DrawerModule, DatePickerModule, InputTextModule, ButtonModule, RippleModule, Select, MessageModule, ScrollPanelModule, Toast, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, DrawerModule, DatePickerModule, InputTextModule, ButtonModule, RippleModule, Select, MessageModule, ScrollPanelModule, Toast, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent, FormImagePreviewComponent],
   templateUrl: './add-expense-drawer.component.html',
   styleUrl: './add-expense-drawer.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -42,6 +44,8 @@ export class AddExpenseDrawerComponent {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _messageServ: MessageService = inject(MessageService);
+  private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
+  private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
 
   loading: Signal<boolean> = computed(() => this._loadingServ.loading());
@@ -53,6 +57,12 @@ export class AddExpenseDrawerComponent {
   isEditCategory: boolean = false;
   editCategoryData: ExpenseCategoryModel | null = null;
   showEditCategoryDialog: boolean = false;
+  showCashbookFields: boolean = false;
+  modeOptions: { label: string, value: string }[] = [
+    { label: 'Online', value: 'online' },
+    { label: 'Cash', value: 'cash' },
+  ];
+  uploadedFileUrl: WritableSignal<string | null> = signal(null);
 
   entryForm: FormGroup;
 
@@ -64,7 +74,8 @@ export class AddExpenseDrawerComponent {
       description: [''],
       date: [this.today, [Validators.required]],
       category: ['', [Validators.required]],
-      items: [[], [Validators.required, this.nonEmptyArrayValidator()]]
+      items: [[], [Validators.required, this.nonEmptyArrayValidator()]],
+      mode: ['', [Validators.required]]
     });
 
     effect(() => {
@@ -77,6 +88,50 @@ export class AddExpenseDrawerComponent {
         items: cart
       });
     });
+  }
+
+  onUploadFileClick(): void {
+    const fileInputEl = this._renderer2.createElement('input');
+    this._renderer2.setAttribute(fileInputEl, 'type', 'file');
+
+    fileInputEl.click();
+
+    fileInputEl.addEventListener('change', (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      if (target && target.files && target.files.length > 0) {
+        const file = target.files[0];
+        const allowedFileSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > allowedFileSize) {
+          this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'File size cannot be greater than 5MB' });
+          return;
+        }
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'Only images are allowed.' });
+          return;
+        }
+        this.uploadedFileUrl.set(null);
+        this._supaBaseServ.uploadImage(file, file.name, 'cashbook')
+          .then((response: any) => {
+            this.uploadedFileUrl.set(response.url);
+          })
+          .catch((error: HttpErrorResponse) => {
+            this.uploadedFileUrl.set(null);
+            console.log(error)
+          });
+      }
+    });
+  }
+
+  removeMediaUrl(): void {
+    // this._supaBaseServ.deleteFileFromUrl(this.uploadedFileUrl() as string, 'cashbook')
+    //   .then((response:any) => {
+    //     // console.log(response)
+    //   })
+    //   .catch((error:any) => {
+    //     console.log(error)
+    //   });
+    this.uploadedFileUrl.set(null);
   }
 
   nonEmptyArrayValidator(): ValidatorFn {
@@ -131,6 +186,10 @@ export class AddExpenseDrawerComponent {
         this._messageServ.add({ summary: 'Error', detail: 'Atleast Select 1 Expense Item to create an entry', severity: 'error' });
         return;
       }
+      if (this.entryForm.get('mode')?.hasError('required')) {
+        this._messageServ.add({ summary: 'Error', detail: 'Mode can only be of type online or cash', severity: 'error' });
+        return;
+      }
       this._messageServ.add({ summary: 'Error', detail: 'An error while adding expense entry!', severity: 'error' });
       return;
     }
@@ -139,11 +198,14 @@ export class AddExpenseDrawerComponent {
     const entryCategory = this.entryForm.get('category')?.value;
     const entryItems = this.entryForm.get('items')?.value;
     const entryDescription = this.entryForm.get('description')?.value;
+    const mode = this.entryForm.get('mode')?.value;
     this._expenseApiServ.createExpenseEntry({
       date: entryDate,
       category: entryCategory,
       items: entryItems,
-      description: entryDescription
+      description: entryDescription,
+      mode,
+      attachment: this.uploadedFileUrl()
     }, this._userId)
       .pipe(take(1))
       .subscribe({
@@ -153,6 +215,7 @@ export class AddExpenseDrawerComponent {
             this.entryForm.patchValue({ date: this.today });
             this._messageServ.add({ severity: 'success', summary: 'Sucess', detail: 'Expense entry added successfully' });
             this._loadingServ.loading.set(false);
+            this.uploadedFileUrl.set(null);
             this._expenseApiServ.fetchExpenseEntries.next(true);
           }
         },

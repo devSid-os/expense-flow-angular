@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-* {
-    font-family: "Noto Sans", serif;
-    font-optical-sizing: auto;
-    font-weight: normal;
-    font-style: normal;
-    font-variation-settings:
-        "wdth" 100;
-}
+// * {
+//     font-family: "Noto Sans", serif;
+//     font-optical-sizing: auto;
+//     font-weight: normal;
+//     font-style: normal;
+//     font-variation-settings:
+//         "wdth" 100;
+// }
 
 :host ::ng-deep {
     .p-scrollpanel {
@@ -67,7 +67,8 @@
     }
 }
 
-.expenseCategoryDiv .p-select {
+.expenseCategoryDiv .p-select,
+.showCashbookFieldsDiv .p-select {
     background-color: #fff !important;
     border: 1px solid #bebebe !important;
 
@@ -76,7 +77,19 @@
     }
 }
 
-.expenseCategoryDiv .p-select-overlay {
+.showCashbookFieldsDiv .p-select {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    border: 1px solid #e9e9e9 !important;
+
+    span {
+        color: #000 !important;
+    }
+}
+
+.expenseCategoryDiv .p-select-overlay,
+.showCashbookFieldsDiv .p-select-overlay {
     background: #fff !important;
     border: 1px solid #bebebe !important;
     // border-radius: 0 !important;
@@ -134,7 +147,7 @@
 }
 
 .total-amt-inp-disabled .p-inputtext {
-    background: #e1dede;
+    background: #e1dede!important;
 }
 
 @media screen and (min-width: 768px) {

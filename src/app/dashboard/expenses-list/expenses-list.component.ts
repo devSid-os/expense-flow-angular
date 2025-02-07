@@ -8,7 +8,8 @@ import { UserAccountService } from '../../Services/account.service';
 import { ExpenseApiService } from '../../Services/Expenses/expense-api.service';
 import { ExpenseDataService } from '../../Services/Expenses/expense-data.service';
 import { LoadingService } from '../../Services/loading.service';
-import { MessageService, SortEvent } from 'primeng/api';
+import { MessageService } from 'primeng/api';
+import { CashbookApiService } from '../../Services/Cashbook/cashbook-api.service';
 // NG UI COMPONENTS PRIME IMPORTS
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
@@ -22,7 +23,6 @@ import { DividerModule } from 'primeng/divider';
 import { DatePicker } from 'primeng/datepicker';
 // APP COMPONENTS IMPORT
 import { ExpenseListTableComponent } from './expense-list-table/expense-list-table.component';
-import { EditExpenseDrawerComponent } from '../../components/expense-drawers/edit-expense-drawer/edit-expense-drawer.component';
 import { AddExpenseDrawerComponent } from '../../components/expense-drawers/add-expense-drawer/add-expense-drawer.component';
 import { SelectExpenseItemsDrawerComponent } from '../../components/expense-drawers/select-expense-items-drawer/select-expense-items-drawer.component';
 // MODELS IMPORT
@@ -32,7 +32,7 @@ import { PaginationModel } from '../../Models/pagination.model';
 
 @Component({
   selector: 'app-expenses-list',
-  imports: [CommonModule, FormsModule, SelectModule, ButtonModule, DividerModule, InputTextModule, DatePicker, Dialog, IconFieldModule, InputIconModule, Toast, Chip, EditExpenseDrawerComponent, ExpenseListTableComponent, AddExpenseDrawerComponent, SelectExpenseItemsDrawerComponent],
+  imports: [CommonModule, FormsModule, SelectModule, ButtonModule, DividerModule, InputTextModule, DatePicker, Dialog, IconFieldModule, InputIconModule, Toast, Chip, ExpenseListTableComponent, AddExpenseDrawerComponent, SelectExpenseItemsDrawerComponent],
   templateUrl: './expenses-list.component.html',
   styleUrl: './expenses-list.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -43,8 +43,9 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _loadingServ: LoadingService = inject(LoadingService);
-  private _userId: string = this._userAccountServ.userPayload()._id;
   private _messageService: MessageService = inject(MessageService);
+  private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
+  private _userId: string = this._userAccountServ.userPayload()._id;
   readonly today: Date = new Date();
 
   allEntries: Signal<{
@@ -70,21 +71,18 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     yesterday: false
   }
 
-  filterModals = {
+  filterModals: { category: boolean, items: boolean, fromDate: boolean, endDate: boolean } = {
     category: false,
     items: false,
     fromDate: false,
     endDate: false
   }
-  
+
   filteredEntries: Signal<{
     data: Signal<ExpenseEntryModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._expenseDataServ.filteredEntries());
   fetchEntries$: Subscription | null = null;
-
-  editExpenseDrawerOpen: Signal<boolean> = computed(() => this._expenseDataServ.showEditExpenseDrawer());
-  editExpenseDrawerData: ExpenseEntryModel | null = null;
 
   expenseFilterApplied: Signal<boolean> = computed(() => this._expenseDataServ.expenseFilterApplied());
 
@@ -191,17 +189,6 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
     this.filters.items = this.filters.items.filter((id) => id !== itemId);
   }
 
-  showEditExpenseDrawer(data: ExpenseEntryModel): void {
-    this._expenseDataServ.showEditExpenseDrawer.set(true);
-    this._expenseDataServ.showAddExpenseDrawer.set(false);
-    this.editExpenseDrawerData = { ...data };
-  }
-
-  removeAllFilters(): void {
-    this._expenseDataServ.resetFilters();
-    this._expenseDataServ.expenseFilterApplied.set(false);
-  }
-
   applyCateogryFilter(): void {
     this.getFilteredEntries(this._userId, this.filteredEntries().pagination().currentPage, this.filteredEntries().pagination().pageSize, {
       categories: this.filters.categories,
@@ -301,7 +288,10 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (response: any) => {
-          this._loadingServ.loading.set(false);
+          if (response.status === 200) {
+            this._cashbookApiServ.reFetchEntries.next(true);
+            this._loadingServ.loading.set(false);
+          }
         },
         error: (error: HttpErrorResponse) => {
           if (error.status === 400) {

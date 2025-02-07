@@ -84,17 +84,6 @@
                     Today
                 </button>
             </div>
-            <div>
-                <button 
-                    (click)='removeAllFilters()'
-                    *ngIf='expenseFilterApplied()'
-                    type='button'
-                    class='flex items-center h-full rounded-full p-1 px-4 text-sm text-[#f87171] bg-[#072419] hover:text-[#03d47c]'
-                >
-                    <i class='fa-regular fa-circle-xmark text-[13px]'></i>&nbsp;
-                    Remove Filters
-                </button>
-            </div>
         </div>
     </div>
 
@@ -103,7 +92,6 @@
             *ngIf='!expenseFilterApplied();else filteredExpenseTable;'
             [entries]='allEntries().data()' 
             (onPageChange)='loadExpenses($event)' 
-            (onEditExpenseClick)='showEditExpenseDrawer($event)'
             [entriesPagination]='allEntries().pagination()'
         >
         </app-expense-list-table>
@@ -111,7 +99,6 @@
             <app-expense-list-table 
                 [entries]='filteredEntries().data()'
                 (onPageChange)='loadExpenses($event, true)' 
-                (onEditExpenseClick)='showEditExpenseDrawer($event)'
                 [entriesPagination]='filteredEntries().pagination()'
             >
             </app-expense-list-table>
@@ -250,12 +237,6 @@
         <i class='fa-solid fa-filter text-sm'></i>&nbsp;Filter
     </button>
 </p-dialog>
-
-<app-edit-expense-drawer 
-    *ngIf='editExpenseDrawerOpen() && editExpenseDrawerData'
-    [expenseEntry]='editExpenseDrawerData'
->
-</app-edit-expense-drawer>
 
 <p-toast [position]='"bottom-center"' />
 

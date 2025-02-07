@@ -22,13 +22,13 @@ import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { Toast } from 'primeng/toast';
-// IMAGE VIEWER IMPORTS
-import { Lightbox, LightboxConfig, LightboxModule } from 'ngx-lightbox';
+// APP COMPONENT IMPORTS
+import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 
 @Component({
   selector: 'app-cash-entry-drawer',
   standalone: true,
-  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast, LightboxModule],
+  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast, FormImagePreviewComponent],
   templateUrl: './cash-entry-drawer.component.html',
   styleUrl: './cash-entry-drawer.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -42,8 +42,6 @@ export class CashEntryDrawerComponent {
   private _messageServ: MessageService = inject(MessageService);
   private _loadingServ: LoadingService = inject(LoadingService);
   private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
-  private _lightbox: Lightbox = inject(Lightbox);
-  private _lightboxConfig: LightboxConfig = inject(LightboxConfig);
   private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
   readonly today = new Date();
@@ -59,14 +57,6 @@ export class CashEntryDrawerComponent {
   entryForm: FormGroup;
 
   constructor() {
-    this._lightboxConfig.resizeDuration = 1;
-    this._lightboxConfig.fadeDuration = 0;
-    this._lightboxConfig.enableTransition = false;
-    this._lightboxConfig.showDownloadButton = true;
-    this._lightboxConfig.disableScrolling = true;
-    this._lightboxConfig.centerVertically = true;
-    this._lightboxConfig.wrapAround = true;
-
     this.entryForm = this._formBuilder.group({
       date: [this.today, [Validators.required]],
       mode: ['online', [Validators.required]],
@@ -118,10 +108,6 @@ export class CashEntryDrawerComponent {
           });
       }
     });
-  }
-
-  openUploadedFilePreview(mediaUrl: string): void {
-    this._lightbox.open([{ src: mediaUrl, caption: '', thumb: '' }], 0);
   }
 
   createCashbookEntry(): void {

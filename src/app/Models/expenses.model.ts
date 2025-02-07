@@ -14,8 +14,11 @@ export interface ExpenseEntryModel {
     category: string,
     date: Date,
     description?: string,
+    attachment?: string,
     _id: string,
-    createdAt: Date
+    createdAt: Date,
+    updatedAt: Date,
+    mode: 'online' | 'cash'
 }
 
 export interface UpdateExpenseEntryModel {
@@ -23,14 +26,18 @@ export interface UpdateExpenseEntryModel {
     date: Date,
     category: string,
     items: { item: { name: string, price: number, _id: string }, qty: number }[],
-    description?: string
+    description?: string,
+    mode: 'online' | 'cash',
+    attachment: string | null
 }
 
 export interface CreateExpenseEntryModel {
     date: Date,
     category: string,
     items: { item: { name: string, price: number, _id: string }, qty: number }[],
-    description?: string
+    description?: string,
+    mode: 'online' | 'cash',
+    attachment: string | null
 }
 
 export interface FetchFilteredEntriesModel {

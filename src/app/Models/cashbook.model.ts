@@ -1,3 +1,5 @@
+import { ExpenseEntryModel, ExpenseItemModel } from "./expenses.model"
+
 export interface CreateCashBookEntryModel {
     date: Date,
     type: 'in' | 'out',
@@ -18,16 +20,17 @@ export interface UpdateCashBookEntryModel {
 }
 
 export interface CashbookModel {
-    date: Date,
+    date?: Date,
     type: 'in' | 'out',
-    mode: 'cash' | 'online',
-    amount: number,
+    mode?: 'cash' | 'online',
+    amount?: number,
     remark?: string,
     attachment?: string,
     _id: string,
-    user: string,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    expenseEntry?: ExpenseEntryModel,
+    entryType: 'cashbook' | 'expense' | 'recipient'
 }
 
 export interface FilteredEntriesModel {

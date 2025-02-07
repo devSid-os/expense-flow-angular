@@ -21,19 +21,33 @@
                 class='p-3 px-4 flex flex-col gap-4 overflow-y-auto'
             >
                 <!-- DATE DIV -->
-                <div class='expenseDateInput flex flex-col gap-1'>
-                    <label class='text-black font-[500]'>Expense Date</label>
-                    <p-datepicker 
-                        formControlName='date' 
-                        [fluid]='true' 
-                        name='expenseDate' 
-                        [maxDate]='today'
-                        [iconDisplay]='"input"' 
-                        [showIcon]='true' 
-                        inputId='icondisplay' 
-                    />
+                <div class='text-black flex justify-between items-stretch gap-2'>
+                    <div class='flex-1 expenseDateInput flex flex-col gap-1'>
+                        <label class='font-[500]'>Expense Date</label>
+                        <p-datepicker 
+                            formControlName='date' 
+                            name='expenseDate' 
+                            [maxDate]='today'
+                            [iconDisplay]='"input"' 
+                            [showIcon]='true' 
+                            inputId='icondisplay' 
+                        />
+                    </div>
+                    <div class='flex-1 showCashbookFieldsDiv flex flex-col gap-1'>
+                        <label class='font-[500]'>Mode</label>
+                        <p-select 
+                            formControlName='mode'
+                            name='entryMode' 
+                            [options]='modeOptions'
+                            placeholder='Select Mode' 
+                            size='small' 
+                            [editable]='false'
+                            optionLabel='label' 
+                            optionValue='value' 
+                            class='w-full'
+                        />
+                    </div>
                 </div>
-
 
                 <!-- SELECT CATEGORY DIV -->
                 <div>
@@ -140,6 +154,21 @@
                 <div class='flex flex-col gap-1' *ngIf='cartItemsArray().length'>
                     <p class='text-black font-[500]'>Total Amount</p>
                     <input disabled [value]='cartTotal()' class='total-amt-inp-disabled' type='number' pInputText pSize='small' />
+                </div>
+
+                <!-- ATTACH MEDIA DIV -->
+                <div class='flex flex-col gap-2'>
+                    <ng-container *ngIf='uploadedFileUrl()'>
+                        <app-form-image-preview [fileUrl]='uploadedFileUrl()' (removeFileUrl)='removeMediaUrl()'></app-form-image-preview>
+                    </ng-container>
+                    <button 
+                        (click)='onUploadFileClick()'
+                        type='button' 
+                        class='text-sm px-4 bg-[#4863d4] text-white font-[500] w-max rounded-[3px] py-1' 
+                        style='border: 1px solid #4863d4;'
+                    >
+                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attach Bill / Media
+                    </button>
                 </div>
 
                 <!-- EXPENSE ENTRY DESCRIPTION DIV -->

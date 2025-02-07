@@ -1,0 +1,19 @@
+<div 
+    class='relative w-[75px] h-[75px] cursor-pointer'
+>
+    <div 
+        (click)='openUploadedFilePreview(fileUrl || "")'
+        class='relative overflow-hidden w-[75px] h-[75px] rounded-md' 
+        style='border: 1px solid gray;'
+    >
+        <img [src]='fileUrl' class='w-full h-full object-cover' />
+        <div class='transition-opacity ease-in-out duration-150 absolute top-0 left-0 w-full h-full opacity-0 hover:opacity-70'
+            style='background: rgb(0,0,0);'>
+        </div>
+    </div>
+    <button (click)='removeFileUrl.emit(true);'
+        class='absolute top-[-6px] right-[-6px] w-[15px] h-[15px] flex items-center justify-center rounded-full bg-[red] text-[#fff] hover:bg-red-600'
+        type='button'>
+        &times;
+    </button>
+</div>

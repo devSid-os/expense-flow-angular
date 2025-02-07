@@ -24,6 +24,7 @@ import { DrawerModule } from 'primeng/drawer';
 // APP COMPONENTS IMPORT
 import { ProfileAvatarComponent } from '../components/profile-avatar/profile-avatar.component';
 import { ProfilePopoverComponent } from '../components/profile-popover/profile-popover.component';
+import { ViewEntryDrawerComponent } from '../components/expense-drawers/view-entry-drawer/view-entry-drawer.component';
 // MODELS IMPORT
 import { UserModel } from '../Models/user.model';
 import { CashbookApiService } from '../Services/Cashbook/cashbook-api.service';
@@ -32,7 +33,7 @@ import { CashbookDataService } from '../Services/Cashbook/cashbook-data.service'
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, AvatarModule, Menu, ButtonModule, OverlayBadgeModule, BadgeModule, PopoverModule, DividerModule, DrawerModule, Ripple, ProfilePopoverComponent, ProfileAvatarComponent],
+  imports: [CommonModule, RouterOutlet, AvatarModule, Menu, ButtonModule, OverlayBadgeModule, BadgeModule, PopoverModule, DividerModule, DrawerModule, Ripple, ProfilePopoverComponent, ProfileAvatarComponent, ViewEntryDrawerComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   encapsulation: ViewEncapsulation.None
@@ -64,10 +65,34 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mobileMenuItemDrawerOpen: boolean = false;
   selectedMenuItem: WritableSignal<{ name: string, icon: string }> = signal({ name: 'Expenses', icon: 'fa-solid fa-receipt' });
   menuitems: MenuItem[] = [
-    { label: 'Expenses', icon: 'fa-solid fa-receipt', styleClass: '', command: () => this.onMenuItemClick('Expenses', 'fa-solid fa-receipt', 'expenses'), link: 'expenses' },
-    { label: 'Cashbook', icon: 'fa-solid fa-wallet', styleClass: '', command: () => this.onMenuItemClick('Cashbook', 'fa-solid fa-wallet', 'cashbook'), link: 'cashbook' },
-    { label: 'Recipients', icon: 'fa-solid fa-address-book', styleClass: '', command: () => this.onMenuItemClick('Recipients', 'fa-solid fa-address-book', 'recipients'), link: 'recipients' },
-    { label: 'Reports', icon: 'fa-solid fa-square-poll-vertical', styleClass: '', command: () => this.onMenuItemClick('Reports', 'fa-solid fa-square-poll-vertical', 'reports'), link: 'reports' }
+    { 
+        label: 'Expenses', 
+        icon: 'fa-solid fa-receipt', 
+        styleClass: '', 
+        command: () => this.onMenuItemClick('Expenses', 'fa-solid fa-receipt', 'expenses'), 
+        link: 'expenses' 
+    },
+    { 
+      label: 'Recipients', 
+      icon: 'fa-solid fa-address-book', 
+      styleClass: '', 
+      command: () => this.onMenuItemClick('Recipients', 'fa-solid fa-address-book', 'recipients'), 
+      link: 'recipients' 
+    },
+    { 
+      label: 'Cashbook', 
+      icon: 'fa-solid fa-wallet', 
+      styleClass: '', 
+      command: () => this.onMenuItemClick('Cashbook', 'fa-solid fa-wallet', 'cashbook'), 
+      link: 'cashbook' 
+    },
+    { 
+      label: 'Reports', 
+      icon: 'fa-solid fa-square-poll-vertical', 
+      styleClass: '', 
+      command: () => this.onMenuItemClick('Reports', 'fa-solid fa-square-poll-vertical', 'reports'), 
+      link: 'reports'
+    }
   ];
 
   constructor() {
@@ -116,6 +141,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         break;
       case 'expenses':
         this.selectedMenuItem.set({ name: 'Expenses', icon: 'fa-solid fa-receipt' });
+        break;
+      case 'reports':
+        this.selectedMenuItem.set({ name: 'Reports', icon: 'fa-solid fa-square-poll-vertical' });
         break;
       default:
         this._router.navigate(['dashboard/expenses']);

@@ -22,14 +22,14 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SelectModule } from 'primeng/select';
 import { TextareaModule } from 'primeng/textarea';
 import { Toast } from 'primeng/toast';
+// APP COMPONENT IMPORTS
+import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
 import { CashbookModel } from '../../../Models/cashbook.model';
-// IMAGE VIEWER IMPORT
-import { Lightbox, LightboxConfig, LightboxModule } from 'ngx-lightbox';
 
 @Component({
   selector: 'app-update-entry-drawer',
-  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast, LightboxModule],
+  imports: [CommonModule, DrawerModule, ScrollPanelModule, DatePickerModule, ButtonModule, SelectModule, ReactiveFormsModule, Chip, InputGroupModule, InputGroupAddonModule, InputTextModule, TextareaModule, Toast, FormImagePreviewComponent],
   templateUrl: './update-entry-drawer.component.html',
   styleUrl: './update-entry-drawer.component.scss',
   providers: [MessageService]
@@ -38,8 +38,6 @@ export class UpdateEntryDrawerComponent implements OnInit {
   private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
-  private _lightbox: Lightbox = inject(Lightbox);
-  private _lightboxConfig: LightboxConfig = inject(LightboxConfig);
   private _renderer2: Renderer2 = inject(Renderer2);
   private _loadingServ: LoadingService = inject(LoadingService);
   private _messageServ: MessageService = inject(MessageService);
@@ -71,26 +69,15 @@ export class UpdateEntryDrawerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._lightboxConfig.resizeDuration = 1;
-    this._lightboxConfig.fadeDuration = 0;
-    this._lightboxConfig.enableTransition = false;
-    this._lightboxConfig.showDownloadButton = true;
-    this._lightboxConfig.disableScrolling = true;
-    this._lightboxConfig.centerVertically = true;
-    this._lightboxConfig.wrapAround = true;
     this.entryForm.patchValue({
       entryId: this.entryData._id,
       type: this.entryData.type,
       mode: this.entryData.mode,
-      date: new Date(this.entryData.date),
+      date: new Date(this.entryData.date!),
       amount: this.entryData.amount,
       remark: this.entryData.remark || ''
     });
     this.uploadedFileUrl.set(this.entryData.attachment || null);
-  }
-
-  openUploadedFilePreview(mediaUrl: string): void {
-    this._lightbox.open([{ src: mediaUrl, caption: '', thumb: '' }], 0);
   }
 
   removeMediaUrl(): void {

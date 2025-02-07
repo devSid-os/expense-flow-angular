@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject, Input, OnInit, Signal, ViewEncapsulation } from '@angular/core';
+import { Component, computed, effect, inject, Input, OnInit, Renderer2, signal, Signal, ViewEncapsulation, WritableSignal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 import { take } from 'rxjs';
@@ -7,6 +7,7 @@ import { take } from 'rxjs';
 import { UserAccountService } from '../../../Services/account.service';
 import { ExpenseApiService } from '../../../Services/Expenses/expense-api.service';
 import { ExpenseDataService } from '../../../Services/Expenses/expense-data.service';
+import { SupaBaseService } from '../../../Services/supabase.service';
 import { LoadingService } from '../../../Services/loading.service';
 // NG UI COMPONENTS PRIME IMPORTS
 import { MessageService } from 'primeng/api';
@@ -22,12 +23,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AddCategoryComponent } from '../add-category/add-category.component';
 import { EditCategoryListComponent } from '../edit-category-list/edit-category-list.component';
 import { EditCategoryFormComponent } from '../edit-category-form/edit-category-form.component';
+import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
 import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../../../Models/expenses.model';
 
 @Component({
   selector: 'app-edit-expense-drawer',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DrawerModule, ScrollPanelModule, ButtonModule, DatePickerModule, Select, MessageModule, Toast, InputTextModule, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, DrawerModule, ScrollPanelModule, ButtonModule, DatePickerModule, Select, MessageModule, Toast, InputTextModule, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent, FormImagePreviewComponent],
   templateUrl: './edit-expense-drawer.component.html',
   styleUrl: './edit-expense-drawer.component.scss',
   providers: [MessageService],
@@ -42,6 +44,8 @@ export class EditExpenseDrawerComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _messageServ: MessageService = inject(MessageService);
+  private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
+  private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
 
   loading: Signal<boolean> = computed(() => this._loadingServ.loading());
@@ -53,8 +57,13 @@ export class EditExpenseDrawerComponent implements OnInit {
   isEditCategory: boolean = false;
   editCategoryData: ExpenseCategoryModel | null = null;
   showEditCategoryDialog: boolean = false;
+  modeOptions: { label: string, value: string }[] = [
+    { label: 'Online', value: 'online' },
+    { label: 'Cash', value: 'cash' },
+  ];
 
   editEntryForm: FormGroup;
+  uploadedFileUrl: WritableSignal<string | null> = signal(null);
 
   isDrawerOpen: Signal<boolean> = computed(() => this._expenseDataServ.showEditExpenseDrawer());
   today: Date = new Date();
@@ -65,6 +74,7 @@ export class EditExpenseDrawerComponent implements OnInit {
       date: [this.today, [Validators.required]],
       category: ['', [Validators.required]],
       items: [[], [Validators.required, this.nonEmptyArrayValidator()]],
+      mode: ['', [Validators.required]],
       id: ['', [Validators.required]]
     });
 
@@ -86,13 +96,15 @@ export class EditExpenseDrawerComponent implements OnInit {
       return null;
     });
     this._expenseDataServ.editItemsCart.set(cart);
+    this.uploadedFileUrl.set(this.expenseEntry.attachment || null);
     const expenseDate = new Date(this.expenseEntry.date);
     this.editEntryForm.patchValue({
       date: expenseDate,
       category: this.expenseEntry.category,
       items: this.expenseEntry.items,
       description: this.expenseEntry.description || '',
-      id: this.expenseEntry._id
+      id: this.expenseEntry._id,
+      mode: this.expenseEntry.mode
     });
   }
 
@@ -102,6 +114,50 @@ export class EditExpenseDrawerComponent implements OnInit {
         ? null
         : { emptyArray: true };
     };
+  }
+
+  removeMediaUrl(): void {
+    // this._supaBaseServ.deleteFileFromUrl(this.uploadedFileUrl() as string, 'cashbook')
+    //   .then((response:any) => {
+    //     // console.log(response)
+    //   })
+    //   .catch((error:any) => {
+    //     console.log(error)
+    //   });
+    this.uploadedFileUrl.set(null);
+  }
+
+  onUploadFileClick(): void {
+    const fileInputEl = this._renderer2.createElement('input');
+    this._renderer2.setAttribute(fileInputEl, 'type', 'file');
+
+    fileInputEl.click();
+
+    fileInputEl.addEventListener('change', (event: Event) => {
+      const target = event.target as HTMLInputElement;
+      if (target && target.files && target.files.length > 0) {
+        const file = target.files[0];
+        const allowedFileSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > allowedFileSize) {
+          this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'File size cannot be greater than 5MB' });
+          return;
+        }
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+        if (!allowedTypes.includes(file.type)) {
+          this._messageServ.add({ severity: 'error', summary: 'Error', detail: 'Only images are allowed.' });
+          return;
+        }
+        this.uploadedFileUrl.set(null);
+        this._supaBaseServ.uploadImage(file, file.name, 'cashbook')
+          .then((response: any) => {
+            this.uploadedFileUrl.set(response.url);
+          })
+          .catch((error: HttpErrorResponse) => {
+            this.uploadedFileUrl.set(null);
+            console.log(error)
+          });
+      }
+    });
   }
 
   closeDrawer(): void {
@@ -153,6 +209,10 @@ export class EditExpenseDrawerComponent implements OnInit {
         this._messageServ.add({ summary: 'Error', detail: 'Atleast Select 1 Expense Item to create an entry', severity: 'error' });
         return;
       }
+      if (this.editEntryForm.get('mode')?.hasError('required')) {
+        this._messageServ.add({ summary: 'Error', detail: 'Mode can only be of type online or cash', severity: 'error' });
+        return;
+      }
       this._messageServ.add({ summary: 'Error', detail: 'An error while adding expense entry!', severity: 'error' });
       return;
     }
@@ -162,12 +222,15 @@ export class EditExpenseDrawerComponent implements OnInit {
     const entryItems = this.editEntryForm.get('items')?.value;
     const entryDescription = this.editEntryForm.get('description')?.value;
     const entryId = this.editEntryForm.get('id')?.value;
+    const entryMode = this.editEntryForm.get('mode')?.value;
     this._expenseApiServ.updateUserExpenseEntry({
       entryId,
       description: entryDescription,
       date: entryDate,
       category: entryCategory,
-      items: entryItems
+      items: entryItems,
+      mode: entryMode,
+      attachment: this.uploadedFileUrl()
     }, this._userId)
       .pipe(
         take(1)

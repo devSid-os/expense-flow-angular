@@ -11,6 +11,7 @@ import { PaginationModel } from '../../../Models/pagination.model';
 // IMAGE VIEWER IMPORT
 import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 import { CashbookDataService } from '../../../Services/Cashbook/cashbook-data.service';
+import { ExpenseItemModel } from '../../../Models/expenses.model';
 
 @Component({
   selector: 'app-entries-table',
@@ -42,6 +43,10 @@ export class EntriesTableComponent {
 
   removeAllFilters(): void {
     this._cashbookDataServ.resetAllFilters();
+  }
+
+  getItemsTotal(items: { item: ExpenseItemModel, qty: number }[]): number {
+    return items.reduce((acc, item) => acc + (item.item.price * item.qty), 0);
   }
 
   getTotalPage(): number {
