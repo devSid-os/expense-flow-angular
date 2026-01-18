@@ -14,13 +14,13 @@ import { UserAccountService } from '../Services/account.service';
 import { CookieService } from 'ngx-cookie-service'
 import { LoadingService } from '../Services/loading.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-sign-in',
   imports: [CommonModule, RouterModule, ButtonModule, ReactiveFormsModule, FormsModule, InputTextModule, IconField, InputIcon, DividerModule, Message],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
-  encapsulation: ViewEncapsulation.None,
   standalone: true
 })
 export class SignInComponent implements AfterViewInit {
@@ -68,6 +68,7 @@ export class SignInComponent implements AfterViewInit {
         const payload = this._decodeToken(response.credential);
         this._loadingServ.loading.set(true);
         this._userAccountServ.googleSignIn(payload)
+        .pipe(take(1))
           .subscribe({
             next: (response: any) => {
               this._loadingServ.loading.set(false);
@@ -96,6 +97,7 @@ export class SignInComponent implements AfterViewInit {
   signIn(): void {
     this._loadingServ.loading.set(true);
     this._userAccountServ.signIn(this.signInForm.get('email')?.value, this.signInForm.get('password')?.value)
+    .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {

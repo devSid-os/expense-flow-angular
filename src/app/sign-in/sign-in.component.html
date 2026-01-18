@@ -1,53 +1,74 @@
-<div class='min-w-screen max-w-screen min-h-[100vh] h-[100vh] w-full'>
-    <div class='w-full min-h-[100%] h-[100%] flex justify-center items-center'>
+<div class="min-h-screen w-full flex justify-center items-center bg-[#1E2C2C] p-4 font-sans relative overflow-hidden">
 
-        <div class='bg-[#313131] shadow-lg rounded-md p-3 py-4 w-[88%] sm:w-[85%] md:w-[50%] lg:w-[40%]'>
-            <div class='w-full h-full flex flex-col items-center gap-3'>
-                <!-- LOGO IMAGE -->
-                <img class='select-none w-[25%] mx-auto' src='images/expense_flow_logo.png' />
-                <h1 class='select-none text-[#289f9b] text-2xl font-bold lg:text-3xl'>Expense Flow</h1>
-                <div class='flex flex-col items-center'>
-                    <h3 class='font-[600] text-lg sm:text-xl'>Sign In</h3>
-                    <p class='text-[gray] text-sm sm:text-base'>
-                        Not Registered Yet? <a routerLink='/signup'
-                            class='font-[500] text-[#289f9b] hover:opacity-80'>Sign Up</a>
-                    </p>
+    <div class="absolute inset-0 bg-gradient-to-br from-[#1E2C2C] to-[#0F1A1A] opacity-80"></div>
+    <div
+        class="absolute w-64 h-64 bg-[#34D399] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob top-0 left-0">
+    </div>
+    <div
+        class="absolute w-64 h-64 bg-[#10B981] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000 bottom-0 right-0">
+    </div>
+
+
+    <div class="relative bg-[#2D3A3A] shadow-2xl rounded-xl p-8 w-full max-w-md lg:max-w-lg border border-[#3C4A4A]">
+        <div class="w-full flex flex-col items-center gap-6 text-center">
+
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-14 h-14 bg-[#34D399] rounded-full flex items-center justify-center shadow-lg">
+                    <i class="pi pi-wallet text-white text-5xl"></i>
+                </div>
+                <h1 class="select-none text-[#E0E0E0] text-3xl font-bold tracking-tight">ExpenseFlow</h1>
+                <p class="text-[#34D399] text-sm font-medium -mt-2">Smart expense management</p>
+            </div>
+
+            <div class="w-full">
+                <h3 class="font-semibold text-2xl text-white">Sign In</h3>
+                <p class="text-gray-400 text-sm mt-1">
+                    Not Registered Yet? <a routerLink='/signup'
+                        class='font-semibold text-[#34D399] hover:text-opacity-80 transition-colors cursor-pointer'>Sign
+                        Up</a>
+                </p>
+            </div>
+
+            <form #loginForm (ngSubmit)='signIn();' [formGroup]='signInForm' class='w-full flex flex-col gap-4 mt-4'>
+
+                <div>
+                    <label class='select-none text-sm font-medium text-gray-300 sr-only' for='email'>Email</label>
+                    <p-iconfield class="mt-1">
+                        <p-inputicon class='pi pi-envelope text-gray-400' />
+                        <input autocomplete='off' class='font-normal' type='text' pInputText
+                            placeholder='johnDoe25@example.com' formControlName='email' name='email' id='email' />
+                    </p-iconfield>
                 </div>
 
-                <form #loginForm (ngSubmit)='signIn();' [formGroup]='signInForm'
-                    class='w-full flex flex-col gap-3 mt-4'>
-                    <div>
-                        <label class='select-none' for='email'>Email</label>
-                        <p-iconfield>
-                            <p-inputicon class='pi pi-user' />
-                            <input autocomplete='off' class='font-normal' type='text' pInputText placeholder='johnDoe25@example.com'
-                                formControlName='email' name='email' id='email' />
-                        </p-iconfield>
-                    </div>
+                <div>
+                    <label class='select-none text-sm font-medium text-gray-300 sr-only' for='password'>Password</label>
+                    <p-iconfield class="mt-1">
+                        <p-inputicon class='pi pi-lock text-gray-400' />
+                        <input autocomplete='off' class='font-normal' type='password' pInputText placeholder='••••••••'
+                            formControlName='password' name='password' id='password' />
+                    </p-iconfield>
+                </div>
 
-                    <div>
-                        <label class='select-none' for='password'>Password</label>
-                        <p-iconfield>
-                            <p-inputicon class='pi pi-key' />
-                            <input autocomplete='off' class='font-normal' type='password' pInputText placeholder='••••••••'
-                                formControlName='password' name='password' id='password' />
-                        </p-iconfield>
-                    </div>
-                    <p-message severity='error' size='small' *ngIf='signInError' variant='simple'>
-                        {{signInError}}
-                    </p-message>
+                <p-message severity='error' size='small' *ngIf='signInError' variant='simple' class="p-error-message">
+                    {{signInError}}
+                </p-message>
 
-                    <p-button [disabled]='loading()' type='submit' class='custom-sign-in-btn mt-2' label='SIGN IN' [raised]='true' />
-                </form>
+                <p-button [disabled]='loading()' type='submit' class='custom-sign-in-btn mt-4' label='SIGN IN'
+                    [raised]='true' />
+            </form>
 
-                <p-divider align='center'>
-                    <b>or</b>
-                </p-divider>
+            <p-divider align='center' class="custom-divider">
+                <b class="text-gray-400 font-normal">or</b>
+            </p-divider>
 
-                <!-- GOOGLE BUTTON -->
-                <div id='google-btn'></div>
-
+            <div id='google-btn' class="w-full mx-auto flex flex-row justify-center">
+                <button class="w-full custom-google-btn flex items-center justify-center gap-3">
+                    <img src="https://img.icons8.com/color/16/000000/google-logo.png" alt="Google logo"
+                        class="w-4 h-4" />
+                    Sign in as Siddharth
+                </button>
             </div>
+
         </div>
     </div>
 </div>

@@ -11,6 +11,7 @@ import { ExpenseDataService } from '../../../Services/Expenses/expense-data.serv
 import { LoadingService } from '../../../Services/loading.service';
 import { MessageService } from 'primeng/api';
 // NG UI COMPONENTS PRIME IMPORTS
+import { AutoComplete, AutoCompleteCompleteEvent } from 'primeng/autocomplete';
 import { DrawerModule } from 'primeng/drawer';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputTextModule } from 'primeng/inputtext';
@@ -27,10 +28,14 @@ import { EditCategoryFormComponent } from '../edit-category-form/edit-category-f
 import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
 import { ExpenseCategoryModel, ExpenseItemModel } from '../../../Models/expenses.model';
+import { CashbookApiService } from '../../../Services/Cashbook/cashbook-api.service';
+import { RecipientApiService } from '../../../Services/Recipients/recipient-api.service';
+import { RecipientModel } from '../../../Models/recipient.model';
+import { extractErrorMessage } from '../../../utils/helper';
 
 @Component({
   selector: 'app-add-expense-drawer',
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, DrawerModule, DatePickerModule, InputTextModule, ButtonModule, RippleModule, Select, MessageModule, ScrollPanelModule, Toast, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent, FormImagePreviewComponent],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, DrawerModule, DatePickerModule, InputTextModule, ButtonModule, RippleModule, Select, MessageModule, ScrollPanelModule, Toast, AddCategoryComponent, EditCategoryListComponent, EditCategoryFormComponent, FormImagePreviewComponent, AutoComplete],
   templateUrl: './add-expense-drawer.component.html',
   styleUrl: './add-expense-drawer.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -45,6 +50,8 @@ export class AddExpenseDrawerComponent {
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _messageServ: MessageService = inject(MessageService);
   private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
+  private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
+  private _recipientApiServ: RecipientApiService = inject(RecipientApiService);
   private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
 
@@ -66,6 +73,10 @@ export class AddExpenseDrawerComponent {
 
   entryForm: FormGroup;
 
+  recipientSearchLoading: boolean = false;
+  recipients: RecipientModel[] = new Array();
+  selectedRecipient: string | null = null; // RECIPIENT ID NOT WHOLE data
+
   isDrawerOpen: Signal<boolean> = computed(() => this._expenseDataServ.showAddExpenseDrawer());
   today: Date = new Date();
 
@@ -74,7 +85,7 @@ export class AddExpenseDrawerComponent {
       description: [''],
       date: [this.today, [Validators.required]],
       category: ['', [Validators.required]],
-      items: [[], [Validators.required, this.nonEmptyArrayValidator()]],
+      items: [[], []],
       mode: ['', [Validators.required]]
     });
 
@@ -111,7 +122,7 @@ export class AddExpenseDrawerComponent {
           return;
         }
         this.uploadedFileUrl.set(null);
-        this._supaBaseServ.uploadImage(file, file.name, 'cashbook')
+        this._supaBaseServ.uploadImage(file, file.name, 'expense')
           .then((response: any) => {
             this.uploadedFileUrl.set(response.url);
           })
@@ -132,14 +143,6 @@ export class AddExpenseDrawerComponent {
     //     console.log(error)
     //   });
     this.uploadedFileUrl.set(null);
-  }
-
-  nonEmptyArrayValidator(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      return Array.isArray(control.value) && control.value.length > 0
-        ? null
-        : { emptyArray: true };
-    };
   }
 
   closeDrawer(): void {
@@ -172,6 +175,9 @@ export class AddExpenseDrawerComponent {
 
   // API CALLS FUNCTIONS
   createExpenseEntry(): void {
+    const entryItems = this.entryForm.get('items')?.value || [];
+    console.log('selected recipient', this.selectedRecipient);
+
     if (this.entryForm.invalid) {
       if (this.entryForm.get('date')?.hasError('required')) {
         this._messageServ.add({ summary: 'Error', detail: 'Expense Date is a required field', severity: 'error' });
@@ -182,10 +188,14 @@ export class AddExpenseDrawerComponent {
         this._messageServ.add({ summary: 'Error', detail: 'Expense Category is a required field', severity: 'error' });
         return;
       }
-      if (this.entryForm.get('items')?.hasError('emptyArray')) {
-        this._messageServ.add({ summary: 'Error', detail: 'Atleast Select 1 Expense Item to create an entry', severity: 'error' });
-        return;
+
+      if (this.selectedRecipient === null) {
+        if (entryItems.length < 0) {
+          this._messageServ.add({ summary: 'Error', detail: 'Atleast Select 1 Expense Item to create an entry', severity: 'error' });
+          return;
+        }
       }
+
       if (this.entryForm.get('mode')?.hasError('required')) {
         this._messageServ.add({ summary: 'Error', detail: 'Mode can only be of type online or cash', severity: 'error' });
         return;
@@ -196,7 +206,7 @@ export class AddExpenseDrawerComponent {
     this._loadingServ.loading.set(true);
     const entryDate = this.entryForm.get('date')?.value;
     const entryCategory = this.entryForm.get('category')?.value;
-    const entryItems = this.entryForm.get('items')?.value;
+    // const entryItems = this.entryForm.get('items')?.value;
     const entryDescription = this.entryForm.get('description')?.value;
     const mode = this.entryForm.get('mode')?.value;
     this._expenseApiServ.createExpenseEntry({
@@ -205,24 +215,53 @@ export class AddExpenseDrawerComponent {
       items: entryItems,
       description: entryDescription,
       mode,
-      attachment: this.uploadedFileUrl()
+      attachment: this.uploadedFileUrl(),
+      recipient: this.selectedRecipient || null
     }, this._userId)
       .pipe(take(1))
       .subscribe({
         next: (response: any) => {
-          if (response.status === 201) {
-            this.entryForm.reset();
-            this.entryForm.patchValue({ date: this.today });
-            this._messageServ.add({ severity: 'success', summary: 'Sucess', detail: 'Expense entry added successfully' });
-            this._loadingServ.loading.set(false);
-            this.uploadedFileUrl.set(null);
-            this._expenseApiServ.fetchExpenseEntries.next(true);
+          if (response.status !== 201) {
+            const message = extractErrorMessage(response);
+            this._messageServ.add({ summary: 'Error', detail: message, severity: 'error' });
+            return;
           }
+          this.entryForm.reset();
+          this.entryForm.patchValue({ date: this.today });
+          this._messageServ.add({ severity: 'success', summary: 'Sucess', detail: 'Expense entry added successfully' });
+          this._loadingServ.loading.set(false);
+          this.uploadedFileUrl.set(null);
+          this._expenseApiServ.fetchExpenseEntries.next(true);
+          this._cashbookApiServ.reFetchEntries.next(true);
         },
         error: (error: HttpErrorResponse) => {
-          if (error.status === 400) this._messageServ.add({ summary: 'Error', detail: error.error.error, severity: 'error' });
+          const message = extractErrorMessage(error);
+          this._messageServ.add({ summary: 'Error', detail: message, severity: 'error' });
           this._loadingServ.loading.set(false);
         }
       });
+  }
+
+  searchReipients(event: AutoCompleteCompleteEvent): void {
+    const searchQuery = event.query;
+    this.recipientSearchLoading = true;
+    this._recipientApiServ.getFilteredRecipients(searchQuery, 0, 100, this._userId, false)
+      .pipe(
+        take(1)
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 200) {
+            const recipientList = response?.payload?.[0]?.data || [];
+            this.recipients = recipientList;
+            this.recipientSearchLoading = false;
+          }
+        },
+        error: (error: any) => {
+          console.log('error: ', error);
+          this.recipientSearchLoading = false;
+        }
+      })
+
   }
 }

@@ -6,8 +6,8 @@ import { FormsModule } from '@angular/forms';
 import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
 // MODELS IMPORT
-import { CashbookModel } from '../../../Models/cashbook.model';
 import { PaginationModel } from '../../../Models/pagination.model';
+import { EntryModel } from '../../../Models/entry.model';
 // IMAGE VIEWER IMPORT
 import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 import { CashbookDataService } from '../../../Services/Cashbook/cashbook-data.service';
@@ -24,11 +24,11 @@ export class EntriesTableComponent {
   private _lightboxConfig: LightboxConfig = inject(LightboxConfig);
   private _lightbox: Lightbox = inject(Lightbox);
   private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
-  @Input('entries') entries!: CashbookModel[];
+  @Input('entries') entries!: EntryModel[];
   @Input('pagination') pagination!: PaginationModel;
   @Output('onPageChange') onPageChange: EventEmitter<any> = new EventEmitter<any>();
-  @Output('onTableRowClick') onTableRowClick: EventEmitter<CashbookModel> = new EventEmitter<CashbookModel>();
-  selectedEntries: CashbookModel[] = [];
+  @Output('onTableRowClick') onTableRowClick: EventEmitter<EntryModel> = new EventEmitter<EntryModel>();
+  selectedEntries: EntryModel[] = [];
   filtersApplied: Signal<boolean> = computed(() => this._cashbookDataServ.filtersApplied());
 
   constructor() {

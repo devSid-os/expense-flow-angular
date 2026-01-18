@@ -1,39 +1,164 @@
-.p-inputgroupaddon {
-    background-color: transparent !important;
-    border: 1px solid #bebebe !important;
-    border-right: 0 !important;
-}
-
-.p-password {
-    width: 100% !important;
-}
-
 .p-inputtext {
     width: 100% !important;
-    background-color: #fff !important;
-    color: #000 !important;
-    border: 1px solid #bebebe !important;
+    background-color: #263131 !important; /* Darker than card, blends in */
+    color: #E0E0E0 !important; /* Light text */
+    border: 1px solid #3C4A4A !important; /* Subtle border */
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important; 
+    transition: all 0.2s ease-in-out;
 }
 
-.custom-sign-in-btn>.p-button {
+/* FIX: Increase left padding for input text within an icon field */
+.p-iconfield input.p-inputtext {
+    /* The default padding is usually enough for the icon (around 2rem or 2.5rem). 
+       We will set a generous padding to ensure the text clears the icon. */
+    padding-left: 2.75rem !important; 
+}
+
+.p-inputtext::placeholder {
+    color: #6B7280 !important;
+}
+
+/* Hover/Focus States */
+.p-inputtext:focus {
+    border-color: #34D399 !important; /* Green accent on focus */
+    box-shadow: 0 0 0 0.1rem rgba(52, 211, 153, 0.5) !important;
+    background-color: #222B2B !important;
+}
+
+/* Icon Field Styling */
+.p-iconfield .p-inputicon {
+    /* Ensure the icon is positioned correctly on the left */
+    left: 0.85rem !important; /* Positioned near the left edge */
+    top: 50% !important; /* Center vertically */
+    // transform: translateY(-50%) !important;
+    color: #9CA3AF !important; 
+}
+
+/*
+ * Custom Sign In Button Styling (Gradient Green)
+ */
+.custom-sign-in-btn > .p-button {
     width: 100% !important;
-    background-color: #f39c12 !important;
-    border: #f39c12 !important;
-    color: #fff !important;
-    font-weight: 500 !important;
+    background: linear-gradient(to right, #34D399, #10B981) !important; /* Green gradient */
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 700 !important; /* Bolder text */
+    font-size: 1.1rem !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); /* Stronger shadow */
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
 
     &:hover {
-        background-color: #27ae60 !important;
+        background: linear-gradient(to right, #2ECC71, #0E9B6F) !important; // Darker gradient on hover
+        box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
+        transform: translateY(-1px);
+    }
+    // Subtle overlay on hover
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.1);
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+    &:hover:before {
+        opacity: 1;
     }
 }
 
+/*
+ * Divider Styling
+ */
 .p-divider-content {
     user-select: none;
-    background-color: #ffF !important;
-    color: #000 !important;
-    font-size: 1rem !important;
-    font-weight: 300 !important;
-    // padding: 0 20px !important;
-    background-color: transparent !important;
-    color: #fff !important;
+    background-color: #2D3A3A !important; /* Card background color */
+    color: #9CA3AF !important; /* Softer gray */
+    font-size: 0.95rem !important;
+    padding: 0 1rem !important;
+    font-weight: 500 !important;
+}
+
+.p-divider-horizontal.p-divider-solid:before {
+    border-top: 1px solid #3C4A4A !important; // Divider line color
+}
+
+/*
+ * Custom Google Sign-In Button (Mimicking the image)
+ */
+.custom-google-btn {
+    background-color: #263131; // Slightly darker than card
+    border: 1px solid #3C4A4A;
+    color: #E0E0E0;
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+        background-color: #222B2B;
+        border-color: #34D399; // Green border on hover
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        color: #34D399;
+    }
+}
+
+/* PrimeNG Message for Errors */
+.p-message {
+    background-color: rgba(239, 68, 68, 0.15) !important; // Subtle red background
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    color: #EF4444 !important; // Red text
+    border-radius: 6px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    margin-top: -0.5rem; // Adjust spacing if needed
+}
+
+/* Tailwind-like utility for screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+
+/* Animation for subtle background blobs */
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+.animation-delay-4000 {
+    animation-delay: 4s;
 }

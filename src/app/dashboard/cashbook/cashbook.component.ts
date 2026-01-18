@@ -17,9 +17,9 @@ import { EntriesTableComponent } from './entries-table/entries-table.component';
 import { ViewEntryDrawerComponent } from '../../components/cashbook-drawers/view-entry-drawer/view-entry-drawer.component';
 import { UpdateEntryDrawerComponent } from '../../components/cashbook-drawers/update-entry-drawer/update-entry-drawer.component';
 // MODELS IMPORT
-import { CashbookModel, FilteredEntriesModel } from '../../Models/cashbook.model';
+import { FilteredEntriesModel } from '../../Models/cashbook.model';
 import { PaginationModel } from '../../Models/pagination.model';
-import { ExpenseDataService } from '../../Services/Expenses/expense-data.service';
+import { EntryModel } from '../../Models/entry.model';
 
 @Component({
   selector: 'app-cashbook',
@@ -33,7 +33,6 @@ export class CashbookComponent implements OnInit, OnDestroy {
   private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
   private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
   private _loadingServ: LoadingService = inject(LoadingService);
-  private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
   readonly today = new Date();
 
@@ -60,12 +59,12 @@ export class CashbookComponent implements OnInit, OnDestroy {
     }
 
   allCashBookEntries: Signal<{
-    data: Signal<CashbookModel[]>;
+    data: Signal<EntryModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._cashbookDataServ.allCashbookEntries());
 
   filteredCashBookEntries: Signal<{
-    data: Signal<CashbookModel[]>;
+    data: Signal<EntryModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._cashbookDataServ.filteredCashbookEntires());
 
@@ -109,8 +108,8 @@ export class CashbookComponent implements OnInit, OnDestroy {
       ]
     }
 
-  viewEntryData: CashbookModel | null = null;
-  updateEntryData: CashbookModel | null = null;
+  viewEntryData: EntryModel | null = null;
+  updateEntryData: EntryModel | null = null;
 
   constructor() {
     effect(() => {
@@ -142,7 +141,7 @@ export class CashbookComponent implements OnInit, OnDestroy {
     this.showCustomDurationModal = false;
   }
 
-  openUpdateCashEntryDrawer(entryData: CashbookModel): void {
+  openUpdateCashEntryDrawer(entryData: EntryModel): void {
     this.updateEntryData = entryData;
     this._cashbookDataServ.updateCashEntryDrawer.set(true);
   }
@@ -152,18 +151,10 @@ export class CashbookComponent implements OnInit, OnDestroy {
     this._cashbookDataServ.updateCashEntryDrawer.set(false);
   }
 
-  openViewEntryDrawer(entry: CashbookModel): void {
-    console.log(entry)
-    switch (entry.entryType) {
-      case 'cashbook':
-        this.isViewEntryDrawerOpen = true;
-        this.viewEntryData = entry;
-        break;
-      case 'expense':
-        this._expenseDataServ.showViewEntryDrawer.set(true);
-        this._expenseDataServ.viewEntryData.set(entry.expenseEntry!);
-        break;
-    }
+  openViewEntryDrawer(entry: EntryModel): void {
+    this.isViewEntryDrawerOpen = true;
+    this.viewEntryData = entry;
+    return;
   }
 
   closeViewEntryDrawer(): void {
@@ -295,7 +286,7 @@ export class CashbookComponent implements OnInit, OnDestroy {
     const pageSize = event.rows;
     const pageNumber = (event.first / pageSize);
     if (isFilteredPaginate) {
-      if (pageNumber === this.filteredCashBookEntries().pagination().currentPage) return;
+      // if (pageNumber === this.filteredCashBookEntries().pagination().currentPage) return;
       this.fetchFilteredCashBookEntries(this._userId, pageNumber, pageSize, {
         type: this.dataServFilters().type(),
         mode: this.dataServFilters().mode(),
@@ -304,7 +295,7 @@ export class CashbookComponent implements OnInit, OnDestroy {
       });
     }
     else {
-      if (pageNumber === this.allCashBookEntries().pagination().currentPage) return;
+      // if (pageNumber === this.allCashBookEntries().pagination().currentPage) return;
       this.fetchAllCashBookEntries(this._userId, pageNumber, pageSize);
     }
   }

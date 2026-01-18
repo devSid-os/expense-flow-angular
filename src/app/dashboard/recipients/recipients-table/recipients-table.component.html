@@ -1,0 +1,73 @@
+<p-dataview #dv [value]='data'>
+    <ng-template #header>
+        <div class='flex flex-col md:flex-row md:justify-between'>
+            <p-iconfield iconPosition='left'>
+                <p-inputicon>
+                    <i class='fa-solid fa-magnifying-glass'></i>
+                </p-inputicon>
+                <input [formControl]='searchControl' pInputText type='text' pSize='small'
+                    placeholder='Search by name or number' />
+            </p-iconfield>
+        </div>
+    </ng-template>
+    <ng-template #list let-recipients>
+        <div class="grid gap-2 md:grid-cols-2">
+            <div (click)="openViewRecipientDrawer(recipient);" style="transition: background .15s ease-in-out"
+                class="shadow-lg flex justify-between items-center w-full bg-[#072419] p-3 cursor-pointer rounded-[6px] hover:bg-[#083022]"
+                *ngFor="let recipient of recipients;">
+                <!-- Left: Avatar + Details -->
+                <div class="flex gap-3 items-center">
+                    <app-recipient-avatar [size]="'large'" [name]="recipient.name"
+                        [profileUrl]="recipient.profileUrl || null" />
+                    <div>
+                        <p class="tracking-wider font-medium text-white">{{ recipient.name }}</p>
+                        <p class="text-sm tracking-wider text-[#b5b5b5]">
+                            {{ formatTimeAgo(recipient.updatedAt) }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right: In / Out / Settled -->
+                <div class="flex flex-col gap-1 items-end">
+                    <!-- Settled -->
+                    <div *ngIf="recipient.in === recipient.out"
+                        class="px-3 py-1 rounded-md text-gray-400 bg-gray-800/40 text-sm font-medium tracking-wide">
+                        Settled
+                    </div>
+
+                    <!-- You will give -->
+                    <div *ngIf="recipient.in > recipient.out"
+                        class="px-3 py-1 rounded-md text-amber-400 bg-amber-900/30 text-sm font-medium tracking-wide flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up text-xs"></i>
+                        You will give&nbsp;
+                        <i class="fa-solid fa-indian-rupee-sign text-xs"></i>{{ recipient.in - recipient.out }}
+                    </div>
+
+                    <!-- You will get -->
+                    <div *ngIf="recipient.out > recipient.in"
+                        class="px-3 py-1 rounded-md text-blue-400 bg-blue-900/30 text-sm font-medium tracking-wide flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-down text-xs"></i>
+                        You will get&nbsp;
+                        <i class="fa-solid fa-indian-rupee-sign text-xs"></i>{{ recipient.out - recipient.in }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-dataview>
+
+<!-- VIEW RECIPIENT DRAWER -->
+<app-view-recipient-drawer 
+    *ngIf='recipientDrawerData' 
+    [openDrawer]='openRecipientDrawer'
+    [recipient]='recipientDrawerData' 
+    (onCloseDrawer)='closeViewRecipientDrawer();'
+>
+</app-view-recipient-drawer>
+
+<!-- ADD RECIPIENT ENTRY DRAWER -->
+<app-add-entry-drawer 
+    *ngIf='isAddEntryDrawerOpen();' 
+    (onCloseDrawer)='closeAddEntryDrawer()'
+>
+</app-add-entry-drawer>

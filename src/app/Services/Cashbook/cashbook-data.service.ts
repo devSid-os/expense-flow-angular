@@ -1,5 +1,5 @@
 import { Injectable, signal, WritableSignal } from '@angular/core';
-import { CashbookModel } from '../../Models/cashbook.model';
+import { EntryModel } from '../../Models/entry.model';
 import { PaginationModel } from '../../Models/pagination.model';
 
 @Injectable({
@@ -30,19 +30,19 @@ export class CashbookDataService {
     updateCashEntryDrawer: WritableSignal<boolean> = signal(false);
 
     allCashbookEntries: WritableSignal<{
-        data: WritableSignal<CashbookModel[]>,
+        data: WritableSignal<EntryModel[]>,
         pagination: WritableSignal<PaginationModel>
     }> = signal({
         data: signal([]),
         pagination: signal({
             currentPage: 0,
             totalRecords: 0,
-            pageSize: 25
+            pageSize: 10
         })
     });
 
     filteredCashbookEntires: WritableSignal<{
-        data: WritableSignal<CashbookModel[]>,
+        data: WritableSignal<EntryModel[]>,
         pagination: WritableSignal<PaginationModel>
     }> = signal({
         data: signal([]),

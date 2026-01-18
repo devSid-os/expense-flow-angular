@@ -29,11 +29,15 @@ import { ViewEntryDrawerComponent } from '../components/expense-drawers/view-ent
 import { UserModel } from '../Models/user.model';
 import { CashbookApiService } from '../Services/Cashbook/cashbook-api.service';
 import { CashbookDataService } from '../Services/Cashbook/cashbook-data.service';
+import { SelectExpenseItemsDrawerComponent } from '../components/expense-drawers/select-expense-items-drawer/select-expense-items-drawer.component';
+import { RecipientApiService } from '../Services/Recipients/recipient-api.service';
+import { RecipientDataService } from '../Services/Recipients/recipient-data.service';
+import { PaginationModel } from '../Models/pagination.model';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, AvatarModule, Menu, ButtonModule, OverlayBadgeModule, BadgeModule, PopoverModule, DividerModule, DrawerModule, Ripple, ProfilePopoverComponent, ProfileAvatarComponent, ViewEntryDrawerComponent],
+  imports: [CommonModule, RouterOutlet, AvatarModule, Menu, ButtonModule, OverlayBadgeModule, BadgeModule, PopoverModule, DividerModule, DrawerModule, Ripple, SelectExpenseItemsDrawerComponent, ProfilePopoverComponent, ProfileAvatarComponent, ViewEntryDrawerComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   encapsulation: ViewEncapsulation.None
@@ -50,13 +54,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
   private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
   private _cashbookDataServ: CashbookDataService = inject(CashbookDataService);
+  private _recipientApiServ: RecipientApiService = inject(RecipientApiService);
+  private _recipientDataServ: RecipientDataService = inject(RecipientDataService);
   private _routerEvent$: Subscription | null = null;
   private readonly _userId: string | null = this._cookieServ.get('userId') || null;
 
   isUserAuthorized: Signal<boolean> = computed(() => this._userAccountServ.isUserAuthorized());
   userPayload: Signal<UserModel> = computed(() => this._userAccountServ.userPayload());
-  private _entriesPagination = computed(() => this._expenseDataServ.allEntries().pagination());
-  private _cashbookEntriesPagination = computed(() => this._cashbookDataServ.allCashbookEntries().pagination());
+  private _entriesPagination: Signal<PaginationModel> = computed(() => this._expenseDataServ.allEntries().pagination());
+  private _cashbookEntriesPagination: Signal<PaginationModel> = computed(() => this._cashbookDataServ.allCashbookEntries().pagination());
+  private _recipientsPagination: Signal<PaginationModel> = computed(() => this._recipientDataServ.recipients().pagination());
 
 
   // COMPONENT VARIABLES
@@ -65,32 +72,32 @@ export class DashboardComponent implements OnInit, OnDestroy {
   mobileMenuItemDrawerOpen: boolean = false;
   selectedMenuItem: WritableSignal<{ name: string, icon: string }> = signal({ name: 'Expenses', icon: 'fa-solid fa-receipt' });
   menuitems: MenuItem[] = [
-    { 
-        label: 'Expenses', 
-        icon: 'fa-solid fa-receipt', 
-        styleClass: '', 
-        command: () => this.onMenuItemClick('Expenses', 'fa-solid fa-receipt', 'expenses'), 
-        link: 'expenses' 
+    {
+      label: 'Expenses',
+      icon: 'fa-solid fa-receipt',
+      styleClass: '',
+      command: () => this.onMenuItemClick('Expenses', 'fa-solid fa-receipt', 'expenses'),
+      link: 'expenses'
     },
-    { 
-      label: 'Recipients', 
-      icon: 'fa-solid fa-address-book', 
-      styleClass: '', 
-      command: () => this.onMenuItemClick('Recipients', 'fa-solid fa-address-book', 'recipients'), 
-      link: 'recipients' 
+    {
+      label: 'Recipients',
+      icon: 'fa-solid fa-address-book',
+      styleClass: '',
+      command: () => this.onMenuItemClick('Recipients', 'fa-solid fa-address-book', 'recipients'),
+      link: 'recipients'
     },
-    { 
-      label: 'Cashbook', 
-      icon: 'fa-solid fa-wallet', 
-      styleClass: '', 
-      command: () => this.onMenuItemClick('Cashbook', 'fa-solid fa-wallet', 'cashbook'), 
-      link: 'cashbook' 
+    {
+      label: 'Cashbook',
+      icon: 'fa-solid fa-wallet',
+      styleClass: '',
+      command: () => this.onMenuItemClick('Cashbook', 'fa-solid fa-wallet', 'cashbook'),
+      link: 'cashbook'
     },
-    { 
-      label: 'Reports', 
-      icon: 'fa-solid fa-square-poll-vertical', 
-      styleClass: '', 
-      command: () => this.onMenuItemClick('Reports', 'fa-solid fa-square-poll-vertical', 'reports'), 
+    {
+      label: 'Reports',
+      icon: 'fa-solid fa-square-poll-vertical',
+      styleClass: '',
+      command: () => this.onMenuItemClick('Reports', 'fa-solid fa-square-poll-vertical', 'reports'),
       link: 'reports'
     }
   ];
@@ -145,6 +152,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
       case 'reports':
         this.selectedMenuItem.set({ name: 'Reports', icon: 'fa-solid fa-square-poll-vertical' });
         break;
+      case 'recipients':
+        this.selectedMenuItem.set({ name: 'Recipients', icon: 'fa-solid fa-address-book' });
+        break;
       default:
         this._router.navigate(['dashboard/expenses']);
     }
@@ -161,14 +171,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
   getAllUserData(userId: string): void {
     this._loadingServ.loading.set(true);
     forkJoin({
-      expenseEntries: this._expenseApiServ.getAllUserExpenseEntries(userId, this._entriesPagination().currentPage, this._entriesPagination().pageSize),
       expenseCategories: this._expenseApiServ.getAllUserExpenseCategories(userId),
       expenseItems: this._expenseApiServ.getAllUserExpenseItems(userId),
-      cashbookEntries: this._cashbookApiServ.getAllEntries(userId, this._cashbookEntriesPagination().currentPage, this._cashbookEntriesPagination().pageSize)
+      expenseEntries: this._expenseApiServ.getAllUserExpenseEntries(userId, this._entriesPagination().currentPage, this._entriesPagination().pageSize),
+      cashbookEntries: this._cashbookApiServ.getAllEntries(userId, this._cashbookEntriesPagination().currentPage, this._cashbookEntriesPagination().pageSize),
+      recipients: this._recipientApiServ.getAllRecipients(this._recipientsPagination().currentPage, this._recipientsPagination().pageSize, userId)
     }).pipe(take(1))
       .subscribe({
         next: (response: any) => {
-          if (response.expenseEntries.status === 200 && response.expenseCategories.status === 200 && response.expenseItems.status === 200 && response.cashbookEntries.status === 200) {
+          if (response.expenseEntries.status === 200 && response.expenseCategories.status === 200 && response.expenseItems.status === 200 && response.cashbookEntries.status === 200 && response.recipients.status === 200) {
             this._loadingServ.loading.set(false);
           }
         },
@@ -202,6 +213,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private _verifyUser(userId: string): void {
     this._loadingServ.loading.set(true);
     this._userAccountServ.verifyUser(userId)
+    .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
@@ -223,6 +235,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   signOut(): void {
     this._loadingServ.loading.set(true);
     this._userAccountServ.signOut()
+    .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {

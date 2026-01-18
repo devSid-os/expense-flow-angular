@@ -1,0 +1,147 @@
+// View Entry Drawer Styles - Black & White Theme
+:host ::ng-deep {
+    .view-entry-drawer {
+        .p-drawer {
+            width: 100% !important;
+        }
+
+        .p-drawer-content {
+            background: #f9fafb !important;
+            padding: 0 !important;
+        }
+    }
+}
+
+// Responsive drawer width
+@media screen and (min-width: 768px) {
+    :host ::ng-deep .view-entry-drawer .p-drawer {
+        width: 450px !important;
+        max-width: 90vw !important;
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    :host ::ng-deep .view-entry-drawer .p-drawer {
+        width: 400px !important;
+    }
+}
+
+// Custom scrollbar for drawer content
+.flex-1.overflow-y-auto {
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f3f4f6;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 3px;
+
+        &:hover {
+            background: #9ca3af;
+        }
+    }
+}
+
+// Confirm Dialog Styling
+:host ::ng-deep {
+    .p-confirmdialog {
+        .p-dialog {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 400px;
+
+            .p-dialog-content {
+                padding: 0;
+                background: transparent;
+            }
+        }
+    }
+
+    .p-dialog-mask {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+    }
+}
+
+// Toast notifications
+:host ::ng-deep {
+    .p-toast {
+        .p-toast-message {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+            &.p-toast-message-success {
+                border-left: 4px solid #10b981;
+                
+                .p-toast-message-icon {
+                    color: #10b981;
+                }
+            }
+
+            &.p-toast-message-error {
+                border-left: 4px solid #ef4444;
+                
+                .p-toast-message-icon {
+                    color: #ef4444;
+                }
+            }
+
+            &.p-toast-message-warn {
+                border-left: 4px solid #f59e0b;
+                
+                .p-toast-message-icon {
+                    color: #f59e0b;
+                }
+            }
+
+            &.p-toast-message-info {
+                border-left: 4px solid #3b82f6;
+                
+                .p-toast-message-icon {
+                    color: #3b82f6;
+                }
+            }
+        }
+
+        .p-toast-message-content {
+            padding: 1rem;
+
+            .p-toast-summary {
+                color: #111827;
+                font-weight: 600;
+                font-size: 0.875rem;
+            }
+
+            .p-toast-detail {
+                color: #6b7280;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+        }
+    }
+}
+
+// Animation for drawer opening
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+:host ::ng-deep .view-entry-drawer .p-drawer-content {
+    animation: slideInRight 0.3s ease-out;
+}

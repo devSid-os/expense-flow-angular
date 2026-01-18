@@ -1,0 +1,339 @@
+.p-inputgroupaddon {
+    background: #fff !important;
+    border: 1px solid #d1d5db;
+    border-right: 0;
+}
+
+
+
+// Apply ::ng-deep to override PrimeNG styles
+:host ::ng-deep {
+
+    // Drawer base styles
+    .p-drawer-right {
+        width: 100% !important;
+
+        .p-drawer-content {
+            background: #f9fafb !important;
+            padding: 0 !important;
+        }
+    }
+
+    // Dropdown panel overlay
+    .p-select-overlay {
+        background: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.5rem !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+
+        .p-select-list {
+            padding: 0.5rem !important;
+
+            .p-select-option {
+                color: #374151 !important;
+                padding: 0.5rem 0.75rem !important;
+                border-radius: 0.375rem !important;
+                font-size: 0.875rem !important;
+
+                &:hover {
+                    background: #f3f4f6 !important;
+                    color: #111827 !important;
+                }
+
+                &.p-select-option-selected {
+                    background: #111827 !important;
+                    color: white !important;
+                }
+
+                &.p-focus {
+                    background: #f3f4f6 !important;
+                }
+
+                &.p-select-option-selected.p-focus {
+                    background: #111827 !important;
+                    color: white !important;
+                }
+            }
+        }
+    }
+
+    // Custom DatePicker Input Styling
+    .custom-datepicker {
+        width: 100%;
+
+        .p-datepicker-input-icon-container {
+            .p-datepicker-input {
+                background: white !important;
+                border: 1px solid #d1d5db !important;
+                color: #111827 !important;
+                padding: 0.5rem 0.75rem !important;
+                border-radius: 0.5rem !important;
+                font-size: 0.875rem !important;
+
+                &:hover {
+                    border-color: #9ca3af !important;
+                }
+
+                &:focus {
+                    border-color: #111827 !important;
+                    box-shadow: 0 0 0 1px #111827 !important;
+                    outline: none !important;
+                }
+
+                &::placeholder {
+                    color: #9ca3af !important;
+                }
+            }
+
+            .p-datepicker-dropdown,
+            .p-datepicker-trigger {
+                background: transparent !important;
+                border: none !important;
+                color: #6b7280 !important;
+                right: 0.75rem !important;
+
+                &:hover {
+                    background: transparent !important;
+                    color: #111827 !important;
+                }
+            }
+        }
+    }
+
+    // DatePicker Calendar Panel
+    .p-datepicker {
+        background: white !important;
+        border: 1px solid #e5e7eb !important;
+        border-radius: 0.75rem !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+        padding: 0.75rem !important;
+
+        .p-datepicker-header {
+            background: transparent !important;
+            border-bottom: 1px solid #f3f4f6 !important;
+            padding: 0.5rem 0 !important;
+            margin-bottom: 0.5rem !important;
+
+            .p-datepicker-title {
+
+                .p-datepicker-month,
+                .p-datepicker-year {
+                    color: #111827 !important;
+                    font-weight: 600 !important;
+                    font-size: 0.875rem !important;
+
+                    &:hover {
+                        color: #374151 !important;
+                    }
+                }
+            }
+
+            .p-datepicker-prev,
+            .p-datepicker-next {
+                color: #6b7280 !important;
+                width: 2rem !important;
+                height: 2rem !important;
+                border-radius: 0.375rem !important;
+
+                &:hover {
+                    background: #f3f4f6 !important;
+                    color: #111827 !important;
+                }
+            }
+        }
+
+        table {
+            font-size: 0.75rem !important;
+
+            th {
+                padding: 0.5rem !important;
+                color: #9ca3af !important;
+                font-weight: 500 !important;
+            }
+
+            td {
+                padding: 0.125rem !important;
+
+                span {
+                    width: 2rem !important;
+                    height: 2rem !important;
+                    border-radius: 0.375rem !important;
+                    color: #374151 !important;
+
+                    &:hover:not(.p-disabled) {
+                        background: #f3f4f6 !important;
+                    }
+                }
+
+                &.p-datepicker-today span {
+                    background: #f3f4f6 !important;
+                    color: #111827 !important;
+                    font-weight: 600 !important;
+                }
+            }
+        }
+
+        .p-highlight {
+            background: #111827 !important;
+            color: white !important;
+        }
+
+        .p-disabled {
+            opacity: 0.4 !important;
+        }
+    }
+
+    // Input Group (Rupee Sign) Styling
+    /* Update your .p-inputgroup block */
+    // Update your .p-inputgroup block
+    .p-inputgroup {
+        background-color: #ffffff !important; // Ensure the container is white
+
+        .p-inputtext {
+            background: #ffffff !important; // Ensure input itself is white
+            color: #111827 !important;
+            border-left: 1px solid #d1d5db !important;
+        }
+    }
+
+    // Textarea Styling
+    .p-textarea {
+        background-color: #ffffff !important;
+        color: #111827 !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem !important;
+        padding: 0.75rem !important;
+        font-size: 0.875rem !important;
+        line-height: 1.5 !important;
+        resize: none !important;
+
+        &:hover {
+            border-color: #9ca3af !important;
+        }
+
+        &:focus {
+            border-color: #111827 !important;
+            box-shadow: 0 0 0 1px #111827 !important;
+            outline: none !important;
+        }
+
+        &::placeholder {
+            color: #9ca3af !important;
+        }
+    }
+
+    // Error Message Styling
+    .p-message {
+        border-radius: 0.375rem !important;
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.75rem !important;
+        margin-top: 0.25rem !important;
+
+        &.p-message-error {
+            background-color: rgba(239, 68, 68, 0.1) !important;
+            border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            color: #dc2626 !important;
+
+            .p-message-icon {
+                color: #dc2626 !important;
+            }
+        }
+
+        .p-message-icon {
+            font-size: 0.875rem !important;
+        }
+    }
+
+    // Responsive drawer width
+    @media screen and (min-width: 768px) {
+        .p-drawer-right {
+            width: 45% !important;
+        }
+    }
+
+    @media screen and (min-width: 992px) {
+        .p-drawer-right {
+            width: 35% !important;
+        }
+    }
+
+    // Custom scrollbar
+    .flex-1.overflow-y-auto {
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f3f4f6;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+
+            &:hover {
+                background: #9ca3af;
+            }
+        }
+    }
+
+    // Toast styling
+    .p-toast {
+        .p-toast-message {
+            background: white !important;
+            border: 1px solid #e5e7eb !important;
+            border-radius: 0.5rem !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+
+            &.p-toast-message-success {
+                border-left: 4px solid #10b981 !important;
+
+                .p-toast-message-icon {
+                    color: #10b981 !important;
+                }
+            }
+
+            &.p-toast-message-error {
+                border-left: 4px solid #ef4444 !important;
+
+                .p-toast-message-icon {
+                    color: #ef4444 !important;
+                }
+            }
+        }
+
+        .p-toast-message-content {
+            .p-toast-summary {
+                color: #111827 !important;
+                font-weight: 600 !important;
+            }
+
+            .p-toast-detail {
+                color: #6b7280 !important;
+            }
+        }
+    }
+}
+
+.payment-mode-div {
+    .p-select {
+        background: #ffffff !important; // Force white background
+        border: 1px solid #d1d5db !important;
+
+        .p-select-label {
+            color: #111827 !important; // Dark text for visibility
+            padding: 0.5rem 0.75rem !important;
+            background: #ffffff !important; // Ensure the label area isn't dark
+        }
+
+        .p-select-dropdown {
+            color: #6b7280 !important;
+        }
+
+        .p-select-label {
+            cursor: default;
+            color: black !important;
+        }
+    }
+
+}

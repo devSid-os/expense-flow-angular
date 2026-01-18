@@ -1,18 +1,9 @@
-<p-table 
-    dataKey='_id' 
-    [value]='entries' 
-    [(selection)]='selectedEntries' 
-    [tableStyle]='{"min-width": "50rem"}'
-    [lazy]='true' 
-    [paginator]='true' 
-    [showCurrentPageReport]='true' 
-    [first]='pagination.currentPage * pagination.pageSize'
-    [rows]='pagination.pageSize' 
-    [rowsPerPageOptions]='[25, 50, 100]'
+<p-table dataKey='_id' [value]='entries' [(selection)]='selectedEntries' [tableStyle]='{"min-width": "50rem"}'
+    [lazy]='true' [paginator]='true' [showCurrentPageReport]='true'
+    [first]='pagination.currentPage * pagination.pageSize' [rows]='pagination.pageSize'
+    [rowsPerPageOptions]='[10, 25, 50, 100]'
     [currentPageReportTemplate]='"Page "+(pagination.currentPage + 1)+" of "+(getTotalPage())'
-    (onLazyLoad)='onPageChange.emit($event)' 
-    [totalRecords]='pagination.totalRecords' 
->
+    (onLazyLoad)='onPageChange.emit($event)' [totalRecords]='pagination.totalRecords'>
     <ng-template #caption>
         <div class='flex items-center justify-between gap-2 flex-wrap'>
             <span class='font-bold'>Cashbook</span>
@@ -20,11 +11,8 @@
                 <button title='REMOVE ALL FILTERS' class='text-[13px] font-[500] tracking-wide text-[#03d47c]'>
                     <i class='fa-solid fa-download'></i>&nbsp;DOWNLOAD REPORT
                 </button>
-                <button 
-                    (click)='removeAllFilters();'
-                    *ngIf='filtersApplied()' 
-                    class='text-[13px] font-[500] tracking-wide text-red-400 hover:text-red-500'
-                >
+                <button (click)='removeAllFilters();' *ngIf='filtersApplied()'
+                    class='text-[13px] font-[500] tracking-wide text-red-400 hover:text-red-500'>
                     <i class='fa-solid fa-filter-circle-xmark'></i>&nbsp;REMOVE FILTERS
                 </button>
             </div>
@@ -33,64 +21,61 @@
     <ng-template #header>
         <tr>
             <th><p-tableHeaderCheckbox /></th>
+            <th class='text-[12px]'>S.NO</th>
             <th class='text-[12px]'>Date</th>
-            <th class='text-[12px]'>Expense Entry</th>
+            <th class='text-[12px]'>Info</th>
             <th class='text-[12px]'>Amount</th>
             <th class='text-[12px]'>Mode</th>
             <th class='text-[12px]'>Attachment</th>
         </tr>
     </ng-template>
-    <ng-template #body let-entry>
+    <ng-template #body let-entry let-i="rowIndex">
         <tr (click)='onTableRowClick.emit(entry);' class='cursor-pointer hover:bg-[#1a3d32!important]'>
             <td>
                 <p-tableCheckbox (click)='$event.stopPropagation();' [value]='entry' />
             </td>
-            <td class='text-sm italic tracking-wider'>
-                <ng-container [ngSwitch]='entry.entryType'>
-                    <ng-container *ngSwitchCase='"cashbook"'>{{entry.date | date: 'dd-MMM-yyyy'}}</ng-container>
-                    <ng-container *ngSwitchCase='"expense"'>{{entry.expenseEntry.date | date: 'dd-MMM-yyyy'}}</ng-container>
-                </ng-container>
+            <td class="text-sm text-center">
+                #{{ pagination.currentPage * pagination.pageSize + i + 1 }}
             </td>
-            <td class='text-sm text-[#bebebe] font-[500] tracking-wider'>{{(entry?.expenseEntry?.category | titlecase) || '-'}}</td>
-            <td 
-                [ngClass]='{"text-[#f87171]": entry.type === "out", "text-[#03d47c]": entry.type === "in"}'
-                class='text-sm tracking-wide font-[500]'
-            >
+            <td class='text-sm italic tracking-wider'>
+                {{entry.date | date: 'dd-MMM-yyyy'}}
+            </td>
+            <td class=''>
+                <div>
+                    <p class="text-sm text-[#bebebe] font-[500] tracking-wider" style="text-transform: capitalize;"
+                        [ngStyle]="{color: entry?.entryType === 'expense' ?  '#FF5C5C' : entry?.entryType === 'cashbook' ? '#FFA726' : '#E91E63'}">
+                        {{((entry?.entryType || '-'))}} Entry 
+                    </p>
+                    <p class="text-sm text-[#bebebe] font-[500] tracking-wider" style="text-transform: capitalize;"
+                        *ngIf="entry?.entryType === 'expense'">
+                        Category: {{(entry?.category | titlecase) || '-'}}
+                    </p>
+                    <p class="text-sm text-[#bebebe] font-[500] tracking-wider" style="text-transform: capitalize;"
+                        *ngIf="entry?.entryType === 'recipient' || entry?.recipientDetails">
+                        Recipient: {{(entry?.recipientDetails?.name) || '-'}}
+                    </p>
+
+                </div>
+            </td>
+            <td [ngClass]='{"text-[#f87171]": entry.type === "out", "text-[#03d47c]": entry.type === "in"}'
+                class='text-sm tracking-wide font-[500]'>
                 <i class='fa-solid fa-indian-rupee-sign mr-[2px]'></i>
-                <ng-container [ngSwitch]='entry.entryType'>
-                    <ng-container *ngSwitchCase='"cashbook"'>{{entry.amount}}</ng-container>
-                    <ng-container *ngSwitchCase='"expense"'>{{getItemsTotal(entry.expenseEntry.items)}}</ng-container>
-                </ng-container>
+                {{entry.amount}}
             </td>
             <td class='text-sm tracking-wide'>
-                <ng-container [ngSwitch]='entry.entryType'>
-                    <p-tag 
-                        *ngSwitchCase='"cashbook"'
-                        [severity]='entry.mode === "online" ? "success" : "warn"' 
-                        [value]='entry.mode | uppercase' 
-                    />
-                    <p-tag 
-                        *ngSwitchCase='"expense"'
-                        [severity]='entry.expenseEntry.mode === "online" ? "success" : "warn"' 
-                        [value]='entry.expenseEntry.mode | uppercase' 
-                    />
-                </ng-container>
+                <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white capitalize"
+                    [ngClass]="entry?.mode === 'online' ? 'bg-green-600' : 'bg-orange-500'">
+                    {{ entry?.mode || 'N/A' }}
+                </span>
+                <!-- <p-tag [severity]='entry.mode === "online" ? "success" : "warn"' [value]='entry.mode | uppercase' /> -->
             </td>
-            <td 
-                [ngClass]='{"cursor-pointer": entry.attachment}'
-                class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'
-            >
-                <ng-container *ngIf='entry?.attachment || entry?.expenseEntry?.attachment;else noAttachment;'>
-                    <ng-container [ngSwitch]='entry.entryType'>
-                        <button *ngSwitchCase='"cashbook"' (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation()'>
-                            <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
-                        </button>
-
-                        <button *ngSwitchCase='"expense"' (click)='openAttachmentPreview(entry.expenseEntry.attachment);$event.stopPropagation()'>
-                            <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
-                        </button>
-
-                    </ng-container>
+            <td [ngClass]='{"cursor-pointer": entry.attachment}'
+                class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'>
+                <ng-container *ngIf='entry?.attachment;else noAttachment;'>
+                    <button (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation()'>
+                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
+                    </button>
                 </ng-container>
                 <ng-template #noAttachment>-</ng-template>
             </td>

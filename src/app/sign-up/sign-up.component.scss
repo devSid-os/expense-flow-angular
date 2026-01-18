@@ -1,28 +1,128 @@
-.p-inputgroupaddon {
-    background-color: transparent !important;
-    border: 1px solid #bebebe !important;
-    border-right: 0 !important;
-}
-
-.p-password {
-    width: 100% !important;
-}
-
 .p-inputtext {
     width: 100% !important;
-    background: #fff !important;
-    border-color: #bebebe !important;
-    color: #000 !important;
+    background-color: #263131 !important; /* Darker than card, blends in */
+    color: #E0E0E0 !important; /* Light text */
+    border: 1px solid #3C4A4A !important; /* Subtle border */
+    padding: 0.75rem 1rem !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease-in-out;
 }
 
-.custom-sign-in-btn>.p-button {
+.p-inputtext::placeholder {
+    color: #6B7280 !important;
+}
+
+/* FIX: Ensure input text clears the icon */
+.p-iconfield input.p-inputtext {
+    padding-left: 2.75rem !important; 
+}
+
+/* Icon Field Styling */
+.p-iconfield .p-inputicon {
+    left: 0.85rem !important;
+    top: 50% !important; 
+    // transform: translateY(-50%) !important;
+    color: #9CA3AF !important; 
+}
+
+/* Hover/Focus States */
+.p-inputtext:focus,
+.p-password input:focus {
+    border-color: #34D399 !important; /* Green accent on focus */
+    box-shadow: 0 0 0 0.1rem rgba(52, 211, 153, 0.5) !important;
+    background-color: #222B2B !important;
+}
+
+/*
+ * PrimeNG Password Component Styling
+ */
+.p-password {
     width: 100% !important;
-    background-color: #f39c12 !important;
-    border: #f39c12 !important;
-    color: #fff !important;
-    font-weight: 500 !important;
+
+    /* Target the actual input inside p-password */
+    input {
+        width: 100% !important;
+        background-color: #263131 !important;
+        color: #E0E0E0 !important;
+        border: 1px solid #3C4A4A !important;
+        padding: 0.75rem 1rem !important;
+        padding-right: 3rem !important; /* Space for toggle/mask icon */
+        border-radius: 8px !important;
+    }
+}
+
+/*
+ * Custom Sign Up Button Styling (Green Gradient)
+ */
+.custom-sign-in-btn > .p-button {
+    width: 100% !important;
+    background: linear-gradient(to right, #34D399, #10B981) !important; 
+    border: none !important;
+    color: #ffffff !important;
+    font-weight: 700 !important; 
+    font-size: 1.1rem !important;
+    padding: 0.85rem 1rem !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); 
+    transition: all 0.2s ease-in-out;
 
     &:hover {
-        background-color: #27ae60 !important;
+        background: linear-gradient(to right, #2ECC71, #0E9B6F) !important; 
+        box-shadow: 0 6px 20px rgba(52, 211, 153, 0.6);
+        transform: translateY(-1px);
     }
+}
+
+/*
+ * Validation Message Styling (to fit dark theme)
+ */
+.p-message {
+    border-radius: 6px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.875rem !important;
+    
+    // Default error message for General SignUpError
+    &.p-error-message {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        border: 1px solid rgba(239, 68, 68, 0.4) !important;
+        color: #EF4444 !important;
+    }
+}
+
+/* Success Validation Messages (Green for checkmarks) */
+.custom-validation-message.p-message-success {
+    background-color: rgba(52, 211, 153, 0.15) !important; /* Subtle Green background */
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    color: #34D399 !important; /* Vibrant Green text */
+}
+
+/* Error Validation Messages (Red for X marks) */
+.custom-validation-message.p-message-error {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid rgba(239, 68, 68, 0.4) !important;
+    color: #EF4444 !important;
+}
+
+/* Animation for subtle background blobs (copied from Sign In) */
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
 }

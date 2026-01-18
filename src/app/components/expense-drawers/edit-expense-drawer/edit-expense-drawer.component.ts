@@ -25,7 +25,9 @@ import { EditCategoryListComponent } from '../edit-category-list/edit-category-l
 import { EditCategoryFormComponent } from '../edit-category-form/edit-category-form.component';
 import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
-import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../../../Models/expenses.model';
+import { ExpenseCategoryModel, ExpenseItemModel } from '../../../Models/expenses.model';
+import { CashbookApiService } from '../../../Services/Cashbook/cashbook-api.service';
+import { EntryModel } from '../../../Models/entry.model';
 
 @Component({
   selector: 'app-edit-expense-drawer',
@@ -37,13 +39,14 @@ import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../..
 })
 export class EditExpenseDrawerComponent implements OnInit {
 
-  @Input('expenseEntry') expenseEntry!: ExpenseEntryModel;
+  @Input('expenseEntry') expenseEntry!: EntryModel;
   private _loadingServ: LoadingService = inject(LoadingService);
   private _expenseApiServ: ExpenseApiService = inject(ExpenseApiService);
   private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _messageServ: MessageService = inject(MessageService);
+  private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
   private _supaBaseServ: SupaBaseService = inject(SupaBaseService);
   private _renderer2: Renderer2 = inject(Renderer2);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
@@ -89,7 +92,7 @@ export class EditExpenseDrawerComponent implements OnInit {
 
   ngOnInit(): void {
     const cart: { [itemId: string]: { item: ExpenseItemModel, qty: number } } = {};
-    this.expenseEntry.items.forEach((element: { item: ExpenseItemModel, qty: number }) => {
+    (this.expenseEntry?.items || []).forEach((element: { item: ExpenseItemModel, qty: number }) => {
       if (element.item._id) {
         return cart[element.item._id] = { ...element };
       }
@@ -102,7 +105,7 @@ export class EditExpenseDrawerComponent implements OnInit {
       date: expenseDate,
       category: this.expenseEntry.category,
       items: this.expenseEntry.items,
-      description: this.expenseEntry.description || '',
+      description: this.expenseEntry?.remark || '',
       id: this.expenseEntry._id,
       mode: this.expenseEntry.mode
     });
@@ -148,7 +151,7 @@ export class EditExpenseDrawerComponent implements OnInit {
           return;
         }
         this.uploadedFileUrl.set(null);
-        this._supaBaseServ.uploadImage(file, file.name, 'cashbook')
+        this._supaBaseServ.uploadImage(file, file.name, 'expense')
           .then((response: any) => {
             this.uploadedFileUrl.set(response.url);
           })
@@ -243,6 +246,7 @@ export class EditExpenseDrawerComponent implements OnInit {
             this._expenseDataServ.showExpenseItemsDrawer.set(false);
             this._loadingServ.loading.set(false);
             this._expenseApiServ.fetchExpenseEntries.next(true);
+            this._cashbookApiServ.reFetchEntries.next(true);
           }
         },
         error: (error: HttpErrorResponse) => {

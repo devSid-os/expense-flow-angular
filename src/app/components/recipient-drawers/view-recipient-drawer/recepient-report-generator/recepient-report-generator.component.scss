@@ -1,0 +1,13 @@
+// report-generator.component.scss
+
+// This component generates PDF in a new window with inline styles
+// All print styles are in report-generator.styles.ts
+
+:host {
+  display: block;
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  visibility: hidden;
+  pointer-events: none;
+}

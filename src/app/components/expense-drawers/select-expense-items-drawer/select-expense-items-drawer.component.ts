@@ -16,8 +16,6 @@ import { DrawerModule } from 'primeng/drawer';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { MessageModule } from 'primeng/message';
 import { Dialog } from 'primeng/dialog';
 // APP COMPONENTS IMPORT
@@ -27,7 +25,7 @@ import { ExpenseItemModel } from '../../../Models/expenses.model';
 
 @Component({
   selector: 'app-select-expense-items-drawer',
-  imports: [CommonModule, ReactiveFormsModule, DrawerModule, ScrollPanelModule, ButtonModule, InputTextModule, IconField, InputIcon, AccordionModule, MessageModule, Toast, Dialog, ItemsListComponent],
+  imports: [CommonModule, ReactiveFormsModule, DrawerModule, ScrollPanelModule, ButtonModule, InputTextModule,  AccordionModule, MessageModule, Toast, Dialog, ItemsListComponent],
   templateUrl: './select-expense-items-drawer.component.html',
   styleUrl: './select-expense-items-drawer.component.scss',
   encapsulation: ViewEncapsulation.None,

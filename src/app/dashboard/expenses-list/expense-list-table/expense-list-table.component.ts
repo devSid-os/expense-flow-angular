@@ -10,9 +10,10 @@ import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { TagModule } from 'primeng/tag';
 // MODELS IMPORT
-import { ExpenseEntryModel, ExpenseItemModel } from '../../../Models/expenses.model';
+import { ExpenseItemModel } from '../../../Models/expenses.model';
 import { PaginationModel } from '../../../Models/pagination.model';
 import { Lightbox, LightboxConfig } from 'ngx-lightbox';
+import { EntryModel } from '../../../Models/entry.model';
 
 @Component({
   selector: 'app-expense-list-table',
@@ -30,7 +31,7 @@ export class ExpenseListTableComponent implements OnInit {
   products: any[] = [];
   filtersApplied: Signal<boolean> = computed(() => this._expenseDataServ.expenseFilterApplied());
   @Input('entriesPagination') entriesPagination!: PaginationModel;
-  @Input('entries') entries!: ExpenseEntryModel[];
+  @Input('entries') entries!: EntryModel[];
   @Output('onPageChange') onPageChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() {
@@ -56,7 +57,7 @@ export class ExpenseListTableComponent implements OnInit {
     this._expenseDataServ.expenseFilterApplied.set(false);
   }
 
-  openViewEntryDrawer(data: ExpenseEntryModel): void {
+  openViewEntryDrawer(data: EntryModel): void {
     this._expenseDataServ.showViewEntryDrawer.set(true);
     this._expenseDataServ.viewEntryData.set(data);
   }

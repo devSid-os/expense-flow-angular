@@ -1,74 +1,91 @@
 <p-toast />
-<div class='min-w-screen max-w-screen min-h-screen max-h-screen w-full h-full'>
-    <div class='w-full min-h-screen flex justify-center items-center'>
-        <div class='bg-[#313131] shadow-lg rounded-md p-3 py-4 w-[90%] sm:my-6 sm:w-[85%] md:w-[60%] lg:w-[40%]'>
-            <div class='w-full h-full flex flex-col items-center gap-3'>
-                <!-- LOGO IMAGE -->
-                <img class='select-none w-[25%] mx-auto' src='images/expense_flow_logo.png' />
-                <h1 class='select-none text-[#289f9b] text-2xl font-bold lg:text-3xl'>Expense Flow</h1>
-                <div class='flex flex-col items-center'>
-                    <h3 class='font-[600] text-lg sm:text-xl'>Sign Up</h3>
-                    <p class='text-[gray] text-sm sm:text-base'>
-                        Already have an account? <a routerLink='/signin'
-                            class='font-[500] text-[#289f9b] hover:opacity-80'>Sign In</a>
-                    </p>
+<div class="min-h-screen w-full flex justify-center items-center bg-[#1E2C2C] p-4 font-sans relative overflow-hidden">
+    
+    <div class="absolute inset-0 bg-gradient-to-br from-[#1E2C2C] to-[#0F1A1A] opacity-80"></div>
+    <div class="absolute w-64 h-64 bg-[#34D399] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob top-0 left-0"></div>
+    <div class="absolute w-64 h-64 bg-[#10B981] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000 bottom-0 right-0"></div>
+
+    <div class="relative bg-[#2D3A3A] shadow-2xl rounded-xl p-8 w-full max-w-md lg:max-w-lg border border-[#3C4A4A] sm:my-6">
+        <div class="w-full h-full flex flex-col items-center gap-4 text-center">
+
+            <div class="flex flex-col items-center gap-3">
+                <div class="w-16 h-16 bg-[#34D399] rounded-full flex items-center justify-center shadow-lg">
+                    <i class="pi pi-wallet text-white text-3xl"></i>
+                </div>
+                <h1 class="select-none text-[#E0E0E0] text-3xl font-bold tracking-tight">ExpenseFlow</h1>
+                <p class="text-[#34D399] text-sm font-medium -mt-2">Smart expense management</p>
+            </div>
+
+            <div class="w-full">
+                <h3 class="font-semibold text-2xl text-white">Sign Up</h3>
+                <p class="text-gray-400 text-sm mt-1">
+                    Already have an account? <a routerLink='/signin'
+                        class='font-semibold text-[#34D399] hover:text-opacity-80 transition-colors cursor-pointer'>Sign In</a>
+                </p>
+            </div>
+
+            <form (ngSubmit)='onSignUpFormSubmit();' [formGroup]='signUpForm'
+                class='w-full flex flex-col gap-4 mt-2'>
+
+                <div class='grid grid-cols-2 gap-x-3'>
+                    <div>
+                        <label class='select-none text-sm font-medium text-gray-300 sr-only' for='firstName'>First Name</label>
+                        <p-iconfield>
+                            <p-inputicon class='pi pi-user text-gray-400' />
+                            <input autocomplete='off' type='text' pInputText placeholder='First Name'
+                                formControlName='firstName' name='firstName' id='firstName' />
+                        </p-iconfield>
+                    </div>
+                    <div>
+                        <label class='select-none text-sm font-medium text-gray-300 sr-only' for='lastName'>Last Name</label>
+                        <p-iconfield>
+                            <p-inputicon class='pi pi-user text-gray-400' />
+                            <input autocomplete='off' type='text' pInputText placeholder='Last Name'
+                                formControlName='lastName' name='lastName' id='lastName' />
+                        </p-iconfield>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class='select-none text-sm font-medium text-gray-300 sr-only' for='email'>Email</label>
+                    <p-iconfield>
+                        <p-inputicon class='pi pi-envelope text-gray-400' />
+                        <input autocomplete='off' type='email' pInputText placeholder='johnDoe25@example.com'
+                            formControlName='email' name='email' id='email' />
+                    </p-iconfield>
+                </div>
+                
+                <div>
+                    <label class='select-none text-sm font-medium text-gray-300 sr-only' for='password'>Password</label>
+                    <p-password class="bg-white!important" autocomplete='off' placeholder='Password' formControlName='password' id='password'
+                        name='password' [feedback]='false' [toggleMask]='true' />
+                </div>
+                
+                <ng-container *ngIf='signUpForm.get("password")?.dirty && signUpForm.get("password")?.invalid'>
+                    <p-message class="custom-validation-message"
+                        [icon]='(!signUpForm.get("password")?.hasError("pattern") && signUpForm.get("password")?.value?.length > 1) ? "pi pi-check" : "pi pi-times-circle"'
+                        [severity]='(!signUpForm.get("password")?.hasError("pattern") && signUpForm.get("password")?.value?.length > 1) ? "success" : "error"'
+                        size='small'>Password must contain uppercase, lowercase, digit and symbol.</p-message>
+                    <p-message class="custom-validation-message"
+                        [icon]='(signUpForm.get("password")?.value?.length >= 8) ? "pi pi-check" : "pi pi-times-circle"'
+                        [severity]='(signUpForm.get("password")?.value?.length >= 8) ? "success" : "error"'
+                        size='small'>Password must be at least 8 characters long.</p-message>
+                </ng-container>
+                
+                <div>
+                    <label class='select-none text-sm font-medium text-gray-300 sr-only' for='confirmPassword'>Confirm Password</label>
+                    <p-password autocomplete='off' placeholder='Confirm Password' formControlName='confirmPassword'
+                        id='confirmPassword' name='confirmPassword' [feedback]='false' [toggleMask]='true' />
                 </div>
 
-                <form (ngSubmit)='onSignUpFormSubmit();' [formGroup]='signUpForm'
-                    class='w-full flex flex-col gap-3 mt-4'>
-                    <div class='grid grid-cols-2 gap-x-2'>
-                        <!-- FIRST NAME -->
-                        <div>
-                            <label class='select-none' for='firstName'>First Name</label>
-                            <input autocomplete='off' class='font-normal' type='text' pInputText placeholder='John'
-                                formControlName='firstName' name='firstName' id='firstName' />
-                        </div>
-                        <!-- LAST NAME -->
-                        <div>
-                            <label class='select-none' for='lastName'>Last Name</label>
-                            <input autocomplete='off' class='font-normal' type='text' pInputText placeholder='Doe'
-                                formControlName='lastName' name='lastName' id='lastName' />
-                        </div>
-                    </div>
-                    <!-- EMAIL -->
-                    <div>
-                        <label class='select-none' for='email'>Email</label>
-                        <input autocomplete='off' class='font-normal' type='email' pInputText placeholder='johnDoe25@example.com'
-                            formControlName='email' name='email' id='email' />
-                    </div>
-                    <!-- PASSWORD -->
-                    <div>
-                        <label class='select-none' for='password'>Password</label>
-                        <p-password autocomplete='off' class='font-normal' placeholder='••••••••' formControlName='password' id='password'
-                            name='password' [feedback]='false' [toggleMask]='true' />
-                    </div>
-                    <!-- PASSWORD ERROR MESSAGES -->
-                    <ng-container *ngIf='signUpForm.get("password")?.dirty && signUpForm.get("password")?.invalid'>
-                        <p-message
-                            [icon]='(!signUpForm.get("password")?.hasError("pattern") && signUpForm.get("password")?.value?.length > 1) ? "pi pi-check" : "pi pi-times-circle"'
-                            [severity]='(!signUpForm.get("password")?.hasError("pattern") && signUpForm.get("password")?.value?.length > 1) ? "success" : "error"'
-                            size='small'>Password must contain uppercase, lowercase, digit and symbol.</p-message>
-                        <p-message
-                            [icon]='(signUpForm.get("password")?.value?.length > 7) ? "pi pi-check" : "pi pi-times-circle"'
-                            [severity]='(signUpForm.get("password")?.value?.length > 7) ? "success" : "error"'
-                            size='small'>Password must be at least 8 characters long.</p-message>
-                    </ng-container>
-                    <!-- CONFIRM PASSWORD -->
-                    <div>
-                        <label class='select-none' for='confirmPassword'>Confirm Password</label>
-                        <p-password autocomplete='off' class='font-normal' placeholder='••••••••' formControlName='confirmPassword'
-                            id='confirmPassword' name='confirmPassword' [feedback]='false' [toggleMask]='true' />
-                    </div>
-
-                    <p-message icon='pi pi-times-circle' *ngIf='signUpError' severity='error' size='small'>
-                        {{signUpError}}
-                    </p-message>
+                <p-message class="p-error-message" icon='pi pi-times-circle' *ngIf='signUpError' severity='error' size='small'>
+                    {{signUpError}}
+                </p-message>
 
 
-                    <p-button [disabled]='loading()' type='submit' class='custom-sign-in-btn mt-2' label='SIGN UP'
-                        [raised]='true' />
-                </form>
-            </div>
+                <p-button [disabled]='loading()' type='submit' class='custom-sign-in-btn mt-4' label='SIGN UP'
+                    [raised]='true' />
+            </form>
         </div>
     </div>
 </div>

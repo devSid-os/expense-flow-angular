@@ -10,14 +10,15 @@ export interface ExpenseCategoryModel {
 };
 
 export interface ExpenseEntryModel {
-    items: [{ item: { name: string, price: number, _id: string }, qty: number }],
-    category: string,
-    date: Date,
-    description?: string,
-    attachment?: string,
-    _id: string,
-    createdAt: Date,
-    updatedAt: Date,
+    items?: [{ item: { name: string, price: number, _id: string }, qty: number }];
+    category?: string;
+    date: Date;
+    description?: string;
+    attachment?: string;
+    _id: string;
+    createdAt: Date;
+    updatedAt: Date;
+    recipient?: string;
     mode: 'online' | 'cash'
 }
 
@@ -37,7 +38,8 @@ export interface CreateExpenseEntryModel {
     items: { item: { name: string, price: number, _id: string }, qty: number }[],
     description?: string,
     mode: 'online' | 'cash',
-    attachment: string | null
+    attachment: string | null,
+    recipient: string | null
 }
 
 export interface FetchFilteredEntriesModel {

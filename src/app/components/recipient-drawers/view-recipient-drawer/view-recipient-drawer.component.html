@@ -1,0 +1,368 @@
+<!-- RECIPIENT DRAWER WITH DATE FILTERS -->
+<p-drawer class="overflow-hidden" (onHide)='onCloseDrawer.emit(!true);' position='right' [visible]='openDrawer'
+    [closable]='false'>
+    <div class="w-full h-full flex flex-col bg-gray-50">
+        <!-- Header -->
+        <div class='p-4 bg-white border-b border-gray-200'>
+            <div class='flex items-center justify-between'>
+                <div class='flex items-center gap-3'>
+                    <app-recipient-avatar [size]='"large"' [name]='recipient.name'
+                        [profileUrl]='recipient.profileUrl || null' />
+                    <div class='flex flex-col'>
+                        <p class='font-semibold text-gray-900'>{{recipient.name}}</p>
+                        <p class='text-sm text-gray-500'>{{recipient.number}}</p>
+                    </div>
+                </div>
+                <button [disabled]="loading()" (click)='onCloseDrawer.emit(!true);'
+                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors' type='button'>
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Balance Summary -->
+        <div class='p-4 pt-2 bg-white'>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-medium mb-1">You Gave</p>
+                    <p class="text-base font-semibold text-gray-900">
+                        <i class="fa-solid fa-indian-rupee-sign text-sm"></i>{{recipient.out}}
+                    </p>
+                </div>
+                <div class="p-3 py-2 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-xs text-gray-500 font-medium mb-1">You Got</p>
+                    <p class="text-base font-semibold text-gray-900">
+                        <i class="fa-solid fa-indian-rupee-sign text-sm"></i>{{recipient.in}}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class='flex gap-2 mt-3'>
+                <button [disabled]="loading()"
+                    class='flex-1 text-gray-700 text-xs font-medium p-2 px-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors'
+                    type='button' (click)="openDownloadReport()">
+                    <i class='fa-regular fa-clipboard'></i>&nbsp;Download Report
+                </button>
+                <button [disabled]="loading()" (click)='confirmDeleteRecipient(recipient._id);'
+                    class='flex-1 text-red-600 text-xs font-medium p-2 px-3 rounded-lg border border-red-200 hover:bg-red-50 transition-colors'
+                    type='button'>
+                    <i class='fa-solid fa-trash'></i>&nbsp;Delete
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="flex-1 min-h-0 bg-gray-50 overflow-hidden flex flex-col">
+            <!-- Transactions Header with Filter Toggle -->
+            <div class="px-4 py-3 pt-0 bg-white border-b border-gray-200 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-gray-900">Transactions</h3>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-gray-500 font-semibold">{{entries.length || 0}} Entries</span>
+                        <button (click)="showDateFilter = !showDateFilter"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
+                            [ngClass]="{'bg-gray-900 text-white': showDateFilter || hasActiveFilter, 'bg-gray-100 text-gray-600 hover:bg-gray-200': !showDateFilter && !hasActiveFilter}"
+                            type="button">
+                            <i class="fa-solid fa-filter text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Date Filter Section (Collapsible) -->
+                <div *ngIf="showDateFilter" class="border-t border-gray-100 pt-3">
+
+                    <!-- Quick Filter Chips -->
+                    <div class="flex flex-wrap gap-2 mb-3">
+                        <button *ngFor="let filter of quickDateFilters" (click)="applyQuickFilter(filter.value)"
+                            class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                            [ngClass]="{'bg-gray-900 text-white': activeQuickFilter === filter.value, 'bg-gray-100 text-gray-600 hover:bg-gray-200': activeQuickFilter !== filter.value}"
+                            type="button">
+                            {{filter.label}}
+                        </button>
+                    </div>
+
+                    <!-- Custom Date Range -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="relative">
+                            <label class="text-xs text-gray-500 font-medium mb-1 block">From</label>
+                            <p-calendar [(ngModel)]="dateFilter.startDate" [showIcon]="true" [iconDisplay]="'input'"
+                                dateFormat="dd M yy" placeholder="Start date"
+                                [maxDate]="dateFilter.endDate || today" (onSelect)="onDateFilterChange()"
+                                styleClass="w-full date-filter-input">
+                            </p-calendar>
+                        </div>
+                        <div class="relative">
+                            <label class="text-xs text-gray-500 font-medium mb-1 block">To</label>
+                            <p-calendar [(ngModel)]="dateFilter.endDate" [showIcon]="true" [iconDisplay]="'input'"
+                                dateFormat="dd M yy" placeholder="End date" [minDate]="dateFilter.startDate"
+                                [maxDate]="today" (onSelect)="onDateFilterChange()"
+                                styleClass="w-full date-filter-input">
+                            </p-calendar>
+                        </div>
+                    </div>
+
+                    <!-- Filter Actions -->
+                    <div class="flex items-center justify-between mt-3">
+                        <button *ngIf="hasActiveFilter" (click)="clearDateFilter()"
+                            class="text-xs text-gray-500 hover:text-gray-700 font-medium flex items-center gap-1"
+                            type="button">
+                            <i class="fa-solid fa-xmark"></i>
+                            Clear filters
+                        </button>
+                        <button [disabled]="loading() || !canApplyFilter" (click)="applyDateFilter()"
+                            class="ml-auto px-4 py-2 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            type="button">
+                            <i class="fa-solid fa-check mr-1"></i>
+                            Apply Filter
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Active Filter Badge -->
+                <div *ngIf="hasActiveFilter && !showDateFilter" class="mt-2 flex items-center gap-2">
+                    <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded-full">
+                        <i class="fa-regular fa-calendar"></i>
+                        {{getActiveFilterLabel()}}
+                        <button (click)="clearDateFilter()" class="ml-1 hover:text-gray-900" type="button">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Scrollable Transactions List -->
+            <div class="flex-1 min-h-0 overflow-hidden">
+                <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
+                    <div class="p-4 space-y-3 pb-2">
+                        <div *ngFor="let entry of entries"
+                            class="bg-white border border-gray-200 rounded-lg p-3 hover:shadow-sm transition-shadow">
+
+                            <!-- Amount and Type -->
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center" [ngClass]="{
+                                            'bg-gray-900 text-white': entry.type === 'out',
+                                            'bg-gray-100 text-gray-900': entry.type === 'in'
+                                        }">
+                                        <i class="fa-solid text-sm" [ngClass]="{
+                                            'fa-arrow-up': entry.type === 'out',
+                                            'fa-arrow-down': entry.type === 'in'
+                                        }"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-bold text-gray-900 flex items-center">
+                                            <i class="fa-solid fa-indian-rupee-sign text-sm"></i>{{entry?.amount || 0}}
+                                        </p>
+                                        <p class="text-xs text-gray-500 font-medium mt-0.5">
+                                            {{entry.type === 'in' ? 'Received' : 'Paid'}}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Mode -->
+                                <span class="text-xs px-2.5 py-1 rounded-full font-medium bg-gray-100 text-gray-700">
+                                    <i [ngClass]="{
+                                        'fa-solid fa-globe': entry.mode === 'online',
+                                        'fa-solid fa-money-bill-wave': entry.mode === 'cash'
+                                    }"></i>
+                                    {{entry.mode}}
+                                </span>
+                            </div>
+
+                            <!-- Remark -->
+                            <div *ngIf="entry?.remark" class="mb-3 p-2.5 bg-gray-50 rounded-lg">
+                                <p class="text-xs text-gray-500 font-medium mb-1">Remark</p>
+                                <p class="text-sm text-gray-700">{{entry.remark}}</p>
+                            </div>
+
+                            <!-- Date and Attachment -->
+                            <div
+                                class="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-100">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="text-sm fa-regular fa-calendar"></i>
+                                    <span class="text-sm">{{entry.date | date:'dd MMM yyyy, h:mm a'}}</span>
+                                </div>
+                                <div *ngIf="entry?.attachment"
+                                    class="flex items-center gap-1.5 text-gray-700 cursor-pointer hover:text-gray-900">
+                                    <i class="fa-solid fa-paperclip"></i>
+                                    <span class="font-medium">View</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div *ngIf="!entries || entries.length === 0" class="text-center py-16">
+                            <div
+                                class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i class="fa-regular fa-folder-open text-2xl text-gray-400"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900 mb-1">No transactions yet</p>
+                            <p class="text-xs text-gray-500">Add your first entry below</p>
+                        </div>
+                    </div>
+                </p-scrollpanel>
+            </div>
+        </div>
+
+        <!-- Action Buttons Footer -->
+        <div class="flex-shrink-0">
+            <div *ngIf="!showDateFilter" class="px-4 py-1 bg-white border-t border-gray-200">
+                <p-paginator class="bg-white" [rows]="pagination.pageSize" [totalRecords]="pagination.totalRecords"
+                    [rowsPerPageOptions]="[15, 25, 40]" (onPageChange)="onPageChange($event)"
+                    [showCurrentPageReport]="true">
+                </p-paginator>
+            </div>
+            <div class="p-4 bg-white border-t border-gray-200">
+                <div class="flex gap-3">
+                    <button [disabled]="loading()" (click)="openAddEntryDrawer('out', recipient._id);" type="button"
+                        class="flex-1 rounded-lg text-sm py-3 font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors">
+                        <i class="fa-solid fa-arrow-up text-xs mr-1"></i>
+                        You Gave
+                    </button>
+
+                    <button [disabled]="loading()" (click)="openAddEntryDrawer('in', recipient._id);" type="button"
+                        class="flex-1 rounded-lg text-sm py-3 font-semibold text-gray-900 bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <i class="fa-solid fa-arrow-down text-xs mr-1"></i>
+                        You Got
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</p-drawer>
+
+<p-confirmDialog #cd>
+    <ng-template pTemplate="headless" let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class="flex flex-col items-center p-6 bg-white rounded-xl shadow-xl max-w-sm mx-auto">
+            <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ message.header }}</h3>
+            <p class="text-sm text-gray-600 text-center mb-2">{{ message.message }}</p>
+            <p class="text-xs text-gray-500 text-center mb-6 bg-gray-50 p-2 rounded-lg">
+                <i class="fa-solid fa-info-circle mr-1"></i>
+                Note: All entries of this recipient will still remain in the system.
+            </p>
+            <div class="flex gap-3 w-full">
+                <button [disabled]="loading()" (click)="onReject()"
+                    class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+                    Cancel
+                </button>
+                <button [disabled]="loading()" (click)="onAccept()"
+                    class="flex-1 bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+                    <i class="fa-solid fa-trash mr-1"></i>Delete
+                </button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmDialog>
+
+<!-- Download Report Modal -->
+<p-dialog 
+    [(visible)]="downloadReportObj.showDownloadModal" 
+    [modal]="true" 
+    [closable]="false" 
+    [draggable]="false"
+    [resizable]="false" 
+    [style]="{ width: '400px', background: '#ffffff', borderRadius: '16px' }" 
+    [showHeader]="false" styleClass="download-progress-modal"
+    [contentStyle]="{ padding: '0', background: '#ffffff', borderRadius: '16px' }"
+>
+
+    <div class="p-6 text-center">
+        <!-- Animated Icon -->
+        <div class="relative w-20 h-20 mx-auto mb-5">
+            <!-- Outer rotating ring -->
+            <div class="absolute inset-0 rounded-full border-4 border-gray-200"></div>
+            <div *ngIf="downloadReportObj.downloadStatus === 'downloading'"
+                class="absolute inset-0 rounded-full border-4 border-transparent border-t-gray-900 animate-spin">
+            </div>
+
+            <!-- Center icon -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div [ngClass]="{
+                    'bg-gray-100': downloadReportObj.downloadStatus === 'downloading',
+                    'bg-green-100': downloadReportObj.downloadStatus === 'completed',
+                    'bg-red-100': downloadReportObj.downloadStatus === 'error'
+                }" class="w-14 h-14 rounded-full flex items-center justify-center transition-colors duration-300">
+                    <i [ngClass]="{
+                        'fa-solid fa-file-arrow-down text-gray-700': downloadReportObj.downloadStatus === 'downloading',
+                        'fa-solid fa-check text-green-900': downloadReportObj.downloadStatus === 'completed',
+                        'fa-solid fa-xmark text-red-600': downloadReportObj.downloadStatus === 'error'
+                    }" class="text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Text -->
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">
+            {{ downloadReportObj.downloadStatus === 'downloading' ? 'Generating Report' :
+            downloadReportObj.downloadStatus === 'completed' ? 'Download Complete!' : 'Download Failed' }}
+        </h3>
+        <p class="text-sm text-gray-500 mb-5">
+            {{ downloadReportObj.downloadStatus === 'downloading' ? 'Please wait while we prepare your report...' :
+            downloadReportObj.downloadStatus === 'completed' ? 'Your report has been downloaded successfully.' :
+            'Something went wrong. Please try again.' }}
+        </p>
+
+        <!-- Progress Bar (only shown during download) -->
+        <div *ngIf="downloadReportObj.downloadStatus === 'downloading'" class="mb-5">
+            <div class="flex items-center justify-between text-xs text-gray-500 mb-2">
+                <span>Progress</span>
+                <span class="font-medium">{{ downloadReportObj.downloadProgress }}%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-gray-900 rounded-full transition-all duration-300 ease-out"
+                    [style.width.%]="downloadReportObj.downloadProgress">
+                </div>
+            </div>
+        </div>
+
+        <!-- File Info Card -->
+        <div *ngIf="downloadReportObj.downloadStatus !== 'error'"
+            class="bg-gray-900 rounded-lg p-3 mb-5 flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-lg bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-file-pdf text-red-500"></i>
+            </div>
+            <div class="text-left flex-1 min-w-0">
+                <p class="text-sm font-medium text-white truncate">{{ recipient.name }}_report.pdf</p>
+                <p class="text-xs text-white">
+                    {{ downloadReportObj.downloadStatus === 'downloading' ? 'Preparing...' : 'Ready' }}
+                </p>
+            </div>
+            <i *ngIf="downloadReportObj.downloadStatus === 'completed'"
+                class="fa-solid fa-circle-check text-green-500 text-lg"></i>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+            <button *ngIf="downloadReportObj.downloadStatus === 'downloading'" (click)="cancelDownloadReport()"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                Cancel
+            </button>
+
+            <button *ngIf="downloadReportObj.downloadStatus === 'completed'" (click)="closeDownloadReportModal()"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors">
+                Done
+            </button>
+
+            <button *ngIf="downloadReportObj.downloadStatus === 'error'" (click)="retryDownloadReport()"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors">
+                <i class="fa-solid fa-rotate-right mr-1"></i>
+                Retry
+            </button>
+
+            <button *ngIf="downloadReportObj.downloadStatus === 'error'" (click)="closeDownloadReportModal()"
+                class="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</p-dialog>
+
+<p-toast position="bottom-center" />
+
+<app-recepient-report-generator #reportGenerator></app-recepient-report-generator>

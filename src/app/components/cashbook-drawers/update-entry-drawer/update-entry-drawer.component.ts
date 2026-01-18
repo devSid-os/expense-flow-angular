@@ -25,7 +25,7 @@ import { Toast } from 'primeng/toast';
 // APP COMPONENT IMPORTS
 import { FormImagePreviewComponent } from '../../form-image-preview/form-image-preview.component';
 // MODELS IMPORT
-import { CashbookModel } from '../../../Models/cashbook.model';
+import { EntryModel } from '../../../Models/entry.model';
 
 @Component({
   selector: 'app-update-entry-drawer',
@@ -44,9 +44,9 @@ export class UpdateEntryDrawerComponent implements OnInit {
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private _cashbookApiServ: CashbookApiService = inject(CashbookApiService);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
-  @Input('entryData') entryData!: CashbookModel;
+  @Input('entryData') entryData!: EntryModel;
   @Output('onCloseDrawer') onCloseDrawer: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output('onSuccessfullUpdate') onSuccessfullUpdate: EventEmitter<CashbookModel> = new EventEmitter<CashbookModel>();
+  @Output('onSuccessfullUpdate') onSuccessfullUpdate: EventEmitter<EntryModel> = new EventEmitter<EntryModel>();
   readonly today = new Date();
   uploadedFileUrl: WritableSignal<string | null> = signal(null);
   entryForm: FormGroup;

@@ -1,153 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-
-// * {
-//     font-family: "Noto Sans", serif;
-//     font-optical-sizing: auto;
-//     font-weight: normal;
-//     font-style: normal;
-//     font-variation-settings:
-//         "wdth" 100;
-// }
-
-:host ::ng-deep {
-    .p-scrollpanel {
-        &.custombar {
-            .p-scrollpanel-bar {
-                background-color: var(--p-primary-color);
-            }
-        }
-    }
-}
-
+// Drawer sizing
 .p-drawer-right {
     width: 100% !important;
 
     .p-drawer-content {
-        background: #fff !important;
+        background: #f9fafb !important;
+        
+        // Thin scrollbar
+        scrollbar-width: thin !important;
+        scrollbar-color: #d1d5db #f3f4f6 !important;
     }
 }
 
-.expenseDateInput .p-inputtext,
-.expenseCategoryInputDiv .p-inputtext,
-.editCategoryInputDiv .p-inputtext,
-.entryDescriptionInputDiv .p-inputtext {
-    // width: 60% !important;
-    color: #000 !important;
-    background: #fff !important;
-    border: 1px solid #e9e9e9 !important;
+// Webkit browsers (Chrome, Safari, Edge) - thin scrollbar
+.p-drawer-content::-webkit-scrollbar {
+    width: 6px !important;
 }
 
-.entryDescriptionInputDiv .p-inputtext {
-    border: 1px solid #bebebe !important;
+.p-drawer-content::-webkit-scrollbar-track {
+    background: #f3f4f6 !important;
 }
 
-.expenseCategoryInputDiv button {
-    background-color: transparent !important;
-    border: 0 !important;
-
-    .fa-check {
-        color: seagreen !important;
-    }
-
-    .fa-times {
-        color: red !important;
-    }
+.p-drawer-content::-webkit-scrollbar-thumb {
+    background: #d1d5db !important;
+    border-radius: 3px !important;
 }
 
-.add-category-btn button,
-.edit-categories-btn button,
-.back-btn button {
-    background-color: transparent !important;
-    border: 0 !important;
-    color: rgb(23, 92, 211) !important;
-    padding: .4rem .4rem !important;
-
-    &:hover {
-        background-color: rgb(23, 92, 211, .1) !important;
-    }
+.p-drawer-content::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af !important;
 }
 
-.expenseCategoryDiv .p-select,
-.showCashbookFieldsDiv .p-select {
-    background-color: #fff !important;
-    border: 1px solid #bebebe !important;
-
-    input {
-        color: #000 !important;
-    }
+// Thin scrollbar for overflow containers
+.overflow-y-auto {
+    scrollbar-width: thin !important;
+    scrollbar-color: #d1d5db #f3f4f6 !important;
 }
 
-.showCashbookFieldsDiv .p-select {
-    display: flex !important;
-    align-items: center !important;
-    height: 100% !important;
-    border: 1px solid #e9e9e9 !important;
-
-    span {
-        color: #000 !important;
-    }
+.overflow-y-auto::-webkit-scrollbar {
+    width: 6px !important;
 }
 
-.expenseCategoryDiv .p-select-overlay,
-.showCashbookFieldsDiv .p-select-overlay {
-    background: #fff !important;
-    border: 1px solid #bebebe !important;
-    // border-radius: 0 !important;
-
-    .p-select-option:hover:not(.p-select-option-selected),
-    .p-select-option-selected {
-        background-color: rgb(23, 92, 211, .1) !important;
-        color: rgb(23, 92, 211) !important;
-    }
-
-    .p-select-option:not(.p-select-option-selected) {
-        background: #fff !important;
-        color: #000 !important;
-    }
-
+.overflow-y-auto::-webkit-scrollbar-track {
+    background: #f3f4f6 !important;
 }
 
-.form-error-message .p-message {
-    margin-top: .5rem !important;
+.overflow-y-auto::-webkit-scrollbar-thumb {
+    background: #d1d5db !important;
+    border-radius: 3px !important;
 }
 
-.edit-category-btn button {
-    color: rgb(23, 92, 211) !important;
-    width: max-content !important;
-    padding: 0 !important;
-}
-
-.delete-category-btn button,
-.delete-file-btn button {
-    color: red !important;
-    width: max-content !important;
-    padding: 0 !important;
-}
-
-.confirm-delete-btn button,
-.editCategory-btn button {
-    background: #03d47c !important;
-}
-
-.select-expense-items-btn button {
-    background: white;
-    color: rgb(23, 92, 211) !important;
-    border: 1px solid rgb(23, 92, 211) !important;
-    width: 100% !important;
-
-    &:hover {
-        background: rgba(23, 92, 211, .1) !important;
-    }
-}
-
-.submit-form-btn button {
-    background: rgb(23, 92, 211) !important;
-    color: #fff !important;
-    width: 100% !important;
-}
-
-.total-amt-inp-disabled .p-inputtext {
-    background: #e1dede;
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af !important;
 }
 
 @media screen and (min-width: 768px) {
@@ -160,4 +62,141 @@
     .p-drawer-right {
         width: 32% !important;
     }
+}
+
+// Input styling
+input.p-inputtext,
+textarea.p-inputtext {
+    color: #111827 !important;
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    
+    &:focus {
+        border-color: #9ca3af !important;
+        box-shadow: 0 0 0 1px #9ca3af !important;
+    }
+
+    &:disabled {
+        background: #f3f4f6 !important;
+        color: #6b7280 !important;
+        cursor: not-allowed !important;
+    }
+
+    &::placeholder {
+        color: #9ca3af !important;
+    }
+}
+
+// Select/Dropdown styling
+.p-select {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    
+    &:focus,
+    &:focus-within {
+        border-color: #9ca3af !important;
+        box-shadow: 0 0 0 1px #9ca3af !important;
+    }
+
+    input,
+    span {
+        color: #111827 !important;
+    }
+}
+
+.p-select-overlay {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+
+    .p-select-option:hover:not(.p-select-option-selected) {
+        background-color: #f3f4f6 !important;
+        color: #111827 !important;
+    }
+
+    .p-select-option-selected {
+        background-color: #111827 !important;
+        color: #ffffff !important;
+    }
+
+    .p-select-option:not(.p-select-option-selected) {
+        background: #ffffff !important;
+        color: #111827 !important;
+    }
+}
+
+// Datepicker styling
+.p-datepicker {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+}
+
+// Scrollpanel
+:host ::ng-deep {
+    .p-scrollpanel {
+        &.custombar {
+            .p-scrollpanel-bar {
+                background-color: #9ca3af;
+            }
+        }
+    }
+}
+
+// Remove default button styles and let Tailwind handle it
+button[type="button"],
+button[type="submit"] {
+    &:focus {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+}
+
+// Message styling
+.p-message {
+    margin-top: 0.5rem !important;
+    
+    &.p-message-error {
+        background: #fef2f2 !important;
+        border: 1px solid #fecaca !important;
+        color: #dc2626 !important;
+    }
+}
+
+// Form validation
+.ng-invalid.ng-touched {
+    border-color: #ef4444 !important;
+}
+
+// Ensure proper text colors throughout
+.p-component {
+    color: #111827 !important;
+}
+
+// Category and item cards styling
+.bg-gray-50 {
+    transition: background-color 0.15s ease-in-out;
+}
+
+// Dashed border hover effect
+.border-dashed:hover {
+    border-style: dashed !important;
+}
+
+// Total amount display
+.text-2xl {
+    line-height: 1.2 !important;
+}
+
+// Disabled state for save button
+button:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    
+    &:hover {
+        background-color: inherit !important;
+    }
+}
+
+.fa-pencil {
+    color: #fff!important;
 }

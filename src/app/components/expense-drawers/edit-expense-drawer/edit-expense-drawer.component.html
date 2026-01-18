@@ -1,4 +1,4 @@
-<!-- ADD EXPENSE DRAWER -->
+<!-- EDIT EXPENSE DRAWER -->
 <p-drawer 
     (onHide)='closeDrawer();' 
     position='right' 
@@ -6,185 +6,218 @@
     [closable]='false'
     id='editExpenseDrawer'
 >
-    <p-scrollpanel [style]='{ width: "100%", height: "100%" }'>
-        <div class='w-full h-[100%] pb-2 bg-white'>
-            <div class='p-3'>
-                <h6 class='text-black text-lg font-[500]'>Edit Expense</h6>
+    <div class="w-full h-full flex flex-col bg-gray-50">
+        <!-- Header -->
+        <div class='p-4 bg-white border-b border-gray-200'>
+            <div class='flex items-center justify-between'>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                        <i class="fa-solid fa-pencil text-sm text-white"></i>
+                    </div>
+                    <h2 class='text-lg font-semibold text-gray-900'>Edit Expense</h2>
+                </div>
+                <button 
+                    (click)='closeDrawer()' 
+                    type='button' 
+                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors'
+                >
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
             </div>
-            <hr class='border-1 border-[#e6e0e0]' />
+        </div>
 
-            <!-- EXPENSE ENTRY FORM -->
-            <form 
-                (ngSubmit)='updateExpenseEntry();'
-                style='padding-bottom: 30px;'
-                [formGroup]='editEntryForm' 
-                class='p-3 px-4 flex flex-col gap-4 overflow-y-auto'
-            >
-                <!-- DATE DIV -->
-                <div class='text-black flex justify-between items-stretch gap-2'>
-                    <div class='flex-1 expenseDateInput flex flex-col gap-1'>
-                        <label class='font-[500]'>Expense Date</label>
+        <!-- Form Content -->
+        <form 
+            class='flex-1 overflow-y-auto'
+            (ngSubmit)='updateExpenseEntry();'
+            [formGroup]='editEntryForm'
+        >
+            <div class="p-4 space-y-4">
+                
+                <!-- Date and Mode Row -->
+                <div class='grid grid-cols-2 gap-3'>
+                    <!-- Date Input -->
+                    <div class='flex flex-col gap-1.5'>
+                        <label class='text-sm font-medium text-gray-700'>Date</label>
                         <p-datepicker 
                             formControlName='date' 
-                            name='expenseDate' 
                             [maxDate]='today'
                             [iconDisplay]='"input"' 
                             [showIcon]='true' 
-                            inputId='icondisplay' 
+                            inputId='icondisplay'
                         />
                     </div>
-                    <div class='flex-1 showCashbookFieldsDiv flex flex-col gap-1'>
-                        <label class='font-[500]'>Mode</label>
+        
+                    <!-- Mode Select -->
+                    <div class='flex flex-col gap-1.5'>
+                        <label class='text-sm font-medium text-gray-700'>Payment Mode</label>
                         <p-select 
                             formControlName='mode'
-                            name='entryMode' 
                             [options]='modeOptions'
-                            placeholder='Select Mode' 
-                            size='small' 
+                            placeholder='Select mode' 
                             [editable]='false'
                             optionLabel='label' 
                             optionValue='value' 
-                            class='w-full'
+                            styleClass="w-full"
                         />
                     </div>
                 </div>
 
-
-                <!-- SELECT CATEGORY DIV -->
-                <div>
-                    <div 
-                        style='border: 1px solid #e9e9e9;'
-                        class='expenseCategoryDiv text-black p-2 pb-4 rounded-md flex flex-col gap-3 rounded-bl-none rounded-br-none'
-                    >
-                        <div class='flex items-center'>
-                            <i class='fa-solid fa-layer-group text-[gray] text-sm mt-[2px]'></i>&nbsp;&nbsp;
-                            <p class='text-black'>Expense Category</p>
-                        </div>
-
-                        <p-select 
-                            formControlName='category' 
-                            name='expenseCategory' 
-                            [options]='categoriesOptions()'
-                            placeholder='Select a Category' 
-                            size='small' 
-                            [editable]='true'
-                            optionLabel='name' 
-                            optionValue='name' 
-                            class='w-full' 
-                        />
-
+                <!-- Category Section -->
+                <div class='bg-white border border-gray-200 rounded-lg p-4 space-y-3'>
+                    <div class='flex items-center gap-2'>
+                        <i class='fa-solid fa-layer-group text-gray-500 text-sm'></i>
+                        <p class='text-sm font-semibold text-gray-900'>Category</p>
                     </div>
 
-                    <!-- ADD/EDIT CATEGORY DIV -->
-                    <div 
-                        style='border: 1px solid #e9e9e9;border-top: 0;' 
-                        class='p-2 rounded-bl-md rounded-br-md'
-                    >
-                        <div 
-                            *ngIf='!isAddNewCategory && !isEditCategory' 
-                            class='flex justify-between items-center'
+                    <p-select 
+                        formControlName='category' 
+                        [options]='categoriesOptions()'
+                        placeholder='Select a category' 
+                        [editable]='true'
+                        optionLabel='name' 
+                        optionValue='name' 
+                        styleClass='w-full' 
+                    />
+
+                    <!-- Category Actions -->
+                    <div *ngIf='!isAddNewCategory && !isEditCategory' class='flex gap-2 pt-2 border-t border-gray-100'>
+                        <button 
+                            (click)='showAddNewCategoryForm();' 
+                            type='button'
+                            class='flex-1 text-xs font-medium py-2 px-3 text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors'
                         >
-                            <p-button 
-                                (click)='showAddNewCategoryForm();' 
-                                pRipple 
-                                label='Add New Category'
-                                class='add-category-btn' 
-                                icon='fa-solid fa-plus' 
-                                size='small' 
-                            />
-                            <p-button 
-                                (click)='isEditCategory = true;' 
-                                class='edit-categories-btn' 
-                                pRipple 
-                                label='Edit'
-                                size='small' 
-                            />
-                        </div>
-
-                        <!-- ADD NEW CATEGORY FORM -->
-                        <app-add-category *ngIf='isAddNewCategory' (onCloseCategoryForm)='closeAddNewCategoryForm();'></app-add-category>
-
-                        <!-- EDIT CATEGORY FORM DIV -->
-                        <app-edit-category-list *ngIf='isEditCategory' (onEditCategoryClick)='showEditCategoryModal($event)' (onCloseEditCategoryModal)='isEditCategory=false;'></app-edit-category-list>
+                            <i class='fa-solid fa-plus mr-1'></i>Add Category
+                        </button>
+                        <button 
+                            (click)='isEditCategory = true;' 
+                            type='button'
+                            class='flex-1 text-xs font-medium py-2 px-3 text-gray-700 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors'
+                        >
+                            <i class='fa-solid fa-pencil mr-1'></i>Edit
+                        </button>
                     </div>
+
+                    <!-- Add New Category Form -->
+                    <app-add-category 
+                        *ngIf='isAddNewCategory' 
+                        (onCloseCategoryForm)='closeAddNewCategoryForm();'
+                    >
+                    </app-add-category>
+
+                    <!-- Edit Category Form -->
+                    <app-edit-category-list 
+                        *ngIf='isEditCategory' 
+                        (onEditCategoryClick)='showEditCategoryModal($event)' 
+                        (onCloseEditCategoryModal)='isEditCategory=false;'
+                    >
+                    </app-edit-category-list>
                 </div>
 
-                <!-- SELECT EXPENSE ITEMS DIV -->
-                <div 
-                    style='border: 1px solid #e9e9e9;'
-                    class='expenseCategoryDiv p-3 pb-4 rounded-md flex flex-col gap-3'
-                >
-                    <p class='text-black font-semibold'>Expense Item Details</p>
+                <!-- Expense Items Section -->
+                <div class='bg-white border border-gray-200 rounded-lg p-4 space-y-3'>
+                    <p class='text-sm font-semibold text-gray-900'>Expense Items</p>
 
-                    <div class='w-full flex flex-col'>
-                        @for (item of cartItemsArray();track item.item._id) {
-                            <div class='w-full flex justify-between py-2'>
-                                <div>
-                                    <p class='text-black'>{{item.item.name}}</p>
-                                    <p class='text-[gray] text-sm flex items-center gap-2 tracking-wide'>
-                                        <span>{{item.qty}}</span>
-                                        <span>x</span>
-                                        <span>
-                                            <i style='font-size: .8rem;' class='text-sm fa-solid fa-indian-rupee-sign'></i>{{item.item.price}}
-                                        </span>
-                                    </p>
-                                </div>
-                                <p class='text-black font-semibold'>
-                                    <i class='fa-solid fa-indian-rupee-sign'></i>{{calculateItemsTotal(item.item.price, item.qty)}}
+                    <!-- Items List -->
+                    <div class='space-y-2' *ngIf='cartItemsArray().length > 0'>
+                        <div *ngFor='let item of cartItemsArray()' 
+                            class='flex justify-between items-start p-3 bg-gray-50 rounded-lg'>
+                            <div>
+                                <p class='text-sm font-medium text-gray-900'>{{item.item.name}}</p>
+                                <p class='text-sm text-gray-500 mt-1 flex items-center gap-2'>
+                                    <span>{{item.qty}}</span>
+                                    <span>×</span>
+                                    <span>
+                                        <i class='fa-solid fa-indian-rupee-sign text-xs'></i>{{item.item.price}}
+                                    </span>
                                 </p>
                             </div>
-                        }
+                            <p class='text-sm font-semibold text-gray-900'>
+                                <i class='fa-solid fa-indian-rupee-sign text-xs'></i>{{calculateItemsTotal(item.item.price, item.qty)}}
+                            </p>
+                        </div>
                     </div>
 
-                    <p-button 
-                        (click)='openExpenseItemsDrawer();' 
-                        class='select-expense-items-btn' 
-                        [label]='cartItemsArray().length > 0 ? "Add More Items" : "Select Expense Items"' icon='fa-solid fa-plus' size='small' 
-                    />
-                </div>
-
-                <!-- TOTAL AMOUNT DIV -->
-                <div class='flex flex-col gap-1' *ngIf='cartItemsArray().length'>
-                    <p class='text-black font-[500]'>Total Amount</p>
-                    <input disabled [value]='cartTotal()' class='total-amt-inp-disabled' type='number' pInputText pSize='small' />
-                </div>
-
-                <!-- ATTACH MEDIA DIV -->
-                <div class='flex flex-col gap-2'>
-                    <ng-container *ngIf='uploadedFileUrl()'>
-                        <app-form-image-preview [fileUrl]='uploadedFileUrl()' (removeFileUrl)='removeMediaUrl()'></app-form-image-preview>
-                    </ng-container>
+                    <!-- Add Items Button -->
                     <button 
-                        (click)='onUploadFileClick()'
-                        type='button' 
-                        class='text-sm px-4 bg-[#4863d4] text-white font-[500] w-max rounded-[3px] py-1' 
-                        style='border: 1px solid #4863d4;'
+                        (click)='openExpenseItemsDrawer();' 
+                        type='button'
+                        class='w-full p-3 text-sm font-medium text-gray-700 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors'
                     >
-                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attach Bill / Media
+                        <i class='fa-solid fa-plus mr-2'></i>
+                        {{cartItemsArray().length > 0 ? 'Add More Items' : 'Select Expense Items'}}
                     </button>
                 </div>
 
-                <!-- EXPENSE ENTRY DESCRIPTION DIV -->
-                <div class='entryDescriptionInputDiv flex flex-col'>
-                    <label class='text-black font-[500]' for='entryDescription'>Description</label>
+                <!-- Total Amount -->
+                <div class='flex flex-col gap-1.5' *ngIf='cartItemsArray().length'>
+                    <label class='text-sm font-medium text-gray-900'>Total Amount</label>
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                        <p class="text-base font-bold text-gray-900">
+                            <i class='fa-solid fa-indian-rupee-sign text-sm'></i>{{cartTotal()}}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Description Input -->
+                <div class='flex flex-col gap-1.5'>
+                    <label class='text-sm font-medium text-gray-700'>
+                        Description <span class="text-gray-400 font-normal">(Optional)</span>
+                    </label>
                     <input 
                         autocomplete='off' 
-                        placeholder='Enter Description' 
+                        placeholder='Add a description...' 
                         pInputText 
                         type='text' 
-                        formControlName='description' 
-                        name='entryDescription' 
-                        id='entryDescription' 
+                        formControlName='description'
+                        class="w-full"
                     />
                 </div>
 
-                <!-- SUBMIT BUTTON -->
-                <p-button type='submit' class='submit-form-btn' label='Update Entry' />
-            </form>
-        </div>
-    </p-scrollpanel>
+                <!-- Attachment Section -->
+                <div class='flex flex-col gap-2'>
+                    <label class='text-sm font-medium text-gray-700'>
+                        Attachment <span class="text-gray-400 font-normal">(Optional)</span>
+                    </label>
+                    
+                    <ng-container *ngIf='uploadedFileUrl()'>
+                        <app-form-image-preview 
+                            [fileUrl]='uploadedFileUrl()' 
+                            (removeFileUrl)='removeMediaUrl()'>
+                        </app-form-image-preview>
+                    </ng-container>
+
+                    <button 
+                        (click)='onUploadFileClick()'
+                        type='button' 
+                        class='w-full p-3 text-sm font-medium text-gray-700 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors'
+                    >
+                        <i class='fa-solid fa-paperclip mr-2'></i>Attach Bill or Receipt
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer with Update Button -->
+            <div class='p-4 bg-white border-t border-gray-200 mt-auto'>
+                <button 
+                    type='submit'
+                    class='w-full rounded-lg text-sm py-3 font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                    [disabled]='editEntryForm.invalid || cartItemsArray().length === 0'
+                >
+                    <i class="fa-solid fa-check mr-2"></i>Update Expense
+                </button>
+            </div>
+        </form>
+    </div>
 </p-drawer>
 
-<app-edit-category-form *ngIf='editCategoryData' [editCategoryData]='editCategoryData' [showEditCategoryDialog]='showEditCategoryDialog' (onCloseEditCategoryDialog)='closeEditCategoryModal()'></app-edit-category-form>
+<!-- EDIT CATEGORY FORM DIALOG -->
+<app-edit-category-form 
+    *ngIf='editCategoryData' 
+    [editCategoryData]='editCategoryData' 
+    [showEditCategoryDialog]='showEditCategoryDialog' 
+    (onCloseEditCategoryDialog)='closeEditCategoryModal()'
+>
+</app-edit-category-form>
 
 <p-toast position='bottom-center' />

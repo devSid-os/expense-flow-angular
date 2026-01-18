@@ -52,23 +52,25 @@
             <td class='tracking-wide text-sm italic text-[#fff]'>
                 {{ entry.date | date : 'dd-MMM-yyyy' }}
             </td>
-            <td class='tracking-wide font-semibold text-sm'>{{ entry.category }}</td>
+            <td class='tracking-wide font-semibold text-sm'>{{ entry?.category || '-' }}</td>
             <td class='font-semibold text-[#f87171] text-sm'>
-                <i class='fa-solid fa-indian-rupee-sign text-sm'></i>&nbsp;{{ getExpenseTotal(entry.items)
+                <i class='fa-solid fa-indian-rupee-sign text-sm'></i>&nbsp;{{ getExpenseTotal(entry?.items || [])
                 }}
             </td>
             <td class='tracking-wide text-[13px] italic text-[#fff]'>
-                <p-tag 
-                    [severity]='entry.mode === "online" ? "success" : "warn"' 
-                    [value]='entry.mode | uppercase' 
-                />
+                <span
+                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium text-white capitalize"
+                    [ngClass]="entry?.mode === 'online' ? 'bg-green-600' : 'bg-orange-500'">
+                    {{ entry?.mode || 'N/A' }}
+                </span>
             </td>
             <td class='text-[13px] text-[#bebebe] tracking-wide hover:text-[aqua]'>
-                <button (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation();'>
-                    <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
-                </button>
-                <!-- <p-button (click)='onEditExpenseClick.emit(entry);' class='edit-entry-btn'
-                    icon='fa-solid fa-pencil' variant='text' size='small' />-->
+                <ng-container *ngIf='entry.attachment;else noAttachmentPlaceholder;'>
+                    <button (click)='openAttachmentPreview(entry.attachment);$event.stopPropagation();'>
+                        <i class='fa-solid fa-paperclip'></i>&nbsp;Attachment
+                    </button>
+                </ng-container>
+                <ng-template #noAttachmentPlaceholder>-</ng-template>
             </td>
         </tr>
     </ng-template>

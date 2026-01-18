@@ -1,0 +1,4 @@
+<p-avatar *ngIf='!profileUrl;else imageAvatar;' [label]='name[0] | uppercase' [size]='size' shape='square' />
+<ng-template #imageAvatar>
+    <p-avatar [size]='size' [image]='profileUrl!' shape='square' />
+</ng-template>

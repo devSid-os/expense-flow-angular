@@ -13,7 +13,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ButtonModule } from 'primeng/button';
 // MODELS IMPORT
-import { CashbookModel } from '../../../Models/cashbook.model';
+import { EntryModel } from '../../../Models/entry.model';
 // IMAGE VIEWER IMPORT
 import { Lightbox, LightboxConfig } from 'ngx-lightbox';
 
@@ -34,9 +34,9 @@ export class ViewEntryDrawerComponent {
   private _userAccountServ: UserAccountService = inject(UserAccountService);
   private readonly _userId: string = this._userAccountServ.userPayload()._id;
   @Input('isViewEntryDrawerOpen') isViewEntryDrawerOpen!: boolean;
-  @Input('entryData') entryData!: CashbookModel;
+  @Input('entryData') entryData!: EntryModel;
   @Output('onCloseDrawer') onCloseDrawer: EventEmitter<false> = new EventEmitter<false>();
-  @Output('onEditClick') onEditClick: EventEmitter<CashbookModel> = new EventEmitter<CashbookModel>();
+  @Output('onEditClick') onEditClick: EventEmitter<EntryModel> = new EventEmitter<EntryModel>();
 
   constructor() {
     this._lightboxConfig.resizeDuration = 1;

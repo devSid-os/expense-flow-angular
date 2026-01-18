@@ -1,5 +1,5 @@
 <!-- ADD CASH ENTRY DRAWER -->
-<p-drawer 
+<!-- <p-drawer 
     position='right' 
     [visible]='isViewEntryDrawerOpen' 
     [closable]='false'
@@ -58,7 +58,7 @@
                     </ng-container>
 
                     <div class='flex gap-2'>
-                        <button type='button' class='bg-[#e7f1f9] text-[#2195dd] mt-2 px-2 py-1 text-sm rounded-md'>
+                        <button type='button' class='bg-[#e7f1f9] text-[#2195dd] font-[500] mt-2 px-2 py-1 text-sm rounded-md'>
                             {{entryData.mode | uppercase}}
                         </button>
                     </div>
@@ -141,4 +141,212 @@
             </div>
         </div>
     </ng-template>
+</p-confirmdialog> -->
+
+<!-- VIEW ENTRY DRAWER -->
+<!-- VIEW ENTRY DRAWER -->
+<p-drawer 
+    class="view-entry-drawer" 
+    position='right' 
+    [visible]='isViewEntryDrawerOpen' 
+    [closable]='false'
+    (onHide)='onCloseDrawer.emit();'
+>
+    <div class="w-full h-full flex flex-col bg-gray-50">
+        <!-- Header -->
+        <div class='p-4 bg-white border-b border-gray-200'>
+            <div class='flex items-center justify-between'>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                        <i class="fa-solid fa-receipt text-sm"></i>
+                    </div>
+                    <h2 class='text-lg font-semibold text-gray-900'>Transaction Details</h2>
+                </div>
+                <button 
+                    (click)='onCloseDrawer.emit();'
+                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors flex items-center justify-center' 
+                    type='button'
+                >
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto">
+            <div class="p-4 space-y-4">
+                
+                <!-- Main Transaction Card -->
+                <div class='bg-white border border-gray-200 rounded-lg p-4'>
+                    <!-- Type and Date -->
+                    <div class='flex justify-between items-start mb-3'>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                                [ngClass]="{
+                                    'bg-gray-900 text-white': entryData.type === 'out',
+                                    'bg-gray-100 text-gray-900': entryData.type === 'in'
+                                }">
+                                <i class="fa-solid text-sm" [ngClass]="{
+                                    'fa-arrow-up': entryData.type === 'out',
+                                    'fa-arrow-down': entryData.type === 'in'
+                                }"></i>
+                            </div>
+                            <div>
+                                <p class='font-semibold text-gray-900'>
+                                    {{ entryData.type === 'out' ? 'Cash Out' : 'Cash In' }}
+                                </p>
+                                <p class='text-xs text-gray-500'>
+                                    {{ entryData.date | date: 'dd MMM yyyy' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div class='py-3'>
+                        <p class='text-lg font-bold text-gray-900'>
+                            <i class='fa-solid fa-indian-rupee-sign text-base'></i> {{ entryData.amount }}
+                        </p>
+                    </div>
+
+                    <!-- Payment Mode Badge -->
+                    <div class='flex gap-2 mb-3'>
+                        <span class='text-xs px-2.5 py-1 rounded-full font-medium bg-gray-100 text-gray-700'>
+                            <i [ngClass]="{
+                                'fa-solid fa-globe': entryData.mode === 'online',
+                                'fa-solid fa-money-bill-wave': entryData.mode === 'cash'
+                            }"></i>
+                            {{ entryData.mode | uppercase }}
+                        </span>
+                        <span *ngIf='entryData.category' class='text-xs px-2.5 py-1 rounded-full font-medium bg-gray-100 text-gray-700'>
+                            <i class="fa-solid fa-tag"></i>
+                            {{ entryData.category| uppercase }}
+                        </span>
+                    </div>
+
+                    <!-- Remark -->
+                    <div *ngIf='entryData.remark' class='p-3 bg-gray-50 rounded-lg border border-gray-200 mb-3'>
+                        <p class='text-xs text-gray-500 font-medium mb-1'>Note</p>
+                        <p class='text-sm text-gray-700'>{{ entryData.remark }}</p>
+                    </div>
+
+                    <!-- Attachment -->
+                    <div *ngIf='entryData.attachment' class='mb-3'>
+                        <p class='text-xs text-gray-500 font-medium mb-2'>Attachment</p>
+                        <div
+                            (click)='openAttachmentPreview(entryData.attachment)' 
+                            class='relative cursor-pointer overflow-hidden w-32 h-32 rounded-lg border-2 border-gray-200 hover:border-gray-900 transition-colors'
+                        >
+                            <img [src]='entryData.attachment' class='w-full h-full object-cover' />
+                            <div class='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-end justify-center pb-2'>
+                                <span class='text-white text-xs font-medium'>
+                                    <i class='fa-solid fa-expand mr-1'></i>View
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Items List -->
+                    <div *ngIf='entryData.items && entryData.items.length > 0' class='pt-3 border-t border-gray-200'>
+                        <p class='text-sm font-semibold text-gray-900 mb-3'>Items</p>
+                        <div class='space-y-2'>
+                            <div *ngFor='let item of entryData.items' 
+                                class='flex justify-between items-start p-2 bg-gray-50 rounded-lg'>
+                                <div class='flex-1'>
+                                    <p class='text-sm font-medium text-gray-900'>{{ item?.item?.name || 'Nil' }}</p>
+                                    <p class='text-xs text-gray-500'>Quantity: {{ item.qty || 'Nil' }}</p>
+                                </div>
+                                <p class='text-sm font-semibold text-gray-900'>
+                                    <i class='fa-solid fa-indian-rupee-sign text-xs'></i>{{ item?.item?.price || 'Nil' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Timeline -->
+                <div class='bg-white border border-gray-200 rounded-lg p-4'>
+                    <h3 class='text-sm font-semibold text-gray-900 mb-3'>Activity</h3>
+                    <div class='space-y-3'>
+                        <!-- Created -->
+                        <div class='flex items-start gap-3'>
+                            <div class='w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0'>
+                                <i class='fa-solid fa-plus text-xs'></i>
+                            </div>
+                            <div class='flex-1'>
+                                <p class='text-sm font-medium text-gray-900'>Created</p>
+                                <p class='text-xs text-gray-500'>
+                                    {{ entryData.createdAt | date : 'dd MMM yyyy, h:mm a' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Last Updated -->
+                        <div *ngIf='entryData.updatedAt' class='flex items-start gap-3'>
+                            <div class='w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0'>
+                                <i class='fa-solid fa-pencil text-xs'></i>
+                            </div>
+                            <div class='flex-1'>
+                                <p class='text-sm font-medium text-gray-900'>Last Updated</p>
+                                <p class='text-xs text-gray-500'>
+                                    {{ entryData.updatedAt | date : 'dd MMM yyyy, h:mm a' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class='p-4 bg-white border-t border-gray-200 flex-shrink-0'>
+            <div class='flex gap-3'>
+                <button 
+                    (click)='showDeleteEntryConfirmation(entryData._id)' 
+                    type='button'
+                    class='flex-1 rounded-lg text-sm py-3 font-semibold text-red-600 bg-red-50 hover:bg-red-100 transition-colors border border-red-200'
+                >
+                    <i class='fa-solid fa-trash mr-2'></i>Delete
+                </button>
+                <button
+                    (click)='onEditClick.emit(entryData)'
+                    type='button'
+                    class='flex-1 rounded-lg text-sm py-3 font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors'
+                >
+                    <i class='fa-solid fa-pencil mr-2'></i>Edit
+                </button>
+            </div>
+        </div>
+    </div>
+</p-drawer>
+
+<!-- DELETE ENTRY CONFIRMATION MODAL -->
+<p-confirmdialog #cd>
+    <ng-template pTemplate="headless" let-message let-onAccept="onAccept" let-onReject="onReject">
+        <div class='flex flex-col items-center p-8 bg-white rounded-lg shadow-xl max-w-sm mx-auto'>
+            <div class='rounded-full bg-red-100 text-red-600 inline-flex justify-center items-center h-16 w-16'>
+                <i class='fa-solid fa-trash text-2xl'></i>
+            </div>
+            <span class='font-bold text-xl text-gray-900 block mb-2 mt-4'>{{ message.header }}</span>
+            <p class='mb-0 text-gray-600 text-center text-sm'>{{ message.message }}</p>
+            <div class='flex items-center gap-3 mt-6 w-full'>
+                <button
+                    (click)='onReject()'
+                    class='flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors'
+                    type='button'
+                >
+                    Cancel
+                </button>
+                <button
+                    (click)='onAccept()'
+                    class='flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors'
+                    type='button'
+                >
+                    <i class='fa-solid fa-trash mr-1'></i>Delete
+                </button>
+            </div>
+        </div>
+    </ng-template>
 </p-confirmdialog>
+
+<!-- <p-toast position='bottom-center' /> -->

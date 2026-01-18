@@ -116,11 +116,11 @@
 >
     <ul class='flex gap-2 filter-chips flex-wrap mb-3'>
         @for (category of categories();track category._id) {
-            <p-chip 
-                (click)='addCategoryToFilterList(category.name)'             
-                class='tracking-wider cursor-pointer bg-[#1a3d32!important] hover:bg-[#03d47c!important]' 
-                [label]='category.name | uppercase' 
-            />
+            <button class="p-2 py-1 bg-[#1a3d32!important] hover:bg-[#03d47c!important] rounded-md" (click)='addCategoryToFilterList(category.name)'>
+                <span class="text-white text-xs  tracking-wide">
+                    {{(category.name || '') | uppercase}}
+                </span>
+            </button>
         }
     </ul>
 
@@ -160,11 +160,11 @@
 >
     <ul class='flex gap-2 filter-chips flex-wrap mb-3'>
         @for (item of items();track item._id) {
-            <p-chip 
-                (click)='addItemToFilteredList(item._id || "")'             
-                class='tracking-wider cursor-pointer bg-[#1a3d32!important] hover:bg-[#03d47c!important]' 
-                [label]='item.name | uppercase' 
-            />
+            <button class="p-2 py-1 bg-[#1a3d32!important] hover:bg-[#03d47c!important] rounded-md" (click)='addItemToFilteredList(item._id || "")'>
+                <span class="text-white text-xs  tracking-wide">
+                    {{(item.name || '') | uppercase}}
+                </span>
+            </button>
         }
     </ul>
 
@@ -242,5 +242,3 @@
 
 <!-- ADD EXPENSE DRAWER -->
 <app-add-expense-drawer></app-add-expense-drawer>
-<!-- EXPENSE ITEMS DRAWER -->
-<app-select-expense-items-drawer></app-select-expense-items-drawer>

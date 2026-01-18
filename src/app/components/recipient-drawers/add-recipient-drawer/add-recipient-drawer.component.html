@@ -1,0 +1,156 @@
+<!-- ADD RECIPIENT DRAWER -->
+<p-drawer 
+    (onHide)='closeDrawer.emit(!true);' 
+    position='right' 
+    [visible]='openDrawer' 
+    [closable]='false'
+    [closeOnEscape]='false'
+>
+    <div class="w-full h-full flex flex-col bg-gray-50">
+        <!-- Header -->
+        <div class='p-4 bg-white border-b border-gray-200'>
+            <div class='flex items-center justify-between'>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 text-white flex items-center justify-center">
+                        <i class="fa-solid fa-user-plus text-sm"></i>
+                    </div>
+                    <h2 class='text-lg font-semibold text-gray-900'>Add Recipient</h2>
+                </div>
+                <button 
+                    (click)='closeDrawer.emit(!true)' 
+                    type='button' 
+                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors'
+                >
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <form class='flex-1 overflow-y-auto' [formGroup]='addRecipientForm' (ngSubmit)='addNewRecipient()'>
+            <div class="p-4 space-y-4">
+                
+                <!-- Name Input -->
+                <div class='flex flex-col gap-1.5'>
+                    <label for='recipientName' class='text-sm font-medium text-gray-700'>
+                        Recipient Name
+                    </label>
+                    <input 
+                        type='text' 
+                        placeholder='Enter full name' 
+                        pInputText 
+                        id='recipientName' 
+                        formControlName='name'
+                        class="w-full"
+                    />
+                </div>
+
+                <!-- Phone Input -->
+                <div class='flex flex-col gap-1.5'>
+                    <label for='recipientNumber' class='text-sm font-medium text-gray-700'>
+                        Phone Number
+                    </label>
+                    <input 
+                        pKeyFilter='num' 
+                        type='number' 
+                        placeholder='Enter phone number' 
+                        pInputText
+                        id='recipientNumber' 
+                        formControlName='number'
+                        class="w-full"
+                    />
+                    <p-message 
+                        severity='error' 
+                        *ngIf='addRecipientForm.get("number")?.hasError("pattern")' 
+                        variant='simple'>
+                        Please enter a valid phone number
+                    </p-message>
+                </div>
+
+                <!-- Preview Card -->
+                <div 
+                    *ngIf='addRecipientForm.get("name")?.value && addRecipientForm.get("name")?.value.length'
+                    class='mt-6'
+                >
+                    <label class='text-sm font-medium text-gray-700 mb-2 block'>Preview</label>
+                    <div class='bg-white border border-gray-200 rounded-lg p-4'>
+                        <div class='flex items-center justify-between'>
+                            <div class='flex items-center gap-3 flex-1 overflow-hidden'>
+                                <app-recipient-avatar 
+                                    [size]='"large"' 
+                                    [name]='addRecipientForm.get("name")!.value'
+                                    [profileUrl]='uploadedFileUrl() || null' 
+                                />
+                                <div class='flex flex-col overflow-hidden'>
+                                    <p class='font-semibold text-gray-900 whitespace-nowrap overflow-hidden text-ellipsis'>
+                                        {{addRecipientForm.get('name')?.value}}
+                                    </p>
+                                    <p class='text-sm text-gray-500'>
+                                        {{addRecipientForm.get('number')?.value || 'No phone number'}}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class='flex flex-col gap-2 ml-2'>
+                                <button 
+                                    (click)='onUploadFileClick()' 
+                                    title='Add photo' 
+                                    type='button'
+                                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors flex items-center justify-center'
+                                >
+                                    <i class='fa-solid fa-camera text-sm'></i>
+                                </button>
+                                <button 
+                                    *ngIf='uploadedFileUrl()' 
+                                    (click)='removeProfilePhoto()' 
+                                    title='Remove photo' 
+                                    type='button'
+                                    class='w-8 h-8 rounded-full hover:bg-red-50 text-red-600 transition-colors flex items-center justify-center'
+                                >
+                                    <i class='fa-solid fa-trash text-sm'></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Hint -->
+                        <div 
+                            *ngIf='!uploadedFileUrl()' 
+                            class='mt-3 pt-3 border-t border-gray-100'
+                        >
+                            <p class='text-xs text-gray-500 flex items-center gap-1.5'>
+                                <i class='fa-solid fa-info-circle'></i>
+                                <span>Click the camera icon to add a profile photo</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty State Hint -->
+                <div 
+                    *ngIf='!addRecipientForm.get("name")?.value || !addRecipientForm.get("name")?.value.length'
+                    class='mt-6 p-4 bg-gray-100 rounded-lg border border-gray-200'
+                >
+                    <div class='flex items-start gap-2'>
+                        <i class='fa-solid fa-lightbulb text-gray-400 mt-0.5'></i>
+                        <div class='text-sm text-gray-600'>
+                            <p class='font-medium mb-1'>Quick Tip</p>
+                            <p class='text-xs'>Add recipients to easily track who you've paid or received money from.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer with Add Button -->
+            <div class='p-4 bg-white border-t border-gray-200 mt-auto'>
+                <button 
+                    [disabled]='addRecipientForm.invalid' 
+                    type='submit'
+                    class='w-full rounded-lg text-sm py-3 font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                >
+                    <i class="fa-solid fa-user-plus mr-2"></i>Add Recipient
+                </button>
+            </div>
+        </form>
+    </div>
+</p-drawer>
+
+<p-toast position='bottom-center' />

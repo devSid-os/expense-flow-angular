@@ -11,8 +11,8 @@ import { CreateExpenseEntryModel, FetchFilteredEntriesModel, UpdateExpenseEntryM
 })
 export class ExpenseApiService {
     private _http = inject(HttpClient);
-    private _expenseDataServ = inject(ExpenseDataService);
-    private _userAccountServ = inject(UserAccountService);
+    private _expenseDataServ: ExpenseDataService = inject(ExpenseDataService);
+    private _userAccountServ: UserAccountService = inject(UserAccountService);
     private _BASEURL: string = `${environment.BACKEND_BASE_URL}/expense`;
 
     fetchExpenseEntries = new BehaviorSubject<boolean>(false);
@@ -191,6 +191,7 @@ export class ExpenseApiService {
     }
 
     deleteUserExpenseEntry(userId: string, entryId: string): Observable<Object> {
+        console.log(userId)
         return this._http.delete(`${this._BASEURL}/deleteEntry/${userId}/${entryId}`, { withCredentials: true })
             .pipe(
                 tap((response: any) => {

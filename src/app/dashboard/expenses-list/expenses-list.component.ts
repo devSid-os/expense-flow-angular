@@ -24,15 +24,15 @@ import { DatePicker } from 'primeng/datepicker';
 // APP COMPONENTS IMPORT
 import { ExpenseListTableComponent } from './expense-list-table/expense-list-table.component';
 import { AddExpenseDrawerComponent } from '../../components/expense-drawers/add-expense-drawer/add-expense-drawer.component';
-import { SelectExpenseItemsDrawerComponent } from '../../components/expense-drawers/select-expense-items-drawer/select-expense-items-drawer.component';
 // MODELS IMPORT
-import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel, FetchFilteredEntriesModel } from '../../Models/expenses.model';
+import { ExpenseCategoryModel, ExpenseItemModel, FetchFilteredEntriesModel } from '../../Models/expenses.model';
 import { PaginationModel } from '../../Models/pagination.model';
+import { EntryModel } from '../../Models/entry.model';
 
 
 @Component({
   selector: 'app-expenses-list',
-  imports: [CommonModule, FormsModule, SelectModule, ButtonModule, DividerModule, InputTextModule, DatePicker, Dialog, IconFieldModule, InputIconModule, Toast, Chip, ExpenseListTableComponent, AddExpenseDrawerComponent, SelectExpenseItemsDrawerComponent],
+  imports: [CommonModule, FormsModule, SelectModule, ButtonModule, DividerModule, InputTextModule, DatePicker, Dialog, IconFieldModule, InputIconModule, Toast, Chip, ExpenseListTableComponent, AddExpenseDrawerComponent],
   templateUrl: './expenses-list.component.html',
   styleUrl: './expenses-list.component.scss',
   encapsulation: ViewEncapsulation.None,
@@ -49,7 +49,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   readonly today: Date = new Date();
 
   allEntries: Signal<{
-    data: Signal<ExpenseEntryModel[]>;
+    data: Signal<EntryModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._expenseDataServ.allEntries());
   categories: Signal<ExpenseCategoryModel[]> = computed(() => this._expenseDataServ.categories());
@@ -79,7 +79,7 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   }
 
   filteredEntries: Signal<{
-    data: Signal<ExpenseEntryModel[]>;
+    data: Signal<EntryModel[]>;
     pagination: Signal<PaginationModel>;
   }> = computed(() => this._expenseDataServ.filteredEntries());
   fetchEntries$: Subscription | null = null;
@@ -242,12 +242,12 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
   loadExpenses(event: any, isFilteredPaginate: boolean = false): void {
     const pageSize = event.rows;
     const pageNumber = (event.first / pageSize);
-    if (isFilteredPaginate) {
-      if (pageNumber === this.allEntries().pagination().currentPage) return;
+    if (!isFilteredPaginate) {
+      // if (pageNumber === this.allEntries().pagination().currentPage) return;
       this.getAllUserExpenseEntries(this._userId, pageNumber, pageSize);
     }
     else {
-      if (pageNumber === this.filteredEntries().pagination().currentPage) return;
+      // if (pageNumber === this.filteredEntries().pagination().currentPage) return;
       this.getFilteredEntries(this._userId, pageNumber, pageSize, {
         categories: this.expenseDataServFilters().categories(),
         itemsList: this.expenseDataServFilters().items(),
@@ -289,7 +289,6 @@ export class ExpensesListComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response: any) => {
           if (response.status === 200) {
-            this._cashbookApiServ.reFetchEntries.next(true);
             this._loadingServ.loading.set(false);
           }
         },

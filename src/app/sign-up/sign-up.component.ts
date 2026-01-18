@@ -13,14 +13,18 @@ import { Toast } from 'primeng/toast'
 import { UserAccountService } from '../Services/account.service';
 import { LoadingService } from '../Services/loading.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { IconField } from 'primeng/iconfield';
+import { InputIcon } from 'primeng/inputicon';
+
 
 @Component({
   selector: 'app-sign-up',
-  imports: [CommonModule, RouterModule, ButtonModule, ReactiveFormsModule, FormsModule, InputTextModule, DividerModule, Message, PasswordModule, Toast],
+  imports: [CommonModule, RouterModule, ButtonModule, ReactiveFormsModule, FormsModule, InputTextModule, DividerModule, Message, PasswordModule, Toast, IconField, InputIcon],
   templateUrl: './sign-up.component.html',
   styleUrl: './sign-up.component.scss',
   providers: [MessageService],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.Emulated
+
 })
 export class SignUpComponent {
   loading: Signal<boolean> = computed(() => this._loadingServ.loading());
@@ -72,6 +76,7 @@ export class SignUpComponent {
     }
     this._loadingServ.loading.set(true);
     this._userAccountServ.signUp(this.signUpForm.value)
+      .pipe(take(1))
       .subscribe({
         next: (response: any) => {
           this.signUpError = null;

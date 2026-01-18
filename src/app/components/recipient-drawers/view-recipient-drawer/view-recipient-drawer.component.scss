@@ -1,0 +1,310 @@
+:host ::ng-deep {
+    .date-filter-input {
+        width: 100%;
+
+        .p-inputtext {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background: white;
+            color: #374151;
+
+            &:focus {
+                border-color: #111827;
+                box-shadow: 0 0 0 1px #111827;
+            }
+
+            &::placeholder {
+                color: #9ca3af;
+            }
+        }
+
+        .p-datepicker-trigger {
+            background: transparent;
+            border: none;
+            color: #6b7280;
+            padding: 0 0.5rem;
+
+            &:hover {
+                background: transparent;
+                color: #111827;
+            }
+        }
+    }
+
+    // Calendar Popup Styles
+    .p-datepicker {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+
+        .p-datepicker-header {
+            background: transparent;
+            border-bottom: 1px solid #f3f4f6;
+            padding: 0.5rem 0;
+            margin-bottom: 0.5rem;
+
+            .p-datepicker-title {
+
+                .p-datepicker-month,
+                .p-datepicker-year {
+                    color: #111827;
+                    font-weight: 600;
+                    font-size: 0.875rem;
+
+                    &:hover {
+                        color: #374151;
+                    }
+                }
+            }
+
+            .p-datepicker-prev,
+            .p-datepicker-next {
+                color: #6b7280;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 0.375rem;
+
+                &:hover {
+                    background: #f3f4f6;
+                    color: #111827;
+                }
+            }
+        }
+
+        table {
+            font-size: 0.75rem;
+
+            th {
+                padding: 0.5rem;
+                color: #9ca3af;
+                font-weight: 500;
+            }
+
+            td {
+                padding: 0.125rem;
+
+                span {
+                    width: 2rem;
+                    height: 2rem;
+                    border-radius: 0.375rem;
+                    color: #374151;
+
+                    &:hover:not(.p-disabled) {
+                        background: #f3f4f6;
+                    }
+                }
+
+                &.p-datepicker-today span {
+                    background: #f3f4f6;
+                    color: #111827;
+                    font-weight: 600;
+                }
+            }
+        }
+
+        .p-highlight {
+            background: #111827 !important;
+            color: white !important;
+        }
+
+        .p-disabled {
+            opacity: 0.4;
+        }
+    }
+
+    // Scrollpanel adjustment for filter
+    .p-scrollpanel {
+        &.custombar {
+            .p-scrollpanel-bar {
+                background-color: var(--p-primary-color);
+            }
+        }
+    }
+}
+
+// Existing styles...
+.p-drawer-right {
+    width: 100% !important;
+
+    .p-drawer-content {
+        background: #fff !important;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .p-drawer-right {
+        width: 44% !important;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    .p-drawer-right {
+        width: 34% !important;
+    }
+}
+
+.p-paginator {
+    background: white !important;
+    border: none !important;
+    padding: 0.5rem 0 !important;
+}
+
+.p-paginator-current {
+    color: black !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.p-paginator-pages .p-paginator-page {
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    margin: 0 0.125rem;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+}
+
+.p-paginator-page:not(.p-disabled):not(.p-paginator-page-selected):hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
+
+.p-paginator-page.p-paginator-page-selected {
+    background: #111827 !important;
+    border-color: #111827 !important;
+    color: #ffffff !important;
+}
+
+.p-paginator-first,
+.p-paginator-prev,
+.p-paginator-next,
+.p-paginator-last {
+    color: #6b7280;
+    min-width: 2rem;
+    height: 2rem;
+}
+
+.p-dropdown {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+}
+
+.p-select {
+    background-color: white;
+
+    span {
+        padding: .1rem .2rem !important;
+        color: black;
+    }
+}
+
+.p-select-list {
+    background-color: white !important;
+}
+
+.p-select-option:not(.p-select-option-selected):not(.p-disabled).p-focus {
+    background: #333 !important;
+
+    span {
+        color: white !important;
+    }
+}
+
+.p-select-option.p-select-option-selected.p-focus {
+    background: #333 !important;
+
+    span {
+        color: white !important;
+    }
+}
+
+:host ::ng-deep {
+    .p-confirmdialog {
+        .p-dialog {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            border-radius: 12px;
+            overflow: hidden;
+            max-width: 400px;
+
+            .p-dialog-content {
+                padding: 0;
+                background: transparent;
+            }
+        }
+    }
+
+    .p-dialog-mask {
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(2px);
+    }
+}
+
+// Add to view-recipient-drawer.component.scss
+
+// Spin animation
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+// Modal styling overrides
+::ng-deep .download-progress-modal {
+    .p-dialog {
+        border-radius: 16px !important;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
+
+    .p-dialog-content {
+        padding: 0 !important;
+        border-radius: 16px !important;
+        background: #ffffff !important;
+    }
+
+    // Remove dark overlay tint if any
+    .p-dialog-mask {
+        background: rgba(0, 0, 0, 0.5) !important;
+    }
+
+    .p-component {
+        background: #fff !important;
+    }
+}
+
+// Progress bar shimmer effect
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.progress-shimmer {
+    background: linear-gradient(90deg,
+            #1f2937 0%,
+            #374151 50%,
+            #1f2937 100%) !important;
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}

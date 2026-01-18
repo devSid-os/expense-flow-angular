@@ -1,0 +1,29 @@
+<div class='flex flex-col gap-4'>
+
+    <div class='hidden items-center select-none lg:flex'>
+        <img class='w-[43px] h-[43px]' src='images/recipient_logo.png' />&nbsp;&nbsp;
+        <p class='text-xl tracking-wide'>Recipients</p>
+    </div>
+
+    <div class='w-full flex flex-col items-start gap-2 mt-2'>
+        <button
+            type='button'
+            (click)='openAddRecipientDrawer=true;'
+            class='bg-[#28c181] text-white font-[600] p-1 px-3 rounded-[4px] text-[13px] tracking-wide'
+        >
+            <i class='fa-solid fa-plus'></i>&nbsp;Add Recipient
+        </button>
+    </div>
+
+    <div>
+        <app-recipients-table 
+            [pagination]='filterApplied() ? filteredRecipients().pagination() : recipients().pagination()' 
+            [data]='filterApplied() ? filteredRecipients().data() : recipients().data()'
+            (onFilterSearchChange)='searchRecipients($event)'
+        >
+        </app-recipients-table>
+    </div>
+</div>
+
+<!-- ADD RECIPIENT DRAWER -->
+<app-add-recipient-drawer [openDrawer]='openAddRecipientDrawer' (closeDrawer)='openAddRecipientDrawer=false'></app-add-recipient-drawer>

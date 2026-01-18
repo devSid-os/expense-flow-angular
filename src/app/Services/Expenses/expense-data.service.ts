@@ -1,6 +1,7 @@
 import { computed, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { ExpenseCategoryModel, ExpenseEntryModel, ExpenseItemModel } from '../../Models/expenses.model';
+import { ExpenseCategoryModel, ExpenseItemModel } from '../../Models/expenses.model';
 import { PaginationModel } from '../../Models/pagination.model';
+import { EntryModel } from '../../Models/entry.model';
 
 @Injectable({
     providedIn: 'root'
@@ -9,7 +10,7 @@ export class ExpenseDataService {
 
     // ALL EXPENSE ENTRIES DATA AND PAGINATION
     allEntries: WritableSignal<{
-        data: WritableSignal<ExpenseEntryModel[]>,
+        data: WritableSignal<EntryModel[]>,
         pagination: WritableSignal<PaginationModel>
     }> = signal({
         data: signal([]),
@@ -46,7 +47,7 @@ export class ExpenseDataService {
 
     // FILTERED EXPENSE ENTRIES AND PAGINATION
     filteredEntries: WritableSignal<{
-        data: WritableSignal<ExpenseEntryModel[]>,
+        data: WritableSignal<EntryModel[]>,
         pagination: WritableSignal<PaginationModel>
     }> = signal({
         data: signal([]),
@@ -77,7 +78,7 @@ export class ExpenseDataService {
     showExpenseItemsDrawer: WritableSignal<boolean> = signal(false);
     showEditExpenseDrawer: WritableSignal<boolean> = signal(false);
     showViewEntryDrawer: WritableSignal<boolean> = signal(false);
-    viewEntryData: WritableSignal<ExpenseEntryModel | null> = signal(null);
+    viewEntryData: WritableSignal<EntryModel | null> = signal(null);
 
     resetFilters(): void {
         this.filters().categories.set([]);

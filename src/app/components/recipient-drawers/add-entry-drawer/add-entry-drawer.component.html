@@ -1,0 +1,138 @@
+<p-drawer 
+    (onHide)='onCloseDrawer.emit(!true);' 
+    position='right' 
+    [visible]='addEntryDrawer().open()' 
+    [closable]='false'
+>
+    <div class="w-full h-full flex flex-col bg-gray-50">
+        <!-- Header -->
+        <div class='p-4 bg-white border-b border-gray-200'>
+            <div class='flex items-center justify-between'>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center"
+                        [ngClass]="{
+                            'bg-gray-900 text-white': addEntryDrawer().type() === 'out',
+                            'bg-gray-100 text-gray-900': addEntryDrawer().type() === 'in'
+                        }">
+                        <i class="fa-solid text-sm" [ngClass]="{
+                            'fa-arrow-up': addEntryDrawer().type() === 'out',
+                            'fa-arrow-down': addEntryDrawer().type() === 'in'
+                        }"></i>
+                    </div>
+                    <h2 class='text-lg font-semibold text-gray-900'>
+                        {{addEntryDrawer().type() === 'out' ? 'Record Payment' : 'Record Receipt'}}
+                    </h2>
+                </div>
+                <button (click)='onCloseDrawer.emit(!true)' type='button' 
+                    class='w-8 h-8 rounded-full hover:bg-gray-100 text-gray-600 transition-colors'>
+                    <i class='fa-solid fa-xmark'></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <form class='flex-1 overflow-y-auto' [formGroup]='addEntry' (ngSubmit)='addRecipientEntry()'>
+            <div class="p-4 space-y-4">
+                <!-- Date and Mode Row -->
+                <div class='grid grid-cols-2 gap-3'>
+                    <!-- Date Input -->
+                    <div class='flex flex-col gap-1.5'>
+                        <label class='text-sm font-medium text-gray-700'>Date</label>
+                        <p-datepicker 
+                            formControlName='date'
+                            [fluid]='true' 
+                            [iconDisplay]='"input"' 
+                            [showIcon]='true' 
+                            inputId='icondisplay' 
+                            [maxDate]='today'
+                            styleClass="custom-datepicker"
+                        />
+                    </div>
+        
+                    <!-- Mode Select -->
+                    <div class='flex flex-col gap-1.5 payment-mode-div'>
+                        <label class='text-sm font-medium text-gray-700'>Payment Mode</label>
+                        <p-select 
+                            formControlName='mode'
+                            [options]='modeOptions'
+                            placeholder='Select mode' 
+                            [editable]='true'
+                            optionLabel='label' 
+                            optionValue='value' 
+                            styleClass="w-full text-black"
+                        />
+                    </div>
+                </div>
+
+                <!-- Amount Input -->
+                <div class='flex flex-col gap-1.5'>
+                    <label class='text-sm font-medium text-gray-900'>Amount</label>
+                    <p-inputgroup>
+                        <p-inputgroup-addon class="bg-gray-50">
+                            <i class='fa-solid fa-indian-rupee-sign text-gray-600'></i>
+                        </p-inputgroup-addon>
+                        <input 
+                            formControlName='amount' 
+                            pInputText 
+                            placeholder='Enter amount' 
+                            type='number' 
+                            class="text-lg font-semibold"
+                        />
+                    </p-inputgroup>
+                    <p-message 
+                        severity='error' 
+                        *ngIf='addEntry.get("amount")?.hasError("pattern")' 
+                        variant='simple'>
+                        Please enter a valid amount
+                    </p-message>
+                </div>
+
+                <!-- Remark Textarea -->
+                <div class='flex flex-col gap-1.5'>
+                    <label class='text-sm font-medium text-gray-700'>Note <span class="text-gray-400 font-normal">(Optional)</span></label>
+                    <textarea 
+                        style="background: white!important"
+                        formControlName='remark' 
+                        rows='4' 
+                        placeholder='Add a note about this transaction...' 
+                        pTextarea
+                        class="resize-none"
+                    ></textarea>
+                </div>
+
+                <!-- Attachment Section -->
+                <div class='flex flex-col gap-2'>
+                    <label class='text-sm font-medium text-gray-700'>Attachment <span class="text-gray-400 font-normal">(Optional)</span></label>
+                    
+                    <ng-container *ngIf='uploadedFileUrl()'>
+                        <app-form-image-preview 
+                            [fileUrl]='uploadedFileUrl()' 
+                            (removeFileUrl)='removeMediaUrl()'>
+                        </app-form-image-preview>
+                    </ng-container>
+
+                    <button 
+                        (click)='onUploadFileClick()'
+                        type='button' 
+                        class='w-full p-3 text-sm font-medium text-gray-700 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-colors'
+                    >
+                        <i class='fa-solid fa-paperclip mr-2'></i>Attach Bill or Receipt
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer with Save Button -->
+            <div class='p-4 bg-white border-t border-gray-200 mt-auto'>
+                <button 
+                    type='submit'
+                    class='w-full rounded-lg text-sm py-3 font-semibold text-white bg-gray-900 hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                    [disabled]='addEntry.invalid'
+                >
+                    <i class="fa-solid fa-check mr-2"></i>Save Transaction
+                </button>
+            </div>
+        </form>
+    </div>
+</p-drawer>
+
+<p-toast position='bottom-center' />
